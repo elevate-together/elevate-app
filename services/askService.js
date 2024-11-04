@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function sendQuestion(question) {
   try {
-    const response = await axios.post("vercel-backend-datatopia.vercel.app/ask", {
+    const response = await axios.post("https://vercel-backend-datatopia.vercel.app/ask", {
       question, 
     });
 
