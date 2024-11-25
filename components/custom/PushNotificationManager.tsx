@@ -32,7 +32,7 @@ function PushNotificationManager() {
       "serviceWorker" in navigator &&
       "PushManager" in window
     ) {
-      setIsSupported(false);
+      setIsSupported(true);
       registerServiceWorker();
     }
   }, []);
