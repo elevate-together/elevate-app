@@ -135,8 +135,8 @@ function PushNotificationManager() {
             <AlertDescription>
               <div className="flex flex-col md: flex-row gap-5">
                 <div>
-                  You're not subscribed to notifications. Enable them to get
-                  real-time alerts and never miss important updates.
+                  You&apos;re not subscribed to notifications. Enable them to
+                  get real-time alerts and never miss important updates.
                 </div>
                 <Button variant="secondary" onClick={subscribeToPush}>
                   Subscribe
