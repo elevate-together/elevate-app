@@ -28,7 +28,7 @@ export const DashboardPage: React.FC = () => {
     <div>
       <h2>Dashboard</h2>
       <div>
-        <div>Welcome {username}</div>
+        <div>Welcome, {username}</div>
         {session.user?.image && (
           <Avatar>
             <AvatarImage src={session.user.image} />
