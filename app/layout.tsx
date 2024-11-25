@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SessionProvider } from "next-auth/react";
 import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
-import { auth } from "@lib/auth/authConfig";
+import { auth } from "@/auth";
 
 import "./globals.css";
 import { Navbar } from "@components/custom/Navbar";
