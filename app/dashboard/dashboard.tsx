@@ -17,7 +17,6 @@ export const DashboardPage: React.FC = () => {
         setUsername(name);
       }
     };
-    ``;
     userInfo();
   }, []);
 
