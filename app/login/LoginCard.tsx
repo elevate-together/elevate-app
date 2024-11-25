@@ -19,11 +19,8 @@ const LoginCard = () => {
     setIsLoading(true);
     try {
       await handleGoogleSignIn();
-      toast.success("Sign in successful.");
-      
     } catch (error) {
-      toast.error("Failed to sign in.");
-      console.error("Google sign-in error:", error);
+      toast.error(`Failed to sign in: ${error}`);
     } finally {
       setIsLoading(false);
     }
@@ -42,7 +39,7 @@ const LoginCard = () => {
           <Button
             variant="outline"
             className="w-full flex items-center justify-center gap-2"
-            onClick={signIn}
+            onClick={() => signIn()}
             disabled={isLoading}
             aria-label="Sign in with Google"
           >

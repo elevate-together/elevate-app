@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { subscribeUser, unsubscribeUser, sendNotification } from "@app/actions";
 import { urlBase64ToUint8Array } from "@utils/vapid";
@@ -13,18 +15,24 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-import { TriangleAlert, UserMinus, SendHorizonal } from "lucide-react";
+import { TriangleAlert, UserMinus, SendHorizonal, Loader } from "lucide-react";
 import { Button } from "@components/ui/button";
+
 function PushNotificationManager() {
   const [isSupported, setIsSupported] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null
   );
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Loading state
 
   useEffect(() => {
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      setIsSupported(true);
+    if (
+      typeof window !== "undefined" &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window
+    ) {
+      setIsSupported(false);
       registerServiceWorker();
     }
   }, []);
@@ -39,26 +47,31 @@ function PushNotificationManager() {
   }
 
   async function subscribeToPush() {
-    const registration = await navigator.serviceWorker.ready;
-    const sub = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-      ),
-    });
-    setSubscription(sub);
+    setIsLoading(true);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+        ),
+      });
+      setSubscription(sub);
+      const subscriptionData = {
+        endpoint: sub.endpoint,
+        keys: {
+          p256dh: arrayBufferToBase64(sub.getKey("p256dh")),
+          auth: arrayBufferToBase64(sub.getKey("auth")),
+        },
+      };
 
-    // Convert ArrayBuffer keys to base64-encoded strings
-    const subscriptionData = {
-      endpoint: sub.endpoint,
-      keys: {
-        p256dh: arrayBufferToBase64(sub.getKey("p256dh")), // Convert ArrayBuffer to base64
-        auth: arrayBufferToBase64(sub.getKey("auth")), // Convert ArrayBuffer to base64
-      },
-    };
-
-    // Send the plain object with base64-encoded keys to the server
-    await subscribeUser(subscriptionData);
+      // Send the plain object with base64-encoded keys to the server
+      await subscribeUser(subscriptionData);
+    } catch (error) {
+      console.error("Error subscribing to push notifications", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
@@ -72,29 +85,57 @@ function PushNotificationManager() {
   }
 
   async function unsubscribeFromPush() {
-    if (subscription) {
-      await subscription.unsubscribe();
-      setSubscription(null);
-      await unsubscribeUser();
+    setIsLoading(true);
+    try {
+      if (subscription) {
+        await subscription.unsubscribe();
+        setSubscription(null);
+        await unsubscribeUser();
+      }
+    } catch (error) {
+      console.error("Error unsubscribing from push notifications", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   async function sendTestNotification() {
-    if (subscription) {
-      await sendNotification(message);
-      setMessage("");
+    setIsLoading(true);
+    try {
+      if (subscription) {
+        await sendNotification(message);
+        setMessage("");
+      }
+    } catch (error) {
+      console.error("Error sending test notification", error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
   if (!isSupported) {
-    return <p>Push notifications are not supported in this browser.</p>;
+    return (
+      <div className=" flex justify-center m-4">
+        <Alert variant="destructive" className=" max-w-lg ">
+          <TriangleAlert className="h-4 w-4" color="#A15027" />
+          <AlertDescription>
+            <div className="flex flex-col md:flex-row gap-5">
+              <p>
+                Push notifications are not supported in this browser. Make sure
+                that your phone is up to date.
+              </p>
+            </div>
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
   }
 
   return (
-    <div className="flex justify-center mt-5">
+    <div className="flex justify-center m-4">
       {subscription ? (
         <div>
-          <Card className="max-w-md ">
+          <Card className="max-w-md">
             <CardHeader>
               <CardTitle>Push Notification</CardTitle>
               <CardDescription>
@@ -113,38 +154,54 @@ function PushNotificationManager() {
             </CardContent>
             <CardFooter>
               <div className="flex flex-col w-full gap-4">
-                <Button className="w-full" onClick={sendTestNotification}>
-                  <SendHorizonal /> Send Test
+                <Button
+                  className="w-full"
+                  onClick={sendTestNotification}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <Loader className="animate-spin h-4 w-4 mr-2" />
+                  ) : (
+                    <SendHorizonal />
+                  )}
+                  Send Test
                 </Button>
                 <Button
                   variant="secondary"
                   className="w-full"
                   onClick={unsubscribeFromPush}
+                  disabled={isLoading}
                 >
-                  <UserMinus /> Unsubscribe
+                  <UserMinus />
+                  Unsubscribe
                 </Button>
               </div>
             </CardFooter>
           </Card>
         </div>
       ) : (
-        <>
-          <Alert variant="warning" className="max-w-lg">
-            <TriangleAlert className="h-4 w-4" color="#A15027" />
-            <AlertTitle className="font-bold">Heads up!</AlertTitle>
-            <AlertDescription>
-              <div className="flex flex-col md: flex-row gap-5">
-                <div>
-                  You&apos;re not subscribed to notifications. Enable them to
-                  get real-time alerts and never miss important updates.
-                </div>
-                <Button variant="secondary" onClick={subscribeToPush}>
-                  Subscribe
-                </Button>
+        <Alert variant="warning" className="max-w-lg">
+          <TriangleAlert className="h-4 w-4" color="#A15027" />
+          <AlertTitle className="font-bold">Heads up!</AlertTitle>
+          <AlertDescription>
+            <div className="flex flex-col md:flex-row gap-5">
+              <div>
+                You&apos;re not subscribed to notifications. Enable them to get
+                real-time alerts and never miss important updates.
               </div>
-            </AlertDescription>
-          </Alert>
-        </>
+              <Button
+                variant="secondary"
+                onClick={subscribeToPush}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader className="animate-spin h-4 w-4 mr-2" />
+                ) : null}
+                Subscribe
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );
