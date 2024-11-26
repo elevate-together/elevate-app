@@ -1,20 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { subscribeUser, unsubscribeUser, sendNotification } from "@app/actions";
+import { subscribeUser, unsubscribeUser } from "@app/actions";
 import { urlBase64ToUint8Array } from "@utils/vapid";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
-
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { TriangleAlert, UserMinus, SendHorizonal, Loader } from "lucide-react";
+import { TriangleAlert, Loader } from "lucide-react";
 import { Button } from "@components/ui/button";
 
 function PushNotificationManager({ userId }: { userId: string }) {
@@ -22,7 +12,7 @@ function PushNotificationManager({ userId }: { userId: string }) {
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null,
   );
-  const [message, setMessage] = useState("");
+  // const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Loading state
 
   useEffect(() => {
@@ -76,7 +66,7 @@ function PushNotificationManager({ userId }: { userId: string }) {
       };
 
       await subscribeUser(subscriptionData, userId, deviceInfo);
-      toast.success(`Added Device to Account`);
+      toast.success(`Device Added to Account`);
     } catch (error) {
       toast.error(`Error Adding Device to Account. Try Again`);
       console.error("Error subscribing to push notifications", error);
@@ -106,25 +96,24 @@ function PushNotificationManager({ userId }: { userId: string }) {
       }
     } catch (error) {
       console.error("Error unsubscribing from push notifications", error);
-      console.error("Error unsubscribing from push notifications", error);
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function sendTestNotification() {
-    setIsLoading(true);
-    try {
-      if (subscription) {
-        await sendNotification(userId, message);
-        setMessage("");
-      }
-    } catch (error) {
-      console.error("Error sending test notification", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  // async function sendTestNotification() {
+  //   setIsLoading(true);
+  //   try {
+  //     if (subscription) {
+  //       await sendNotification(userId, message);
+  //       setMessage("");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error sending test notification", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }
 
   if (!isSupported) {
     return (
@@ -148,49 +137,30 @@ function PushNotificationManager({ userId }: { userId: string }) {
     <div className="flex justify-center m-4">
       {subscription ? (
         <div>
-          <Card className="max-w-md">
-            <CardHeader>
-              <CardTitle>Push Notification</CardTitle>
-              <CardDescription>
-                This card is used for testing push notifications to ensure
-                real-time alerts are functioning correctly.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Input
-                required
-                type="text"
-                placeholder="Enter notification message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-            </CardContent>
-            <CardFooter>
-              <div className="flex flex-col w-full gap-4">
+          <Alert variant="success" className="max-w-lg">
+            <TriangleAlert className="h-4 w-4" color="#16A34A" />
+            <AlertTitle className="font-bold">
+              You’re subscribed to notifications!
+            </AlertTitle>
+            <AlertDescription>
+              <div className="flex flex-col md:flex-row gap-5">
+                <div>
+                  Elevate uses notifications to connect you with your friends.
+                  You can unsubscribe at any time.
+                </div>
                 <Button
-                  className="w-full"
-                  onClick={sendTestNotification}
+                  variant="secondary"
+                  onClick={unsubscribeFromPush}
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <Loader className="animate-spin h-4 w-4 mr-2" />
-                  ) : (
-                    <SendHorizonal />
-                  )}
-                  Send Test
-                </Button>
-                <Button
-                  variant="secondary"
-                  className="w-full"
-                  onClick={unsubscribeFromPush}
-                  disabled={isLoading}
-                >
-                  <UserMinus />
-                  Unsubscribe
+                  ) : null}
+                  Unubscribe
                 </Button>
               </div>
-            </CardFooter>
-          </Card>
+            </AlertDescription>
+          </Alert>
         </div>
       ) : (
         <Alert variant="warning" className="max-w-lg">
@@ -199,8 +169,8 @@ function PushNotificationManager({ userId }: { userId: string }) {
           <AlertDescription>
             <div className="flex flex-col md:flex-row gap-5">
               <div>
-                You&apos;re not subscribed to notifications. Enable them to get
-                real-time alerts and never miss important updates.
+                You’re not subscribed to notifications. Enable them to stay in
+                touch with your groups and get reminders.
               </div>
               <Button
                 variant="secondary"

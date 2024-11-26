@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { House, LogOut, MonitorSmartphone } from "lucide-react";
+import { House, LogOut, MonitorSmartphone, UserRound } from "lucide-react";
 import { handleSignOut } from "@lib/auth/signOutServerAction";
 
 import {
@@ -62,6 +62,16 @@ const AvatarDropdown: React.FC<AvatarDropdownProps> = ({ user }) => {
                 onClick={closeSidebar}
               >
                 <House /> Home
+              </Button>
+            </Link>
+            <Link href="/profile">
+              <Button
+                variant="secondary"
+                className="w-full"
+                onClick={closeSidebar}
+              >
+                <UserRound />
+                Profile
               </Button>
             </Link>
             <Link href="/devices">

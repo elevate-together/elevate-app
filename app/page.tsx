@@ -1,35 +1,21 @@
-"use client";
-import { useSession } from "next-auth/react";
-import PushNotificationManager from "@components/custom/PushNotificationManager";
+import { auth } from "@auth"; // import PushNotificationManager from "@components/custom/PushNotificationManager";
+import { redirect } from "next/navigation";
 
-export default function Page() {
-  const { data: session, status } = useSession();
+export default async function Page() {
+  const session = await auth();
 
-  if (status === "loading") {
-    return <div>Loading...</div>;
+  if (!session || !session.user || !session.user.id) {
+    redirect("/login");
   }
 
-  console.log(session);
+  const userId = session.user.id;
 
   return (
     <div>
-      <PushNotificationManager userId={session?.user?.id || ""} />
+      {/* <PushNotificationManager userId={session?.user?.id || ""} /> */}
+      <div>
+        Welcome, {session?.user?.name} {userId}
+      </div>
     </div>
   );
 }
-
-// import { auth } from "../auth";
-
-// export default async function Home() {
-//   const session = await auth();
-//   console.log(session);
-
-//   if (!session?.user) return <div>Uh Oh, You are Currently Not Signed In</div>;
-
-//   return (
-//     <div>
-//       <div>Welcome, {session.user.name}</div>
-//       <div>You are Currently Signed In</div>
-//     </div>
-//   );
-// }

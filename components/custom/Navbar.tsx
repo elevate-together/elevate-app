@@ -23,10 +23,7 @@ export const Navbar = ({ session }: HeaderProps) => {
   return (
     <header className="px-4 sm:px-6 h-14 flex items-center justify-between bg-black">
       {/* Logo */}
-      <Link
-        className="flex items-center justify-center mx-auto lg:mx-0"
-        href="/"
-      >
+      <Link className="flex items-center m-1 lg:mx-0" href="/">
         <Users className="h-6 w-6 text-white" />
         <span className="ml-2 text-2xl font-bold text-white">ELEVATE</span>
       </Link>
