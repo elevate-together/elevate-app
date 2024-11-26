@@ -114,7 +114,7 @@ export const Devices = async () => {
           ) : (
             <TableRow className="break-words">
               <TableCell colSpan={3} className="font-medium text-center">
-                You don`&apos;`t have any devices linked to your account
+                You don&apos;t have any devices linked to your account
               </TableCell>
             </TableRow>
           )}
