@@ -1,11 +1,19 @@
 "use client";
-
+import { useSession } from "next-auth/react";
 import PushNotificationManager from "@components/custom/PushNotificationManager";
 
 export default function Page() {
+  const { data: session, status } = useSession();
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  console.log(session);
+
   return (
     <div>
-      <PushNotificationManager />
+      <PushNotificationManager userId={session?.user?.id || ""} />
     </div>
   );
 }
