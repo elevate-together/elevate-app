@@ -35,6 +35,12 @@ const getOSVersion = (osVersion: string) => {
     return `Android ${androidMatch[1]}`;
   }
 
+  // macOS version extraction for MacIntel
+  const macMatch = osVersion.match(/Macintosh.*Mac OS X (\d+_\d+_\d+)/);
+  if (macMatch) {
+    return `macOS ${macMatch[1].replace(/_/g, ".")}`;
+  }
+
   // Other platform version extraction (e.g., web browsers)
   const otherMatch = osVersion.match(/Version\/(\d+\.\d+\.\d+)/);
   if (otherMatch) {
