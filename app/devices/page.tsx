@@ -70,23 +70,23 @@ const UsersPage = async () => {
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Users and Devices</h1>
       {users.length > 0 ? (
-        <Table>
+        <Table className="table-fixed">
           <TableCaption>All Registered Devices.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[150px]">User</TableHead>
+              <TableHead className="w-[115px] md:w-[250px]">User</TableHead>
               <TableHead>Device</TableHead>
               <TableHead className="w-[50px]"> </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user.id}>
+              <TableRow key={user.id} className="break-words">
                 <TableCell className="font-medium">
-                  <>
+                  <div>
                     <div className="font-bold">{user.name}</div>
                     <div>{user.email}</div>
-                  </>
+                  </div>
                 </TableCell>
                 <TableCell className="font-medium">
                   <div key={user.id}>
