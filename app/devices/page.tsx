@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
 import {
   Table,
   TableBody,
@@ -9,6 +8,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { EllipsisVertical } from "lucide-react";
+
+import TestNotifyButton from "@components/custom/TestNotifyButton";
+
+const prisma = new PrismaClient();
 
 async function getAllDevices() {
   const users = await prisma.user.findMany({
@@ -53,6 +65,7 @@ const getOSVersion = (osVersion: string) => {
 
 const UsersPage = async () => {
   const { users } = await getAllDevices();
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Users and Devices</h1>
@@ -63,6 +76,7 @@ const UsersPage = async () => {
             <TableRow>
               <TableHead className="w-[150px]">User</TableHead>
               <TableHead>Device</TableHead>
+              <TableHead className="w-[50px]"> </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -71,7 +85,7 @@ const UsersPage = async () => {
                 <TableCell className="font-medium">
                   <>
                     <div className="font-bold">{user.name}</div>
-                    <div> {user.email}</div>
+                    <div>{user.email}</div>
                   </>
                 </TableCell>
                 <TableCell className="font-medium">
@@ -89,9 +103,26 @@ const UsersPage = async () => {
                         </div>
                       ))
                     ) : (
-                      <div>No devices</div> // Corrected the closing div tag
+                      <div>No devices</div>
                     )}
                   </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger>
+                      <EllipsisVertical />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent side="bottom" align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem className="p-0">
+                        <TestNotifyButton
+                          userId={user.id}
+                          message="Test push"
+                        />
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                 </TableCell>
               </TableRow>
             ))}
