@@ -22,7 +22,6 @@ import { auth } from "@auth";
 import { redirect } from "next/navigation";
 import PushNotificationManager from "@components/custom/PushNotificationManager";
 import db from "@lib/db";
-import { format } from "date-fns";
 import { toZonedTime } from "date-fns-tz";
 
 async function getUserDevices(userId: string) {
@@ -62,6 +61,18 @@ export const Devices = async () => {
 
   const timeZone = "America/Chicago";
 
+  const dateTimeFormatter = new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric",
+    hour12: true,
+    timeZone: timeZone,
+    timeZoneName: "short",
+  });
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Your Devices</h1>
@@ -87,10 +98,8 @@ export const Devices = async () => {
                     <div>
                       <p className="text-lg font-bold">{device.platform}</p>
                       <div className="text-gray-500 text-s">
-                        <p>OS: {getOSVersion(device.osVersion)}</p>
-                        <p>
-                          Date Added: {format(zonedDate, "MM/dd/yyyy h:mm a")}
-                        </p>
+                        <p>OS Version: {getOSVersion(device.osVersion)}</p>
+                        <p>Added: {dateTimeFormatter.format(zonedDate)}</p>
                       </div>
                     </div>
                   </TableCell>
