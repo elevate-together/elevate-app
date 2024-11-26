@@ -22,10 +22,11 @@ import { auth } from "@auth";
 import { redirect } from "next/navigation";
 import PushNotificationManager from "@components/custom/PushNotificationManager";
 import db from "@lib/db";
+import { format } from "date-fns";
 
-async function getAllDevices(userId: string) {
+async function getUserDevices(userId: string) {
   try {
-    const users = await db.user.findMany({
+    const user = await db.user.findUnique({
       where: {
         id: userId,
       },
@@ -33,7 +34,15 @@ async function getAllDevices(userId: string) {
         devices: true,
       },
     });
-    return users.length > 0 ? users[0].devices : [];
+
+    if (user) {
+      return {
+        username: user.name,
+        devices: user.devices,
+      };
+    } else {
+      return { username: null, devices: [] };
+    }
   } catch (error) {
     console.error("Error fetching devices:", error);
     throw new Error("Failed to fetch devices");
@@ -49,7 +58,7 @@ export const Devices = async () => {
 
   const userId = session.user.id;
 
-  const devices = await getAllDevices(userId);
+  const { username, devices } = await getUserDevices(userId);
 
   return (
     <div className="container mx-auto p-4">
@@ -65,18 +74,25 @@ export const Devices = async () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {devices.length > 0 ? (
+          {devices && devices.length > 0 ? (
             devices.map((device) => (
               <TableRow key={device.id} className="break-words">
                 <TableCell className="font-medium">
                   <div>
-                    <p>
-                      <strong>Platform:</strong> {device.platform}
+                    <p className="text-lg font-bold">
+                      {username ? `${username.split(" ")[0]}'s` : "User's"}{" "}
+                      {device.platform}
                     </p>
-                    <p>
-                      <strong>OS Version:</strong>{" "}
-                      {getOSVersion(device.osVersion)}
-                    </p>
+                    <div className="text-gray-500 text-s">
+                      <p>OS: {getOSVersion(device.osVersion)}</p>
+                      <p>
+                        Date Added:{" "}
+                        {format(
+                          new Date(device.createdAt),
+                          "MM/dd/yyyy h:mm a",
+                        )}
+                      </p>
+                    </div>
                   </div>
                 </TableCell>
                 <TableCell className="font-medium">
