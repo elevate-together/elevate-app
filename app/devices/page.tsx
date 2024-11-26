@@ -74,7 +74,7 @@ const UsersPage = async () => {
           <TableCaption>All Registered Devices.</TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[115px] md:w-[250px]">User</TableHead>
+              <TableHead className="w-[130px] md:w-[250px]">User</TableHead>
               <TableHead>Device</TableHead>
               <TableHead className="w-[50px]"> </TableHead>
             </TableRow>
