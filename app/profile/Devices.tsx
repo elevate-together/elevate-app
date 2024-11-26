@@ -23,6 +23,7 @@ import { redirect } from "next/navigation";
 import PushNotificationManager from "@components/custom/PushNotificationManager";
 import db from "@lib/db";
 import { format } from "date-fns";
+import { toZonedTime } from "date-fns-tz";
 
 async function getUserDevices(userId: string) {
   try {
@@ -37,11 +38,10 @@ async function getUserDevices(userId: string) {
 
     if (user) {
       return {
-        username: user.name,
         devices: user.devices,
       };
     } else {
-      return { username: null, devices: [] };
+      return { devices: [] };
     }
   } catch (error) {
     console.error("Error fetching devices:", error);
@@ -58,7 +58,9 @@ export const Devices = async () => {
 
   const userId = session.user.id;
 
-  const { username, devices } = await getUserDevices(userId);
+  const { devices } = await getUserDevices(userId);
+
+  const timeZone = "America/Chicago";
 
   return (
     <div className="container mx-auto p-4">
@@ -75,42 +77,43 @@ export const Devices = async () => {
         </TableHeader>
         <TableBody>
           {devices && devices.length > 0 ? (
-            devices.map((device) => (
-              <TableRow key={device.id} className="break-words">
-                <TableCell className="font-medium">
-                  <div>
-                    <p className="text-lg font-bold">
-                      {username ? `${username.split(" ")[0]}'s` : "User's"}{" "}
-                      {device.platform}
-                    </p>
-                    <div className="text-gray-500 text-s">
-                      <p>OS: {getOSVersion(device.osVersion)}</p>
-                      <p>
-                        Date Added:{" "}
-                        {format(
-                          new Date(device.createdAt),
-                          "MM/dd/yyyy h:mm a",
-                        )}
-                      </p>
+            devices.map((device) => {
+              // Convert each device's createdAt to the correct time zone
+              const zonedDate = toZonedTime(device.createdAt, timeZone);
+
+              return (
+                <TableRow key={device.id} className="break-words">
+                  <TableCell className="font-medium">
+                    <div>
+                      <p className="text-lg font-bold">{device.platform}</p>
+                      <div className="text-gray-500 text-s">
+                        <p>OS: {getOSVersion(device.osVersion)}</p>
+                        <p>
+                          Date Added: {format(zonedDate, "MM/dd/yyyy h:mm a")}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell className="font-medium">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger>
-                      <EllipsisVertical />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent side="bottom" align="end">
-                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem className="p-0">
-                        <TestNotifyButton userId={userId} message="Test push" />
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </TableCell>
-              </TableRow>
-            ))
+                  </TableCell>
+                  <TableCell className="font-medium">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <EllipsisVertical />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="bottom" align="end">
+                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem className="p-0">
+                          <TestNotifyButton
+                            userId={userId}
+                            message="Test push"
+                          />
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow className="break-words">
               <TableCell colSpan={3} className="font-medium text-center">
