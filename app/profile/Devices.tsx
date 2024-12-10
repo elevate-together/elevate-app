@@ -74,7 +74,7 @@ export const Devices = async () => {
   });
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4  w-full">
       <h1 className="text-2xl font-bold mb-4">Your Devices</h1>
       <PushNotificationManager userId={userId} />
 
@@ -89,7 +89,6 @@ export const Devices = async () => {
         <TableBody>
           {devices && devices.length > 0 ? (
             devices.map((device) => {
-              // Convert each device's createdAt to the correct time zone
               const zonedDate = toZonedTime(device.createdAt, timeZone);
 
               return (

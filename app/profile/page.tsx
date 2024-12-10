@@ -1,11 +1,11 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Devices } from "./Devices";
-import { Card } from "@components/ui/card";
+import { Info } from "./Info";
 
 const UsersPage = () => {
   return (
-    <div className="flex justify-center items-center m-5">
-      <Tabs defaultValue="account" className=" md: w-[500px]">
+    <div className="flex justify-center items-center m-5 ">
+      <Tabs defaultValue="account" className=" md: max-w-md">
         <TabsList>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="notification">
@@ -13,12 +13,10 @@ const UsersPage = () => {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="account">
-          Make changes to your account here.
+          <Info />
         </TabsContent>
         <TabsContent value="notification">
-          <Card>
-            <Devices />
-          </Card>
+          <Devices />
         </TabsContent>
       </Tabs>
     </div>

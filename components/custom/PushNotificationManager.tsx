@@ -123,7 +123,7 @@ function PushNotificationManager({ userId }: { userId: string }) {
           <AlertDescription>
             <div className="flex flex-col md:flex-row gap-5">
               <p>
-                Push notifications are not supported in this browser. Make sure
+                Push notifications are not supported in this browser. If on mobile device, make sure
                 that your phone is up to date.
               </p>
             </div>

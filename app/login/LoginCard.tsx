@@ -2,13 +2,6 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
 import { handleGoogleSignIn } from "@lib/auth/googleSignInServerAction";
 import { toast } from "sonner";
 
@@ -27,27 +20,23 @@ const LoginCard = () => {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-md">
-      <CardHeader>
-        <CardTitle>Sign In</CardTitle>
-        <CardDescription>
-          Sign in with your Google account to access Elevate
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="flex flex-col items-center">
-          <Button
-            variant="outline"
-            className="w-full flex items-center justify-center gap-2"
-            onClick={() => signIn()}
-            disabled={isLoading}
-            aria-label="Sign in with Google"
-          >
-            {isLoading ? "Signing In..." : "Continue with Google"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="w-full max-w-lg m-6 flex flex-col">
+      <div className="text-2xl font-bold"> Log In</div>
+      <div className="mb-2 text-sm text-muted-foreground">
+        Log in with your Google account to access Elevate
+      </div>
+      <div className="flex flex-col items-center">
+        <Button
+          variant="secondary"
+          className="w-full flex items-center justify-center gap-2"
+          onClick={() => signIn()}
+          disabled={isLoading}
+          aria-label="Sign in with Google"
+        >
+          {isLoading ? "Signing In..." : "Continue with Google"}
+        </Button>
+      </div>
+    </div>
   );
 };
 
