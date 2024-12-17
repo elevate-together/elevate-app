@@ -9,7 +9,7 @@ const UsersPage = () => {
         <TabsList>
           <TabsTrigger value="account">Account</TabsTrigger>
           <TabsTrigger value="notification">
-            Manage Push Notifications
+            Push Notifications
           </TabsTrigger>
         </TabsList>
         <TabsContent value="account">
