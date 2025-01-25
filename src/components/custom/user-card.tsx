@@ -6,8 +6,8 @@ type UserComponentProps = User;
 
 export default function UserComponent({
   id,
-  first_name,
-  last_name,
+  createdAt,
+  name,
   email,
 }: UserComponentProps) {
   return (
@@ -16,10 +16,8 @@ export default function UserComponent({
         key={id}
         className="border border-gray-200 p-4 my-4 rounded-md shadow-sm"
       >
-        <h2 className="text-lg font-semibold">
-          {first_name} {last_name}
-        </h2>
-        <p className="text-sm text-gray-500">ID: {id}</p>
+        <h2 className="text-lg font-semibold">{name}</h2>
+        <p className="text-sm text-gray-500">{createdAt}</p>
         <p className="text-gray-700">Email: {email}</p>
       </div>
     </Link>
