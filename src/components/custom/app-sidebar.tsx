@@ -1,21 +1,18 @@
-"use client";
-
-import { Home } from "lucide-react";
+import { Home, User } from "lucide-react";
 import { Users } from "lucide-react";
 import Link from "next/link";
-// import { useSidebar } from "@/components/ui/sidebar";
-
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarSeparator,
 } from "@/components/ui/sidebar";
+import UserInfo from "./user/user-info";
 
 // Menu items.
 const items = [
@@ -24,31 +21,22 @@ const items = [
     url: "/",
     icon: Home,
   },
-  // {
-  //   title: "Profile",
-  //   url: "/profile",
-  //   icon: CircleUserRound,
-  // },
+  {
+    title: "Profile",
+    url: "/profile",
+    icon: User,
+  },
 ];
 
-export function AppSidebar() {
-  // const { toggleSidebar } = useSidebar();
-
+export default async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        {/* <div className="flex justify-between items-center mx-4 my-2"> */}
-        <Link className="flex items-center justify-center m-4" href="/">
+        <Link className="flex items-center justify-center mt-4" href="/">
           <Users className="h-6 w-6" />
           <span className="ml-2 text-2xl font-bold">ELEVATE</span>
         </Link>
-        {/* <ChevronLeft
-            className="h-6 w-6 cursor-pointer"
-            onClick={toggleSidebar}
-          /> */}
-        {/* </div> */}
       </SidebarHeader>
-      <SidebarSeparator />
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>
@@ -67,6 +55,9 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <UserInfo />
+      </SidebarFooter>
     </Sidebar>
   );
 }

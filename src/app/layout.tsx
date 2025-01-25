@@ -2,7 +2,12 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/custom/app-sidebar";
+import AppSidebar from "@/components/custom/app-sidebar";
+import { Toaster } from "@/components/ui/sonner";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeSwitch } from "@/components/custom/buttons/theme-switch";
+import { Separator } from "@/components/ui/separator";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,17 +29,39 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider>
-          <AppSidebar />
-          <main className="w-full">
-            <SidebarTrigger />
-            {children}
-          </main>
-        </SidebarProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <SidebarProvider>
+            <AppSidebar />
+            <main className="w-full">
+              {/* Navbar */}
+              <div className="flex flex-row justify-between w-full p-2">
+                <SidebarTrigger />
+                <ThemeSwitch />
+              </div>
+              <Separator />
+              {children}
+            </main>
+            <Toaster
+              toastOptions={{
+                classNames: {
+                  error: "bg-red-400",
+                  success: "text-green-600",
+                  warning: "text-yellow-600",
+                  info: "bg-blue-400",
+                },
+              }}
+            />
+          </SidebarProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
