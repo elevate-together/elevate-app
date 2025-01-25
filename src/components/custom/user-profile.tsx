@@ -1,6 +1,6 @@
 import React from "react";
 import type { User } from "@/lib/definition";
-import Link from "next/link";
+// import Link from "next/link";
 
 type UserComponentProps = User;
 

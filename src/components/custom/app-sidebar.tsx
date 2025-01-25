@@ -1,24 +1,15 @@
 "use client";
 
-import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  CircleUserRound,
-  ChevronLeft,
-} from "lucide-react";
+import { Home } from "lucide-react";
 import { Users } from "lucide-react";
 import Link from "next/link";
-import { useSidebar } from "@/components/ui/sidebar";
+// import { useSidebar } from "@/components/ui/sidebar";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
