@@ -27,9 +27,9 @@ export default async function UserInfo() {
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
-            side="right"
+            // side="top"
             sideOffset={7}
-            align="end"
+            // align="end"
             className="p-2"
           >
             <DropdownMenuLabel className="font-semibold text-gray-700">
