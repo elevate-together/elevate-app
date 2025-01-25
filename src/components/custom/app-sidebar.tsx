@@ -1,4 +1,3 @@
-import { Home, User } from "lucide-react";
 import { Users } from "lucide-react";
 import Link from "next/link";
 import {
@@ -13,22 +12,12 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import UserInfo from "./user/user-info";
-
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Profile",
-    url: "/profile",
-    icon: User,
-  },
-];
+import { auth } from "@/auth";
+import { menu_items as items } from "@/lib/utils";
 
 export default async function AppSidebar() {
+  const session = await auth();
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -44,10 +33,19 @@ export default async function AppSidebar() {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
+                    {item.auth ? (
+                      session?.user ? (
+                        <a href={item.url}>
+                          <item.icon width={16} />
+                          <span>{item.title}</span>
+                        </a>
+                      ) : null
+                    ) : (
+                      <a href={item.url}>
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </a>
+                    )}
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
