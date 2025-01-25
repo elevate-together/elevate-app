@@ -1,49 +1,36 @@
-# Elevate - Accountability Web App
-
-Elevate is a Christian accountability web app built with [Next.js](https://nextjs.org), designed to help users stay on track with their personal goals, tasks, and commitments from a faith-based perspective. It serves as a digital companion for individuals seeking to grow spiritually and hold themselves accountable in their walk with God, managing both personal growth and community engagement.
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
 
-To get run this code locally, follow these steps:
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/your-username/elevate.git
-cd elevate
-```
-
-### 2. Install Dependencies
-Install the necessary dependencies using your preferred package manager:
-
-```bash
-npm install
-```
-
-### 3. Run the Development Server
-Start the development server:
+First, run the development server:
 
 ```bash
 npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
-This will start the app in development mode at http://localhost:3000.
 
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-### Features (in progress)
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-##### Goal Tracking: 
-Users can set personal goals and track progress over time.
-Task Management: Organize tasks and check off completed items.
-Accountability Partnerships: Connect with friends, share progress, and motivate each other.
-Progress Reports: Generate visual reports to monitor success.
-Learn More
-To learn more about Next.js, check out the following resources:
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-##### Spiritual Goal Tracking: 
-Set and track faith-based personal goals, like prayer time or Bible reading.
+## Learn More
 
-##### Accountability Partnerships:
-Connect with others in your Christian community, share your progress, and encourage one another in your spiritual journeys.
+To learn more about Next.js, take a look at the following resources:
 
-##### Notifications for Accountability:
-Receive reminders and notifications to stay on track with your spiritual goals and tasks. These notifications can be customized to ensure you stay accountable to yourself and others in your community.
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
