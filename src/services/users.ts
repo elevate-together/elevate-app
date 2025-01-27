@@ -1,8 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import type { User } from "@/lib/definition";
-
+import { User } from "@prisma/client";
 // GET All Users
 export async function getAllUsers(): Promise<{
   success: boolean;

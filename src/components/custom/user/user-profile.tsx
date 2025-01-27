@@ -3,7 +3,7 @@
 import { Button } from "../../ui/button";
 import { deleteUser } from "@/services/users";
 import { toast } from "sonner";
-import type { User } from "@/lib/definition";
+import { User } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { Trash, Pencil } from "lucide-react";
 import { useState } from "react";
@@ -43,7 +43,7 @@ export default function UserProfile(user: User) {
   };
 
   return (
-    <div key={user.id} className="flex flex-col items-left p-4 gap-3">
+    <div key={user.id} className="flex flex-col items-left gap-3">
       <div className="flex flex-row gap-2">
         <Button
           variant="outline"

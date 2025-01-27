@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import UserComponent from "@/components/custom/user/user-card";
 import { getAllUsers } from "@/services/users";
 import UserForm from "@/components/custom/user/user-form";
-import type { User as UserDef} from "@/lib/definition";
+import { User as UserDef } from "@prisma/client";
 import { toast } from "sonner";
 
 export default function Home() {
@@ -27,8 +27,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-items-center min-h-screen p-2 pb-20 gap-4 font-[family-name:var(--font-geist-sans)]">
-
-
       {/* Form to add a new user */}
       <UserForm onSubmit={onSubmit} />
 

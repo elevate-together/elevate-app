@@ -8,13 +8,39 @@ generator client {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  name          String?
-  email         String?   @unique
+  id            String             @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  email         String             @unique
   emailVerified DateTime?
   image         String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  prayerGroups  UserPrayerGroup[]  @relation("UserToPrayerGroup")
   accounts      Account[]
 }
+
+model PrayerGroup {
+  id           String             @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  users        UserPrayerGroup[]  @relation("UserToPrayerGroup")
+}
+
+model UserPrayerGroup {
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String       @db.ObjectId
+  prayerGroupId String       @db.ObjectId
+
+  user          User         @relation("UserToPrayerGroup", fields: [userId], references: [id])
+  prayerGroup   PrayerGroup  @relation("UserToPrayerGroup", fields: [prayerGroupId], references: [id])
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@unique([userId, prayerGroupId]) // Ensure uniqueness in many-to-many relationships
+}
+
 
 model Account {
   id                String   @id @default(auto()) @map("_id") @db.ObjectId

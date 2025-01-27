@@ -1,5 +1,5 @@
 import React from "react";
-import type { User } from "@/lib/definition";
+import { User } from "@prisma/client";
 import Link from "next/link";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";

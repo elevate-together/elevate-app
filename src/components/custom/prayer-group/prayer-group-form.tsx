@@ -13,51 +13,51 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createUser, updateUser } from "@/services/users";
+import { createPrayerGroup, updatePrayerGroup } from "@/services/prayer-group";
 import { toast } from "sonner";
-import type { User } from "@prisma/client";
+import type { PrayerGroup } from "@prisma/client";
 
 // Validation Schema
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name cannot be left blank",
   }),
-  email: z.string().email({
-    message: "Please enter a valid email address",
-  }),
 });
 
-type UserFormProps = {
-  onSubmit: (user: User) => void;
-  user?: User; // The user object is optional for the "create" form case
-  onCancel?: () => void; // Optional callback for the cancel action
+type PrayerFormProps = {
+  onSubmit: (group: PrayerGroup) => void;
+  onCancel: () => void; // Optional callback for the cancel action
+  group?: PrayerGroup; // The group object is optional for the "create" form case
 };
 
-export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
+export default function PrayerForm({
+  onSubmit,
+  group,
+  onCancel,
+}: PrayerFormProps) {
   // Initialize form with default values if user exists
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
+      name: group?.name || "",
     },
   });
 
   // Handle the form submission (for creating or updating)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { name, email } = values;
+    const { name } = values;
     let result;
 
-    if (user?.id) {
+    if (group?.id) {
       // Update the user
-      result = await updateUser(user.id, { name, email });
+      result = await updatePrayerGroup(group.id, { name });
     } else {
       // Create a new user
-      result = await createUser({ name, email });
+      result = await createPrayerGroup({ name });
     }
 
-    if (result.success && result.user) {
-      onSubmit(result.user);
+    if (result.success && result.prayerGroup) {
+      onSubmit(result.prayerGroup);
     } else {
       toast.error(result.message || "An error occurred.");
     }
@@ -68,43 +68,29 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
   // Handle the cancel action, reset the form
   const handleCancel = () => {
     form.reset({
-      name: user?.name || "",
-      email: user?.email || "",
+      name: group?.name || "",
     });
-
-    if (onCancel) {
-      onCancel();
-    }
+    onCancel();
   };
 
   return (
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-8 items-end">
+          <div className="flex flex-col gap-4 w-full">
+            <div>
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>Group Name</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="email@example.com" {...field} />
+                      <Input
+                        className="w-full"
+                        placeholder="Exodus '25 Group"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -112,7 +98,7 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
               />
             </div>
 
-            {user?.id ? (
+            {group?.id ? (
               <div className="flex flex-row gap-4 items-center">
                 <Button variant="outline" onClick={handleCancel}>
                   Cancel
@@ -120,7 +106,18 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
                 <Button type="submit">Save</Button>
               </div>
             ) : (
-              <Button type="submit">Submit</Button>
+              <div className="flex w-full flex-row gap-4 items-center">
+                <Button
+                  className="w-full"
+                  variant="secondary"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="w-full">
+                  Save
+                </Button>
+              </div>
             )}
           </div>
         </form>

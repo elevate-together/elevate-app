@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { EllipsisVertical } from 'lucide-react';
+import { EllipsisVertical } from "lucide-react";
 
 type AvatarProps = {
   name: string;
@@ -32,7 +32,9 @@ export default async function UserAvatar({
       )}
       <div className="flex flex-col gap-0 items-start">
         <div className="text-sm font-semibold p-0 m-0">{name}</div>
-        <p className="text-xs text-muted-foreground p-0 m-0">{email}</p>
+        <p className="text-xs font-normal text-muted-foreground p-0 m-0">
+          {email}
+        </p>
       </div>
       {icon && <EllipsisVertical width={17} />}
     </div>
