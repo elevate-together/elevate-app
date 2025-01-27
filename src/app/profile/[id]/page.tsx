@@ -69,13 +69,13 @@ export default async function Profile({
                       <DialogTitle>
                         Are your sure you want to leave {group.name}
                       </DialogTitle>
-                      <DialogDescription>
-                        This will remove you from <b>{group.name}</b>, and you
-                        won’t be able to view its information. You can rejoin
-                        later if you change your mind. Confirm if you wish to
-                        proceed.
-                      </DialogDescription>
                     </DialogHeader>
+                    <DialogDescription>
+                      This will remove you from <b>{group.name}</b>, and you
+                      won’t be able to view its information. You can rejoin
+                      later if you change your mind. Confirm if you wish to
+                      proceed.
+                    </DialogDescription>
 
                     <DialogFooter>
                       <div className="flex gap-3">

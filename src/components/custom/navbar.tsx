@@ -16,8 +16,8 @@ export default async function Navbar() {
 
       {session && session.user?.id ? (
         <div className="flex flex-row gap-4">
-          <PrayerGroupCreate id={session.user.id} />
-          <SignOut />
+          <PrayerGroupCreate id={session.user.id} hideOnMobile />
+          <SignOut hideOnMobile />
         </div>
       ) : (
         <SignIn className="max-w-25" />

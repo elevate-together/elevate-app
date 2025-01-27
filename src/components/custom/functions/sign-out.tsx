@@ -1,7 +1,7 @@
 "use client";
 
+import { useIsMobile } from "@/components/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { handleSignOut } from "@/lib/signInOutActions";
 import { LogOut } from "lucide-react";
 

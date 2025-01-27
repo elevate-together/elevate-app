@@ -9,10 +9,12 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { menu_items as items } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
+import PrayerGroupCreate from "./prayer-group/prayer-group-create";
 import UserInfo from "./user/user-info";
 
 export default async function AppSidebar() {
@@ -38,7 +40,6 @@ export default async function AppSidebar() {
               {items.map((item) => {
                 // Replace placeholder `{id}` with actual user ID if applicable
                 const url = item.url.replace("{id}", userId || "");
-
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
@@ -59,6 +60,14 @@ export default async function AppSidebar() {
                   </SidebarMenuItem>
                 );
               })}
+
+              <SidebarSeparator />
+
+              {session && session.user?.id && (
+                <SidebarMenuItem>
+                  <PrayerGroupCreate id={session?.user.id} isMenu />
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
