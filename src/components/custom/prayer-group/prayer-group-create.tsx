@@ -1,14 +1,13 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogContent,
-  AlertDialogDescription,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { useState } from "react";
 import PrayerForm from "./prayer-group-form";
 
 export default function PrayerGroupCreate() {
@@ -28,9 +27,6 @@ export default function PrayerGroupCreate() {
       <AlertDialogContent className="max-w-sm">
         <AlertDialogHeader>
           <AlertDialogTitle>Create New Prayer Group</AlertDialogTitle>
-          <AlertDialogDescription>
-            Please enter a name for your prayer group. This can be changed later.
-          </AlertDialogDescription>
         </AlertDialogHeader>
         <PrayerForm
           onSubmit={handleCloseDialog}

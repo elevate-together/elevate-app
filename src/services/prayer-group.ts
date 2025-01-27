@@ -57,8 +57,10 @@ export async function getPrayerGroupById(id: string): Promise<{
   }
 }
 
-// CREATE a New PrayerGroup
-export async function createPrayerGroup(groupData: { name: string }): Promise<{
+export async function createPrayerGroup(groupData: {
+  name: string;
+  description?: string;
+}): Promise<{
   success: boolean;
   message: string;
   prayerGroup?: PrayerGroup;
@@ -81,10 +83,9 @@ export async function createPrayerGroup(groupData: { name: string }): Promise<{
   }
 }
 
-// UPDATE a PrayerGroup by ID
 export async function updatePrayerGroup(
   id: string,
-  groupData: { name?: string }
+  groupData: { name?: string; description?: string }
 ): Promise<{
   success: boolean;
   message: string;
@@ -153,5 +154,3 @@ export async function deletePrayerGroup(
     };
   }
 }
-
-

@@ -1,13 +1,13 @@
+import AppSidebar from "@/components/custom/app-sidebar";
+import { BackButton } from "@/components/custom/functions/back-button";
+import { Navbar } from "@/components/custom/navbar";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Separator } from "@/components/ui/separator";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/custom/app-sidebar";
-import { Toaster } from "@/components/ui/sonner";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Separator } from "@/components/ui/separator";
-import { Navbar } from "@/components/custom/navbar";
-import { BackButton } from "@/components/custom/buttons/back-button";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -47,11 +47,11 @@ export default function RootLayout({
               <Navbar />
 
               <Separator />
-              <div className="grid grid-cols-[auto_1fr] gap-2 p-5 w-full">
+              <div className="grid grid-cols-[auto_1fr] gap-2 p-7 pl-3 w-full">
                 <div>
                   <BackButton />
                 </div>
-                <div>{children}</div>
+                <div className="w-full h-full">{children}</div>
               </div>
             </main>
             <Toaster

@@ -3,8 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation"; // To check the current route
+import { usePathname, useRouter } from "next/navigation";
 
 export const BackButton = ({ ...props }) => {
   const router = useRouter();
@@ -17,6 +16,7 @@ export const BackButton = ({ ...props }) => {
       {...props}
       variant="ghost"
       size="icon"
+      className="w-6 h-6 "
       onClick={() => router.back()}
     >
       <ChevronLeft />

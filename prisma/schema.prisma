@@ -22,6 +22,7 @@ model User {
 model PrayerGroup {
   id           String             @id @default(auto()) @map("_id") @db.ObjectId
   name         String
+  description  String?
   createdAt    DateTime           @default(now())
   updatedAt    DateTime           @updatedAt
   users        UserPrayerGroup[]  @relation("UserToPrayerGroup")

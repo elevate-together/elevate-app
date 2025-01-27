@@ -1,4 +1,4 @@
-import { JoinGroup } from "@/components/custom/join-group";
+ import { PrayerGroupJoin } from "@/components/custom/prayer-group/prayer-group-join";
 import UserProfile from "@/components/custom/user/user-profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -102,7 +102,10 @@ export default async function Profile({
           <div>
             <h2 className="text-lg font-semibold">Looking for a group?</h2>
             {/* Pass the remaining groups (user isn't part of) to JoinGroup */}
-            <JoinGroup data={remainingGroups.prayerGroups} userId={user.id} />
+            <PrayerGroupJoin
+              data={remainingGroups.prayerGroups}
+              userId={user.id}
+            />
           </div>
         )}
     </div>

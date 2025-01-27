@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { SignIn } from "@/components/custom/buttons/sign-in";
+import { SignIn } from "@/components/custom/functions/sign-in";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,9 +8,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import UserAvatar from "./user-avatar";
-import { SignOut } from "../buttons/sign-out";
 import { menu_items } from "@/lib/utils";
+import { SignOut } from "../functions/sign-out";
+import UserAvatar from "./user-avatar";
 
 export default async function UserInfo() {
   const session = await auth();

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { auth } from "@/auth";
 import {
   Sidebar,
   SidebarContent,
@@ -10,10 +10,10 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import UserInfo from "./user/user-info";
-import { auth } from "@/auth";
 import { menu_items as items } from "@/lib/utils";
 import Image from "next/image";
+import Link from "next/link";
+import UserInfo from "./user/user-info";
 
 export default async function AppSidebar() {
   const session = await auth();
@@ -22,7 +22,10 @@ export default async function AppSidebar() {
   return (
     <Sidebar>
       <SidebarHeader>
-        <Link className="flex flex-row items-center justify-center mt-4" href="/">
+        <Link
+          className="flex flex-row items-center justify-center mt-4"
+          href="/"
+        >
           {/* <Users className="h-6 w-6" /> */}
           <Image src="/people.png" alt="Elevate Logo" height={30} width={30} />
           <span className="ml-2 text-2xl font-bold">ELEVATE</span>

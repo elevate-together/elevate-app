@@ -1,8 +1,5 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -13,15 +10,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { createPrayerGroup, updatePrayerGroup } from "@/services/prayer-group";
-import { toast } from "sonner";
+import { zodResolver } from "@hookform/resolvers/zod";
 import type { PrayerGroup } from "@prisma/client";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // Validation Schema
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name cannot be left blank",
   }),
+  description: z
+    .string()
+    .min(1, {
+      message: "Description must be at least 1 character",
+    })
+    .max(250, {
+      message: "Description must be less than 250 characters",
+    })
+    .optional(),
 });
 
 type PrayerFormProps = {
@@ -45,15 +55,15 @@ export default function PrayerForm({
 
   // Handle the form submission (for creating or updating)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { name } = values;
+    // const { name, description } = values;
     let result;
 
     if (group?.id) {
       // Update the user
-      result = await updatePrayerGroup(group.id, { name });
+      result = await updatePrayerGroup(group.id, values);
     } else {
       // Create a new user
-      result = await createPrayerGroup({ name });
+      result = await createPrayerGroup(values);
     }
 
     if (result.success && result.prayerGroup) {
@@ -69,6 +79,7 @@ export default function PrayerForm({
   const handleCancel = () => {
     form.reset({
       name: group?.name || "",
+      description: group?.description || "",
     });
     onCancel();
   };
@@ -89,6 +100,23 @@ export default function PrayerForm({
                       <Input
                         className="w-full"
                         placeholder="Exodus '25 Group"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="w-full min-h-32"
+                        placeholder="Description (optional)"
                         {...field}
                       />
                     </FormControl>

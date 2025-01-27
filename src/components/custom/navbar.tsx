@@ -1,7 +1,7 @@
 "use client";
 
+import { ThemeSwitch } from "@/components/custom/functions/theme-switch";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { ThemeSwitch } from "@/components/custom/buttons/theme-switch";
 import PrayerGroupCreate from "./prayer-group/prayer-group-create";
 
 export const Navbar = () => {

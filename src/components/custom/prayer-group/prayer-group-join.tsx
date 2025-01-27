@@ -1,8 +1,7 @@
 "use client";
 
-import * as React from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -12,8 +11,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
+import * as React from "react";
+import { toast } from "sonner";
 
 import {
   Table,
@@ -23,15 +23,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PrayerGroup } from "@prisma/client";
 import { addUserToPrayerGroup } from "@/services/user-prayer-group";
+import { PrayerGroup } from "@prisma/client";
 import { Eye, Star } from "lucide-react";
 
 type JoinGroupProps = {
   data: PrayerGroup[];
   userId: string;
 };
-export function JoinGroup({ data, userId }: JoinGroupProps) {
+export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
   const router = useRouter();
   const columns: ColumnDef<PrayerGroup>[] = [
     {
@@ -47,7 +47,6 @@ export function JoinGroup({ data, userId }: JoinGroupProps) {
       enableHiding: false,
       header: "Created",
       cell: ({ row }) => {
-        console.log(row.getAllCells());
         const createdAt = new Date(row.getValue("createdAt"));
         return (
           <div className="capitalize">
@@ -60,6 +59,7 @@ export function JoinGroup({ data, userId }: JoinGroupProps) {
         );
       },
     },
+
     {
       id: "join",
       enableHiding: false,
