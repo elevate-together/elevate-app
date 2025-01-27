@@ -7,7 +7,7 @@ import {
   getPrayerGroupsNotIn,
 } from "@/services/user-prayer-group";
 import { getUserById } from "@/services/users";
-import { LogOut } from "lucide-react";
+import { Trash } from "lucide-react";
 
 import {
   Dialog,
@@ -61,7 +61,7 @@ export default async function Profile({
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="secondary" size="icon">
-                      <LogOut />
+                      <Trash />
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px]">

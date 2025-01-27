@@ -11,7 +11,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { useRouter } from "next/navigation";
 import * as React from "react";
 import { toast } from "sonner";
 
@@ -26,7 +25,8 @@ import {
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { addUserToPrayerGroup } from "@/services/user-prayer-group";
 import { User } from "@prisma/client";
-import { Eye, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import ViewGroup from "../functions/view-group";
 import UserAvatar from "../user/user-avatar";
 
 type JoinGroupProps = {
@@ -34,9 +34,6 @@ type JoinGroupProps = {
   userId: string;
 };
 export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
-  const router = useRouter();
-  console.log(data);
-
   const columns: ColumnDef<PrayerGroupWithOwner>[] = [
     {
       accessorKey: "name",
@@ -94,16 +91,7 @@ export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
 
         return (
           <div className="flex gap-3 justify-end">
-            <Button
-              className="p-2"
-              variant="outline"
-              onClick={() => {
-                router.push(`/groups/${row.original.id}`);
-              }}
-            >
-              <Eye />
-              View
-            </Button>
+            <ViewGroup group={row.original} />
             <Button className="p-2" onClick={joinGroup}>
               <Star />
               Join

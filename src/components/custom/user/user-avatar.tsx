@@ -6,7 +6,7 @@ import { EllipsisVertical } from "lucide-react";
 type AvatarProps = {
   name: string;
   email: string;
-  image: string;
+  image: string | undefined;
   icon?: boolean;
   size?: "small" | "large";
   includeEmail?: boolean | null;

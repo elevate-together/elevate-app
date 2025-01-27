@@ -1,11 +1,10 @@
 "use client";
-
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
 import { usePathname, useRouter } from "next/navigation";
 
-export const BackButton = ({ ...props }) => {
+export default function BackButton({ ...props }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -22,4 +21,4 @@ export const BackButton = ({ ...props }) => {
       <ChevronLeft />
     </Button>
   );
-};
+}

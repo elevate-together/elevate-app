@@ -1,12 +1,12 @@
 "use client";
 
-import { Button } from "../../ui/button";
 import { deleteUser } from "@/services/users";
-import { toast } from "sonner";
 import { User } from "@prisma/client";
+import { Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Trash, Pencil } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
+import { Button } from "../../ui/button";
 import UserForm from "./user-form";
 
 export default function UserProfile(user: User) {
@@ -43,7 +43,22 @@ export default function UserProfile(user: User) {
   };
 
   return (
-    <div key={user.id} className="flex flex-col items-left gap-3">
+    <div
+      key={user.id}
+      className="flex flex-row items-center justify-between gap-3"
+    >
+      {isEdit ? (
+        <UserForm
+          user={userData}
+          onSubmit={handleUserSubmit}
+          onCancel={handleCancel}
+        />
+      ) : (
+        <div>
+          <h2 className="text-lg font-semibold">{userData.name}</h2>
+          <p className="text-muted-foreground">Email: {userData.email}</p>
+        </div>
+      )}
       <div className="flex flex-row gap-2">
         <Button
           variant="outline"
@@ -60,20 +75,6 @@ export default function UserProfile(user: User) {
           <Trash />
         </Button>
       </div>
-
-      {isEdit ? (
-        <UserForm
-          user={userData}
-          onSubmit={handleUserSubmit}
-          onCancel={handleCancel}
-        />
-      ) : (
-        <div>
-          <h2 className="text-lg font-semibold">{userData.name}</h2>
-          {/* <p className="text-sm text-gray-500">ID: {userData.id}</p> */}
-          <p className="text-muted-foreground">Email: {userData.email}</p>
-        </div>
-      )}
     </div>
   );
 }
