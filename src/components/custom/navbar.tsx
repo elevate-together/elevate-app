@@ -9,7 +9,7 @@ export default async function Navbar() {
   const session = await auth();
   return (
     <div className="flex flex-row justify-between w-full p-2">
-      <div>
+      <div className="flex flex-row justify-start">
         <SidebarTrigger />
         <ThemeSwitch />
       </div>
@@ -20,7 +20,9 @@ export default async function Navbar() {
           <SignOut hideOnMobile />
         </div>
       ) : (
-        <SignIn className="max-w-25" />
+        <div>
+          <SignIn className="max-w-25" />
+        </div>
       )}
     </div>
   );
