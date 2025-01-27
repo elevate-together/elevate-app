@@ -2,7 +2,7 @@
 
 This is my most recent project, which I started in November 2024 (still in progress). Elevate is a Christian accountability web app built with [Next.js](https://nextjs.org), designed to help users stay on track with their personal goals, tasks, and commitments from a faith-based perspective. It serves as a digital companion for individuals seeking to grow spiritually and hold themselves accountable in their walk with God, managing both personal growth and community engagement.
 
-## What I'm Learning
+## What I am Learning
 
 - Implementing Google OAuth
 - Connecting and deploying to a secure, custom domain
