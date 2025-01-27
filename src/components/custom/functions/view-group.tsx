@@ -30,8 +30,8 @@ export default function ViewGroup({ group }: ViewGroupProps) {
           View
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
+      <DialogContent>
+        <DialogHeader className="items-start">
           <DialogTitle className="text-xl">{group.name}</DialogTitle>
           <DialogDescription>
             Created:{" "}
