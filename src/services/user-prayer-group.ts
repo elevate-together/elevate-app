@@ -143,7 +143,7 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
 export async function getPrayerGroupsNotIn(userId: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: PrayerGroup[];
+  prayerGroups?: (PrayerGroup & { owner: User })[]; // Include owner in the return type
 }> {
   try {
     const prayerGroups = await db.prayerGroup.findMany({
@@ -156,13 +156,16 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
           },
         },
       },
+      include: {
+        owner: true, // Include the related owner user object
+      },
     });
 
     return {
       success: true,
       message:
         "Successfully fetched prayer groups not associated with the user",
-      prayerGroups,
+      prayerGroups, // Now includes the 'owner' field in each prayer group
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);
@@ -176,7 +179,7 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
 export async function getPrayerGroupsForUser(userId: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: PrayerGroup[];
+  prayerGroups?: (PrayerGroup & { owner: User })[]; // Include owner in the return type
 }> {
   try {
     const prayerGroups = await db.prayerGroup.findMany({
@@ -186,6 +189,9 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
             userId: userId, // Ensures the user is part of the prayer group
           },
         },
+      },
+      include: {
+        owner: true, // Include the related owner user object
       },
     });
 

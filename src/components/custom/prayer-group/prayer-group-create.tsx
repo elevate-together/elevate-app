@@ -1,3 +1,4 @@
+"use client";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -10,7 +11,7 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import PrayerForm from "./prayer-group-form";
 
-export default function PrayerGroupCreate() {
+export default function PrayerGroupCreate({ id }: { id: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleCloseDialog = () => {
@@ -29,6 +30,7 @@ export default function PrayerGroupCreate() {
           <AlertDialogTitle>Create New Prayer Group</AlertDialogTitle>
         </AlertDialogHeader>
         <PrayerForm
+          ownerId={id}
           onSubmit={handleCloseDialog}
           onCancel={() => setIsOpen(false)}
         />

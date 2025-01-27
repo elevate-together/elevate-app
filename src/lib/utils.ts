@@ -1,10 +1,15 @@
+import { PrayerGroup, User as UserDef } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
 import { Home, User, Users } from "lucide-react";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export type PrayerGroupWithOwner = PrayerGroup & {
+  owner: UserDef;
+};
 
 export const menu_items = [
   {

@@ -1,3 +1,5 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EllipsisVertical } from "lucide-react";
 
@@ -6,13 +8,17 @@ type AvatarProps = {
   email: string;
   image: string;
   icon?: boolean;
+  size?: "small" | "large";
+  includeEmail?: boolean | null;
 };
 
-export default async function UserAvatar({
+export default function UserAvatar({
   name,
   email,
   image,
   icon = false,
+  size = "large",
+  includeEmail = true,
 }: AvatarProps) {
   return (
     <div
@@ -20,21 +26,24 @@ export default async function UserAvatar({
         icon ? "justify-between" : "justify-start gap-2"
       }`}
     >
-      {image ? (
-        <Avatar>
-          <AvatarImage className="" src={image} />
-          <AvatarFallback>{name?.at(0) ?? "A"}</AvatarFallback>
-        </Avatar>
-      ) : (
-        <Avatar>
-          <AvatarFallback>{name?.at(0) ?? "A"}</AvatarFallback>
-        </Avatar>
-      )}
+      <Avatar className={`${size == "large" ? "" : "w-8 h-8"}`}>
+        <AvatarImage className="" src={image ?? undefined} />
+        <AvatarFallback>{name?.at(0) ?? "A"}</AvatarFallback>
+      </Avatar>
+
       <div className="flex flex-col gap-0 items-start">
-        <div className="text-sm font-semibold p-0 m-0">{name}</div>
-        <p className="text-xs font-normal text-muted-foreground p-0 m-0">
-          {email}
-        </p>
+        <div
+          className={`text-sm ${
+            includeEmail ? "font-semibold" : "font-normal"
+          } p-0 m-0`}
+        >
+          {name}
+        </div>
+        {includeEmail && (
+          <p className="text-xs font-normal text-muted-foreground p-0 m-0">
+            {email}
+          </p>
+        )}
       </div>
       {icon && <EllipsisVertical width={17} />}
     </div>

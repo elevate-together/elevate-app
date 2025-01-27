@@ -1,8 +1,9 @@
 "use client";
 
+import { User } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { User, PrayerGroup } from "@prisma/client";
 
+import { PrayerGroupWithOwner } from "@/lib/utils";
 import { getPrayerGroupById } from "@/services/prayer-group";
 import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
 import React from "react";
@@ -12,7 +13,7 @@ export default function Profile({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [prayerGroup, setPrayerGroup] = useState<PrayerGroup>();
+  const [prayerGroup, setPrayerGroup] = useState<PrayerGroupWithOwner>();
   const [message, setMessage] = useState<string>("");
   const [users, setUsers] = useState<User[]>([]);
 
@@ -62,6 +63,7 @@ export default function Profile({
     <div>
       <h2>{prayerGroup.name}</h2>
       {message && <p>{message}</p>}
+      <div>Owner: {prayerGroup.owner?.name || "No owner"}</div>
       <ul>
         {users.map((user) => (
           <li key={user.id}>

@@ -71,7 +71,7 @@ export default function UserProfile(user: User) {
         <div>
           <h2 className="text-lg font-semibold">{userData.name}</h2>
           {/* <p className="text-sm text-gray-500">ID: {userData.id}</p> */}
-          <p className="text-gray-700">Email: {userData.email}</p>
+          <p className="text-muted-foreground">Email: {userData.email}</p>
         </div>
       )}
     </div>

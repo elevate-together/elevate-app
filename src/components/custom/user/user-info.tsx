@@ -1,5 +1,7 @@
 import { auth } from "@/auth";
 import { SignIn } from "@/components/custom/functions/sign-in";
+import { SignOut } from "@/components/custom/functions/sign-out";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { menu_items } from "@/lib/utils";
-import { SignOut } from "../functions/sign-out";
 import UserAvatar from "./user-avatar";
 
 export default async function UserInfo() {
   const session = await auth();
   const { name, email, image } = { ...session?.user };
-  // const userId = session?.user?.id;
 
   return (
     <div className="flex items-center">
@@ -61,7 +61,7 @@ export default async function UserInfo() {
               );
             })}
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="hover:bg-transparent rounded-md p-0">
+            <DropdownMenuItem className="flex justify-center hover:bg-transparent rounded-md p-0 bg-green-300">
               <SignOut />
             </DropdownMenuItem>
           </DropdownMenuContent>

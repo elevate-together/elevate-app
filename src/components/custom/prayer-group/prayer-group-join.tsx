@@ -23,43 +23,53 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PrayerGroupWithOwner } from "@/lib/utils";
 import { addUserToPrayerGroup } from "@/services/user-prayer-group";
-import { PrayerGroup } from "@prisma/client";
+import { User } from "@prisma/client";
 import { Eye, Star } from "lucide-react";
+import UserAvatar from "../user/user-avatar";
 
 type JoinGroupProps = {
-  data: PrayerGroup[];
+  data: PrayerGroupWithOwner[];
   userId: string;
 };
 export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
   const router = useRouter();
-  const columns: ColumnDef<PrayerGroup>[] = [
+  console.log(data);
+
+  const columns: ColumnDef<PrayerGroupWithOwner>[] = [
     {
       accessorKey: "name",
       enableHiding: false,
       header: "Group Name",
       cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("name")}</div>
+        <div className="capitalize font-bold">{row.getValue("name")}</div>
       ),
     },
     {
-      accessorKey: "createdAt",
+      accessorKey: "owner", // Accessing the 'name' field inside the 'owner' object
       enableHiding: false,
-      header: "Created",
+      header: "Owner", // Column header
       cell: ({ row }) => {
-        const createdAt = new Date(row.getValue("createdAt"));
+        const owner: User = row.getValue("owner");
+
         return (
           <div className="capitalize">
-            {createdAt.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
+            {owner && owner.name && owner.image ? (
+              <UserAvatar
+                name={owner.name}
+                email={owner.email}
+                image={owner.image}
+                includeEmail={false}
+                size="small"
+              />
+            ) : (
+              <div>-</div>
+            )}
           </div>
         );
       },
     },
-
     {
       id: "join",
       enableHiding: false,

@@ -1,6 +1,6 @@
 import AppSidebar from "@/components/custom/app-sidebar";
 import { BackButton } from "@/components/custom/functions/back-button";
-import { Navbar } from "@/components/custom/navbar";
+import Navbar from "@/components/custom/navbar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider } from "@/components/ui/sidebar";

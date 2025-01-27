@@ -35,12 +35,14 @@ const formSchema = z.object({
 });
 
 type PrayerFormProps = {
+  ownerId: string;
   onSubmit: (group: PrayerGroup) => void;
   onCancel: () => void; // Optional callback for the cancel action
   group?: PrayerGroup; // The group object is optional for the "create" form case
 };
 
 export default function PrayerForm({
+  ownerId,
   onSubmit,
   group,
   onCancel,
@@ -55,7 +57,7 @@ export default function PrayerForm({
 
   // Handle the form submission (for creating or updating)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    // const { name, description } = values;
+    const { name, description } = values;
     let result;
 
     if (group?.id) {
@@ -63,7 +65,7 @@ export default function PrayerForm({
       result = await updatePrayerGroup(group.id, values);
     } else {
       // Create a new user
-      result = await createPrayerGroup(values);
+      result = await createPrayerGroup({ name, ownerId, description });
     }
 
     if (result.success && result.prayerGroup) {

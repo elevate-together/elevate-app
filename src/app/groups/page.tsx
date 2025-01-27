@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { PrayerGroup } from "@prisma/client";
 import { getAllPrayerGroups } from "@/services/prayer-group";
+import { PrayerGroup } from "@prisma/client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function Create() {
   const [groups, setGroups] = useState<PrayerGroup[]>([]);

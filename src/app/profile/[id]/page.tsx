@@ -1,4 +1,4 @@
- import { PrayerGroupJoin } from "@/components/custom/prayer-group/prayer-group-join";
+import { PrayerGroupJoin } from "@/components/custom/prayer-group/prayer-group-join";
 import UserProfile from "@/components/custom/user/user-profile";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -58,7 +58,6 @@ export default async function Profile({
                 <div className="text-md font-semibold">
                   <h3>{group.name}</h3>
                 </div>
-
                 <Dialog>
                   <DialogTrigger asChild>
                     <Button variant="secondary" size="icon">
