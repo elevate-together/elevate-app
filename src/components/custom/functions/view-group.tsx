@@ -14,16 +14,20 @@ import { PrayerGroupWithOwner } from "@/lib/utils";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import UserAvatar from "../user/user-avatar";
+import JoinGroup from "./join-group";
+import { useState } from "react";
 
 type ViewGroupProps = {
   group: PrayerGroupWithOwner;
+  userId: string;
 };
 
-export default function ViewGroup({ group }: ViewGroupProps) {
+export default function ViewGroup({ group, userId }: ViewGroupProps) {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button className="p-2" variant="outline">
           <Eye />
@@ -68,6 +72,11 @@ export default function ViewGroup({ group }: ViewGroupProps) {
           >
             View More
           </Button>
+          <JoinGroup
+            groupId={group.id}
+            userId={userId}
+            onClose={() => setOpen(false)}
+          />
         </DialogFooter>
       </DialogContent>
     </Dialog>

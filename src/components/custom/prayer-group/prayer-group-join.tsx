@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   ColumnDef,
-  ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -12,7 +11,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import * as React from "react";
-import { toast } from "sonner";
 
 import {
   Table,
@@ -23,11 +21,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PrayerGroupWithOwner } from "@/lib/utils";
-import { addUserToPrayerGroup } from "@/services/user-prayer-group";
 import { User } from "@prisma/client";
-import { Star } from "lucide-react";
 import ViewGroup from "../functions/view-group";
 import UserAvatar from "../user/user-avatar";
+import JoinGroup from "../functions/join-group";
 
 type JoinGroupProps = {
   data: PrayerGroupWithOwner[];
@@ -74,50 +71,22 @@ export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
       enableHiding: false,
       cell: ({ row }) => {
         const groupId = row.original.id;
-
-        const joinGroup = async () => {
-          try {
-            const response = await addUserToPrayerGroup(userId, groupId);
-            if (response.success) {
-              toast.success(response.message);
-            } else {
-              toast.error(response.message);
-            }
-          } catch (error) {
-            console.error("An error occurred:", error);
-            toast.error(
-              "An unexpected error occurred while joining the group."
-            );
-          }
-        };
-
         return (
           <div className="flex gap-3 justify-end">
-            <ViewGroup group={row.original} />
-            <Button className="p-2" onClick={joinGroup}>
-              <Star />
-              Join
-            </Button>
+            <ViewGroup group={row.original} userId={userId} />
+            <JoinGroup groupId={groupId} userId={userId} />;
           </div>
         );
       },
     },
   ];
 
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  );
-
   const table = useReactTable({
     data,
     columns,
-    onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnFilters,
-    },
   });
 
   return (
