@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { handleSignOut } from "@/lib/signInOutActions";
 import { LogOut } from "lucide-react";
 
-export const SignOut = ({ hideOnMobile = false, ...prop }) => {
+export default function SignOut({ hideOnMobile = false, ...prop }) {
   const isMobile = useIsMobile();
 
   if (hideOnMobile && isMobile) return null;
@@ -18,4 +18,4 @@ export const SignOut = ({ hideOnMobile = false, ...prop }) => {
       </Button>
     </div>
   );
-};
+}

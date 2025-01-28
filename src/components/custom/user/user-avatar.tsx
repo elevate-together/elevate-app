@@ -8,7 +8,7 @@ type AvatarProps = {
   email: string;
   image: string | undefined;
   icon?: boolean;
-  size?: "small" | "large";
+  size?: "small" | "medium" | "large";
   includeEmail?: boolean | null;
 };
 
@@ -17,7 +17,7 @@ export default function UserAvatar({
   email,
   image,
   icon = false,
-  size = "large",
+  size = "medium",
   includeEmail = true,
 }: AvatarProps) {
   return (
@@ -26,21 +26,28 @@ export default function UserAvatar({
         icon ? "justify-between" : "justify-start gap-2"
       }`}
     >
-      <Avatar className={`${size == "large" ? "" : "w-8 h-8"}`}>
+      <Avatar
+        className={`${
+          size === "medium" ? "" : size === "large" ? "w-11 h-11" : "w-8 h-8"
+        }`}
+      >
         <AvatarImage className="" src={image ?? undefined} />
         <AvatarFallback>{name?.at(0) ?? "A"}</AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col gap-0 items-start">
         <div
-          className={`text-sm ${
-            includeEmail ? "font-semibold" : "font-normal"
-          } p-0 m-0`}
+          className={`text-sm ${includeEmail ? "font-semibold" : "font-normal"} 
+    ${size === "large" ? "text-xl" : ""} p-0 m-0`}
         >
           {name}
         </div>
         {includeEmail && (
-          <p className="text-xs font-normal text-muted-foreground p-0 m-0">
+          <p
+            className={` ${
+              size == "large" ? "text-sm" : "text-xs"
+            } font-normal text-muted-foreground p-0 m-0`}
+          >
             {email}
           </p>
         )}

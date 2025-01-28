@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import { SignIn } from "@/components/custom/functions/sign-in";
-import { SignOut } from "@/components/custom/functions/sign-out";
+import SignIn from "@/components/custom/functions/sign-in";
+import SignOut from "@/components/custom/functions/sign-out";
 
 import {
   DropdownMenu,

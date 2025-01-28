@@ -27,7 +27,7 @@ export async function addUserToPrayerGroup(
     if (existingMembership) {
       return {
         success: false,
-        message: "User is already part of this prayer group.",
+        message: "You are already a part of this prayer group.",
       };
     }
 
@@ -41,13 +41,14 @@ export async function addUserToPrayerGroup(
 
     return {
       success: true,
-      message: "User successfully added to the prayer group.",
+      message: "You have successfully joined the prayer group.",
     };
   } catch (error) {
     console.error("Error adding user to prayer group:", error);
     return {
       success: false,
-      message: "An error occurred while adding the user to the prayer group.",
+      message:
+        "An issue occurred while trying to add you to the prayer group. Please try again.",
     };
   }
 }
@@ -71,7 +72,7 @@ export async function removeUserFromPrayerGroup(
     if (!userPrayerGroup) {
       return {
         success: false,
-        message: "User is not part of this prayer group.",
+        message: "You are not a part of this prayer group.",
       };
     }
 
@@ -87,14 +88,14 @@ export async function removeUserFromPrayerGroup(
 
     return {
       success: true,
-      message: "User successfully removed from the prayer group.",
+      message: "You have been successfully removed from the prayer group.",
     };
   } catch (error) {
     console.error("Error removing user from prayer group:", error);
     return {
       success: false,
       message:
-        "An error occurred while removing the user from the prayer group.",
+        "An issue occurred while trying to remove you from the prayer group. Please try again.",
     };
   }
 }
@@ -119,7 +120,7 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
     if (usersInGroup.length === 0) {
       return {
         success: false,
-        message: "No users found in this prayer group.",
+        message: "No members are currently part of this prayer group.",
       };
     }
 
@@ -128,14 +129,14 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
 
     return {
       success: true,
-      message: "Successfully fetched all users in the prayer group.",
+      message: "Members retrieved successfully.",
       users,
     };
   } catch (error) {
     console.error("Error fetching users in prayer group:", error);
     return {
       success: false,
-      message: "An error occurred while fetching users in the prayer group.",
+      message: "Could not retrieve group members. Please try again.",
     };
   }
 }
@@ -164,14 +165,14 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
     return {
       success: true,
       message:
-        "Successfully fetched prayer groups not associated with the user",
+        "Prayer groups you are not part of have been retrieved successfully.",
       prayerGroups, // Now includes the 'owner' field in each prayer group
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);
     return {
       success: false,
-      message: "Error fetching prayer groups",
+      message: "An error occurred while fetching the prayer groups.",
     };
   }
 }
@@ -197,14 +198,16 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
 
     return {
       success: true,
-      message: "Successfully fetched prayer groups the user is part of",
+      message:
+        "Prayer groups you are part of have been retrieved successfully.",
       prayerGroups,
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups for the user:", error);
     return {
       success: false,
-      message: "Error fetching prayer groups for the user",
+      message:
+        "An error occurred while fetching the prayer groups you're part of.",
     };
   }
 }
