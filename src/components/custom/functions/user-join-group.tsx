@@ -1,7 +1,8 @@
-import { addUserToPrayerGroup } from "@/services/user-prayer-group";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { addUserToPrayerGroup } from "@/services/user-prayer-group";
 import { Star } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 type JoinGroupProps = {
   userId: string;
@@ -9,11 +10,12 @@ type JoinGroupProps = {
   onClose?: () => void;
 };
 
-export default function JoinGroup({
+export default function UserJoinGroup({
   userId,
   groupId,
   onClose,
 }: JoinGroupProps) {
+  const router = useRouter();
   const joinGroup = async () => {
     try {
       const response = await addUserToPrayerGroup(userId, groupId);
@@ -22,6 +24,7 @@ export default function JoinGroup({
         if (onClose) {
           onClose();
         }
+        router.refresh();
       } else {
         toast.error(response.message);
       }

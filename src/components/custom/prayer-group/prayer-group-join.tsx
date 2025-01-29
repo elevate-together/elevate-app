@@ -10,7 +10,6 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
 
 import {
   Table,
@@ -22,9 +21,9 @@ import {
 } from "@/components/ui/table";
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { User } from "@prisma/client";
+import JoinGroup from "../functions/user-join-group";
 import ViewGroup from "../functions/view-group";
 import UserAvatar from "../user/user-avatar";
-import JoinGroup from "../functions/join-group";
 
 type JoinGroupProps = {
   data: PrayerGroupWithOwner[];
@@ -74,7 +73,7 @@ export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
         return (
           <div className="flex gap-3 justify-end">
             <ViewGroup group={row.original} userId={userId} />
-            <JoinGroup groupId={groupId} userId={userId} />;
+            <JoinGroup groupId={groupId} userId={userId} />
           </div>
         );
       },

@@ -13,9 +13,9 @@ import {
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
-import UserAvatar from "../user/user-avatar";
-import JoinGroup from "./join-group";
 import { useState } from "react";
+import UserAvatar from "../user/user-avatar";
+import JoinGroup from "./user-join-group";
 
 type ViewGroupProps = {
   group: PrayerGroupWithOwner;

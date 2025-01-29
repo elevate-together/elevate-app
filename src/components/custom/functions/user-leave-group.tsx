@@ -1,4 +1,6 @@
 "use client";
+
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,12 +10,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Trash } from "lucide-react";
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { removeUserFromPrayerGroup } from "@/services/user-prayer-group";
-import { toast } from "sonner";
+import { Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 type UserLeaveGroupProps = {
   group: PrayerGroupWithOwner;
@@ -22,12 +24,15 @@ type UserLeaveGroupProps = {
 
 export default function UserLeaveGroup({ group, id }: UserLeaveGroupProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
   const handleSubmit = async () => {
     const response = await removeUserFromPrayerGroup(id, group.id);
 
     if (response.success) {
       toast.success(response.message);
       setOpen(false);
+      router.refresh();
     } else {
       toast.error(response.message);
     }
