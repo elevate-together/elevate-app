@@ -1,6 +1,8 @@
 "use client";
 
 import { useIsMobile } from "@/components/hooks/use-mobile";
+import { useRouter } from "next/navigation";
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -26,11 +28,13 @@ export default function PrayerGroupCreate({
 }: PrayerGroupCreateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
+  const router = useRouter();
 
   if (hideOnMobile && isMobile) return null;
 
   const handleCloseDialog = () => {
     setIsOpen(false);
+    router.refresh();
   };
 
   return (

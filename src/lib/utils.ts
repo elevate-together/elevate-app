@@ -25,7 +25,7 @@ export const menu_items = [
     auth: true,
   },
   {
-    title: "Groups",
+    title: "Your Groups",
     url: "/groups",
     icon: Users,
     auth: true,

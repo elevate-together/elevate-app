@@ -19,7 +19,8 @@ import UserInfo from "./user/user-info";
 
 export default async function AppSidebar() {
   const session = await auth();
-  const userId = session?.user?.id;
+
+  const { id, name, email, image } = session?.user || {};
 
   return (
     <Sidebar>
@@ -39,7 +40,7 @@ export default async function AppSidebar() {
             <SidebarMenu>
               {items.map((item) => {
                 // Replace placeholder `{id}` with actual user ID if applicable
-                const url = item.url.replace("{id}", userId || "");
+                const url = item.url.replace("{id}", id || "");
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild>
@@ -63,9 +64,9 @@ export default async function AppSidebar() {
 
               <SidebarSeparator />
 
-              {session && session.user?.id && (
+              {session && id && (
                 <SidebarMenuItem>
-                  <PrayerGroupCreate id={session?.user.id} isMenu />
+                  <PrayerGroupCreate id={id} isMenu />
                 </SidebarMenuItem>
               )}
             </SidebarMenu>
@@ -73,7 +74,12 @@ export default async function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <UserInfo />
+        <UserInfo
+          name={name ?? ""}
+          email={email ?? ""}
+          image={image ?? ""}
+          id={id ?? undefined}
+        />
       </SidebarFooter>
     </Sidebar>
   );

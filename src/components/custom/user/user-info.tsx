@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import SignIn from "@/components/custom/functions/sign-in";
 import SignOut from "@/components/custom/functions/sign-out";
 
@@ -13,13 +12,16 @@ import {
 import { menu_items } from "@/lib/utils";
 import UserAvatar from "./user-avatar";
 
-export default async function UserInfo() {
-  const session = await auth();
-  const { name, email, image } = { ...session?.user };
-
+type UserInfoProps = {
+  id: string | undefined;
+  name: string;
+  email: string;
+  image: string;
+};
+export default function UserInfo({ id, name, email, image }: UserInfoProps) {
   return (
     <div className="flex items-center">
-      {session && name && email && image ? (
+      {name != "" && email != "" ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="p-2 my-3 rounded-lg w-full hover:bg-accent">
@@ -36,12 +38,12 @@ export default async function UserInfo() {
             <DropdownMenuSeparator className="my-1 " />
             <DropdownMenuItem disabled>Quick Actions</DropdownMenuItem>
             {menu_items.map((item) => {
-              const url = item.url.replace("{id}", session?.user?.id || "");
+              const url = item.url.replace("{id}", id || "");
 
               return (
                 <span key={item.title}>
                   {item.auth ? (
-                    session?.user ? (
+                    id ? (
                       <a href={url}>
                         <DropdownMenuItem className="flex flex-row">
                           <item.icon width={16} />

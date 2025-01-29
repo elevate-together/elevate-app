@@ -41,7 +41,7 @@ export default function UserLeaveGroup({ group, id }: UserLeaveGroupProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary" size="icon">
+        <Button variant="ghost" size="icon">
           <Trash />
         </Button>
       </DialogTrigger>

@@ -1,75 +1,49 @@
-"use client";
-
-import { User } from "@prisma/client";
-import { useEffect, useState } from "react";
-
-import { PrayerGroupWithOwner } from "@/lib/utils";
+import UserAvatar from "@/components/custom/user/user-avatar";
 import { getPrayerGroupById } from "@/services/prayer-group";
 import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
-import React from "react";
 
-export default function Profile({
+export default async function Group({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [prayerGroup, setPrayerGroup] = useState<PrayerGroupWithOwner>();
-  const [message, setMessage] = useState<string>("");
-  const [users, setUsers] = useState<User[]>([]);
+  const { id } = await params;
 
-  const { id } = React.use(params);
+  const { prayerGroup } = await getPrayerGroupById(id);
 
-  useEffect(() => {
-    if (id) {
-      const fetchPrayerGroup = async () => {
-        const { prayerGroup } = await getPrayerGroupById(id);
-
-        if (prayerGroup) {
-          setPrayerGroup(prayerGroup);
-        } else {
-          setMessage("Group not found");
-        }
-      };
-
-      fetchPrayerGroup();
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (prayerGroup) {
-      const fetchUsers = async () => {
-        const result = await getUsersInPrayerGroup(prayerGroup.id);
-
-        if (result.success) {
-          setUsers(result.users || []);
-        } else {
-          setMessage(result.message);
-        }
-      };
-
-      fetchUsers();
-    }
-  }, [prayerGroup]);
+  console.log("HELLO", prayerGroup);
 
   if (!prayerGroup) {
-    return (
-      <div>
-        <p>{message || "Loading group..."}</p>
-      </div>
-    );
+    return null;
   }
+
+  const { users } = await getUsersInPrayerGroup(prayerGroup.id);
 
   return (
     <div>
-      <h2>{prayerGroup.name}</h2>
-      {message && <p>{message}</p>}
-      <div>Owner: {prayerGroup.owner?.name || "No owner"}</div>
+      <div className="flex flex-row justify-between gap-1">
+        <h2 className="text-xl font-bold">{prayerGroup.name}</h2>
+
+        <div className="flex flex-row items-center gap-1">
+          <div className="text-sm ">Owner:</div>
+
+          <UserAvatar
+            name={prayerGroup.owner?.name}
+            email={prayerGroup.owner?.email}
+            image={prayerGroup.owner?.image ?? undefined}
+            includeEmail={false}
+            size="small"
+          />
+        </div>
+      </div>
+
       <ul>
-        {users.map((user) => (
-          <li key={user.id}>
-            {user.name} ({user.email})
-          </li>
-        ))}
+        {users &&
+          users.map((user) => (
+            <li key={user.id}>
+              {user.name} ({user.email})
+            </li>
+          ))}
       </ul>
     </div>
   );
