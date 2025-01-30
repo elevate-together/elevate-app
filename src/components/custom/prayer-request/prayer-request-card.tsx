@@ -89,9 +89,6 @@ export default function PrayerRequestCard({
           <div className="text-sm font-semibold">
             {format(new Date(prayer.createdAt), "MMMM d, yyyy")}
           </div>
-          <div className="text-xs">
-            Last Updated: {format(prayer.updatedAt, "MM/dd/yy")}
-          </div>
           {!isSameDay(prayer.createdAt, prayer.updatedAt) && (
             <div className="text-xs">
               Last Updated: {format(prayer.updatedAt, "MM/dd/yy")}
