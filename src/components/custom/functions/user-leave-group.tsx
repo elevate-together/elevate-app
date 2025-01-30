@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { removeUserFromPrayerGroup } from "@/services/user-prayer-group";
-import { Trash } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -42,7 +42,7 @@ export default function UserLeaveGroup({ group, id }: UserLeaveGroupProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="icon">
-          <Trash />
+          <LogOut />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

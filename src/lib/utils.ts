@@ -1,6 +1,6 @@
 import { PrayerGroup, User as UserDef } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
-import { Home, User, Users } from "lucide-react";
+import { HelpingHandIcon, Home, User, Users } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -20,7 +20,7 @@ export const menu_items = [
   },
   {
     title: "Profile",
-    url: "/profile/{id}",
+    url: "/user/{id}",
     icon: User,
     auth: true,
   },
@@ -28,6 +28,12 @@ export const menu_items = [
     title: "Your Groups",
     url: "/groups",
     icon: Users,
+    auth: true,
+  },
+  {
+    title: "Your Requests",
+    url: "/requests/{id}",
+    icon: HelpingHandIcon,
     auth: true,
   },
 ];

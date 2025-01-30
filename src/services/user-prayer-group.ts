@@ -177,6 +177,48 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
   }
 }
 
+export async function getUsersByPrayerGroup(groupId: string): Promise<{
+  success: boolean;
+  message: string;
+  users?: Pick<User, "id" | "name" | "email" | "image" | "createdAt">[];
+}> {
+  try {
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: { prayerGroupId: groupId },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
+
+    if (!userPrayerGroups.length) {
+      return {
+        success: false,
+        message: "No users found in this prayer group.",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Users retrieved successfully.",
+      users: userPrayerGroups.map((entry) => entry.user),
+    };
+  } catch (error) {
+    console.error("Error fetching users for prayer group:", error);
+    return {
+      success: false,
+      message: "An error occurred while retrieving users.",
+    };
+  }
+}
+
 export async function getPrayerGroupsForUser(userId: string): Promise<{
   success: boolean;
   message: string;
