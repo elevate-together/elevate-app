@@ -2,6 +2,7 @@
 
 import { useIsMobile } from "@/components/hooks/use-mobile";
 
+import PrayerRequestForm from "@/components/custom/prayer-request/prayer-request-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +13,6 @@ import {
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import PrayerForm from "./prayer-group-form";
 
 type PrayerGroupCreateProps = {
   id: string;
@@ -20,7 +20,7 @@ type PrayerGroupCreateProps = {
   hideOnMobile?: boolean;
 };
 
-export default function PrayerGroupCreate({
+export default function PrayerRequestCreate({
   id,
   isMenu = false,
   hideOnMobile = false,
@@ -43,18 +43,14 @@ export default function PrayerGroupCreate({
           }`}
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Plus /> Create Group
+          <Plus /> Add Prayer Request
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Create New Prayer Group</DialogTitle>
+          <DialogTitle>Add New Prayer Request</DialogTitle>
         </DialogHeader>
-        <PrayerForm
-          ownerId={id}
-          onSubmit={handleCloseDialog}
-          onCancel={handleCloseDialog}
-        />
+        <PrayerRequestForm userId={id} onSubmit={handleCloseDialog} />
       </DialogContent>
     </Dialog>
   );

@@ -14,6 +14,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { createPrayerGroup, updatePrayerGroup } from "@/services/prayer-group";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { PrayerGroup } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -47,6 +48,7 @@ export default function PrayerForm({
   group,
   onCancel,
 }: PrayerFormProps) {
+  const router = useRouter();
   // Initialize form with default values if user exists
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,6 +65,7 @@ export default function PrayerForm({
     if (group?.id) {
       // Update the user
       result = await updatePrayerGroup(group.id, values);
+      router.refresh();
     } else {
       // Create a new user
       result = await createPrayerGroup({ name, ownerId, description });

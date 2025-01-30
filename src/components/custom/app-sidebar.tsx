@@ -15,6 +15,7 @@ import { menu_items as items } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import PrayerGroupCreate from "./prayer-group/prayer-group-create";
+import PrayerRequestCreate from "./prayer-request/prayer-request-add";
 import UserInfo from "./user/user-info";
 
 export default async function AppSidebar() {
@@ -67,6 +68,7 @@ export default async function AppSidebar() {
               {session && id && (
                 <SidebarMenuItem>
                   <PrayerGroupCreate id={id} isMenu />
+                  <PrayerRequestCreate id={id} isMenu />
                 </SidebarMenuItem>
               )}
             </SidebarMenu>

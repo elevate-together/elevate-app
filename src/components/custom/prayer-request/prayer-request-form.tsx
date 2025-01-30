@@ -119,6 +119,7 @@ export default function PrayerRequestForm({
               )}
             />
 
+            {/* Status Dropdown */}
             {prayer?.id && (
               <FormField
                 control={form.control}
@@ -149,18 +150,35 @@ export default function PrayerRequestForm({
               />
             )}
 
-            {/* Status Dropdown */}
-
             {/* Buttons */}
             {prayer?.id ? (
               <div className="flex flex-row gap-4 items-center">
-                <Button variant="outline" type="button" onClick={handleCancel}>
+                <Button
+                  className="w-full"
+                  variant="outline"
+                  type="button"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </Button>
-                <Button type="submit">Save</Button>
+                <Button className="w-full" type="submit">
+                  Save
+                </Button>
               </div>
             ) : (
-              <Button type="submit">Submit</Button>
+              <div className="flex flex-row gap-4 items-center w-full">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleCancel}
+                  className="w-full"
+                >
+                  Cancel
+                </Button>
+                <Button className="w-full" type="submit">
+                  Submit
+                </Button>
+              </div>
             )}
           </div>
         </form>
