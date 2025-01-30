@@ -44,10 +44,8 @@ export default async function PrayerGroupMembers({ id }: { id: string }) {
                     includeEmail={false}
                   />
                 </TableCell>
-                <TableCell className="font-medium hidden md:block">
-                  <div>
-                    {format(new Date(member.createdAt), "MMMM d, yyyy")}
-                  </div>
+                <TableCell className="font-medium invisible md:visible">
+                  {format(new Date(member.createdAt), "MMMM d, yyyy")}
                 </TableCell>
                 <TableCell className="font-medium text-right">
                   <UserView id={member.id} variant="ghost" />

@@ -60,7 +60,7 @@ export async function getPrayerRequestById(id: string): Promise<{
 // CREATE a New Prayer Request
 export async function createPrayerRequest(requestData: {
   request: string;
-  status?: PrayerRequestStatus; // 'PENDING' by default if not provided
+  status?: PrayerRequestStatus; // 'ARCHIVED' by default if not provided
   userId: string;
 }): Promise<{
   success: boolean;
@@ -71,7 +71,7 @@ export async function createPrayerRequest(requestData: {
     const newPrayerRequest = await db.prayerRequest.create({
       data: {
         request: requestData.request,
-        status: requestData.status || PrayerRequestStatus.PENDING, // Default to PENDING
+        status: requestData.status || PrayerRequestStatus.ARCHIVED, // Default to PENDING
         user: {
           connect: { id: requestData.userId }, // Connect to the user by ID
         },
@@ -80,7 +80,7 @@ export async function createPrayerRequest(requestData: {
 
     return {
       success: true,
-      message: "Successfully created prayer request",
+      message: "Successfully added prayer request",
       prayerRequest: newPrayerRequest,
     };
   } catch (error) {

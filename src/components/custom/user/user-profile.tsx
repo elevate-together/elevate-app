@@ -31,8 +31,7 @@ export default function UserProfile(user: User) {
   };
 
   // Handle form submit from UserForm and update user state
-  const handleUserSubmit = (updatedUser: User) => {
-    setUserData(updatedUser);
+  const handleUserSubmit = () => {
     setIsEdit(false);
     toast.success("User updated successfully!");
   };
