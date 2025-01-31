@@ -15,10 +15,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import type { PrayerRequest } from "@prisma/client";
+import { updatePrayerRequest } from "@/services/prayer-request";
+import { PrayerRequestStatus, type PrayerRequest } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
-import { Edit2Icon, Star } from "lucide-react";
+import { Edit2Icon, Hand, Package, Star } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import PrayerRequestForm from "./prayer-request-form";
 
 type PrayerRequestCardProps = {
@@ -31,29 +34,67 @@ export default function PrayerRequestCard({
   userId,
 }: PrayerRequestCardProps) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+
+  const handleUpdateStatus = async (status: PrayerRequestStatus) => {
+    const result = await updatePrayerRequest(prayer.id, {
+      status: status,
+    });
+
+    if (result.success) {
+      toast.success(result.message);
+      router.refresh();
+    } else {
+      toast.error(result.message);
+    }
+  };
 
   return (
     <Card className="shadow-none">
-      <CardHeader className="p-5 pb-0">
+      <CardHeader className="px-5 py-4 pb-0">
         <CardTitle>
           <div className="flex flex-row justify-between items-start">
             <div className="font-normal mt-2 mb-3">{prayer.request}</div>
-            <div className="flex flex-col-reverse md:flex-row ">
+          </div>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="px-5 pb-4">
+        <div className="flex flex-row items-center justify-between">
+          <div className="flex flex-col ">
+            <div
+              className={`${
+                prayer.status === PrayerRequestStatus.ANSWERED
+                  ? "font-normal text-xs"
+                  : "font-semibold text-sm"
+              }`}
+            >
+              {prayer.status === PrayerRequestStatus.ANSWERED
+                ? `Created: ${format(new Date(prayer.createdAt), "MM/dd/yy")}`
+                : format(new Date(prayer.createdAt), "MMMM d, yyyy")}
+            </div>
+            {prayer.status === PrayerRequestStatus.ANSWERED ? (
+              <div className="text-xs font-semibold">
+                Answered: {format(new Date(prayer.updatedAt), "MM/dd/yy")}
+              </div>
+            ) : (
+              !isSameDay(
+                new Date(prayer.createdAt),
+                new Date(prayer.updatedAt)
+              ) && (
+                <div className="text-xs">
+                  Last Updated: {format(new Date(prayer.updatedAt), "MM/dd/yy")}
+                </div>
+              )
+            )}
+          </div>
+          <div className="flex flex-row gap-0">
+            {prayer.status != PrayerRequestStatus.ANSWERED && (
               <Dialog open={open} onOpenChange={setOpen}>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <DialogTrigger asChild>
-                        <Button size="icon" variant="ghost">
-                          <Edit2Icon />
-                        </Button>
-                      </DialogTrigger>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Edit Prayer</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <DialogTrigger asChild>
+                  <Button size="icon" variant="ghost">
+                    <Edit2Icon />
+                  </Button>
+                </DialogTrigger>
 
                 <DialogContent className="max-w-md">
                   <DialogHeader>
@@ -67,11 +108,61 @@ export default function PrayerRequestCard({
                   />
                 </DialogContent>
               </Dialog>
+            )}
 
+            {prayer.status != PrayerRequestStatus.ARCHIVED && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Button size="icon" variant="ghost">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() =>
+                        handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
+                      }
+                    >
+                      <Package />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Archive</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            {prayer.status != PrayerRequestStatus.IN_PROGRESS && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() =>
+                        handleUpdateStatus(PrayerRequestStatus.IN_PROGRESS)
+                      }
+                    >
+                      <Hand />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Request</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            )}
+
+            {prayer.status != PrayerRequestStatus.ANSWERED && (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() =>
+                        handleUpdateStatus(PrayerRequestStatus.ANSWERED)
+                      }
+                    >
                       <Star />
                     </Button>
                   </TooltipTrigger>
@@ -80,20 +171,8 @@ export default function PrayerRequestCard({
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
-            </div>
+            )}
           </div>
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="px-5 pb-6">
-        <div className="flex flex-col font-normal">
-          <div className="text-sm font-semibold">
-            {format(new Date(prayer.createdAt), "MMMM d, yyyy")}
-          </div>
-          {!isSameDay(prayer.createdAt, prayer.updatedAt) && (
-            <div className="text-xs">
-              Last Updated: {format(prayer.updatedAt, "MM/dd/yy")}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>

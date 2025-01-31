@@ -37,14 +37,20 @@ export default function PrayerRequestCreate({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          className={`${
-            isMenu ? "flex justify-start items-center w-full p-2" : ""
-          }`}
-          variant={isMenu ? "ghost" : "secondary"}
-        >
-          <Plus /> Add Prayer Request
-        </Button>
+        {isMobile && !isMenu ? (
+          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
+            <Plus />
+          </Button>
+        ) : (
+          <Button
+            className={`${
+              isMenu ? "flex justify-start items-center w-full p-2" : ""
+            }`}
+            variant={isMenu ? "ghost" : "secondary"}
+          >
+            <Plus /> Add Prayer Request
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>

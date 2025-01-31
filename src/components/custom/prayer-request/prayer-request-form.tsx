@@ -11,19 +11,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   createPrayerRequest,
   updatePrayerRequest,
 } from "@/services/prayer-request";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { PrayerRequest } from "@prisma/client";
-import { PrayerRequestStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,7 +24,6 @@ import { z } from "zod";
 // Validation Schema
 const formSchema = z.object({
   request: z.string().min(1, { message: "Request cannot be left blank" }),
-  status: z.nativeEnum(PrayerRequestStatus).optional(),
 });
 
 type UserFormProps = {
@@ -55,21 +46,20 @@ export default function PrayerRequestForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       request: prayer?.request || "",
-      status: prayer?.status || PrayerRequestStatus.IN_PROGRESS, // Use the enum instead of a string
     },
   });
 
   // Handle the form submission (for creating or updating)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { request, status } = values;
+    const { request } = values;
     let result;
 
     if (prayer?.id) {
       // Update the prayer request
-      result = await updatePrayerRequest(prayer.id, { request, status });
+      result = await updatePrayerRequest(prayer.id, { request });
     } else {
       // Create a new prayer request
-      result = await createPrayerRequest({ request, status, userId });
+      result = await createPrayerRequest({ request, userId });
     }
 
     if (result?.success && result?.prayerRequest) {
@@ -89,7 +79,6 @@ export default function PrayerRequestForm({
   const handleCancel = () => {
     form.reset({
       request: prayer?.request || "",
-      status: prayer?.status || PrayerRequestStatus.IN_PROGRESS,
     });
 
     if (onCancel) {
@@ -119,37 +108,6 @@ export default function PrayerRequestForm({
               )}
             />
 
-            {/* Status Dropdown */}
-            {prayer?.id && (
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <FormControl>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <SelectTrigger className="w-[180px]">
-                          <SelectValue placeholder="Select a status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.values(PrayerRequestStatus).map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            )}
-
             {/* Buttons */}
             {prayer?.id ? (
               <div className="flex flex-row gap-4 items-center">
@@ -176,7 +134,7 @@ export default function PrayerRequestForm({
                   Cancel
                 </Button>
                 <Button className="w-full" type="submit">
-                  Submit
+                  Save
                 </Button>
               </div>
             )}

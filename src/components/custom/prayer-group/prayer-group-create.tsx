@@ -43,7 +43,7 @@ export default function PrayerGroupCreate({
           }`}
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Plus /> Create Group
+          <Plus /> Create New Group
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">

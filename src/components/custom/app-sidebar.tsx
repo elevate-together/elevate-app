@@ -67,8 +67,8 @@ export default async function AppSidebar() {
 
               {session && id && (
                 <SidebarMenuItem>
-                  <PrayerGroupCreate id={id} isMenu />
                   <PrayerRequestCreate id={id} isMenu />
+                  <PrayerGroupCreate id={id} isMenu />
                 </SidebarMenuItem>
               )}
             </SidebarMenu>

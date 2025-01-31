@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import SignIn from "@/components/custom/functions/sign-in";
 import SignOut from "@/components/custom/functions/sign-out";
 import { ThemeSwitch } from "@/components/custom/functions/theme-switch";
-import PrayerGroupCreate from "@/components/custom/prayer-group/prayer-group-create";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default async function Navbar() {
@@ -16,7 +15,6 @@ export default async function Navbar() {
 
       {session && session.user?.id ? (
         <div className="flex flex-row gap-4">
-          <PrayerGroupCreate id={session.user.id} hideOnMobile />
           <SignOut hideOnMobile />
         </div>
       ) : (
