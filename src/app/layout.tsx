@@ -1,6 +1,7 @@
 import AppSidebar from "@/components/custom/app-sidebar";
 import BackButton from "@/components/custom/functions/back-button";
 import Navbar from "@/components/custom/navbar";
+import ServiceWorker from "@/components/custom/ServiceWorker";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Separator } from "@/components/ui/separator";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -64,6 +65,7 @@ export default function RootLayout({
                 },
               }}
             />
+            <ServiceWorker />
           </SidebarProvider>
         </ThemeProvider>
       </body>

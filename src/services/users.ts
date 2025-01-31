@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import { User } from "@prisma/client";
+import { Device, User } from "@prisma/client";
 // GET All Users
 export async function getAllUsers(): Promise<{
   success: boolean;
@@ -154,5 +154,31 @@ export async function deleteUser(
       success: false,
       message: "Error deleting user",
     };
+  }
+}
+
+export async function getUserDevices(userId: string): Promise<{
+  success: boolean;
+  message: string;
+  devices?: Device[];
+}> {
+  try {
+    // Fetch all devices associated with the user
+    const devices = await db.device.findMany({
+      where: { userId },
+    });
+
+    if (!devices || devices.length === 0) {
+      return { success: false, message: "No devices found for the user" };
+    }
+
+    return {
+      success: true,
+      message: "Devices retrieved successfully",
+      devices,
+    };
+  } catch (error) {
+    console.error("Error fetching user devices:", error);
+    return { success: false, message: "Failed to fetch devices" };
   }
 }

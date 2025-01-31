@@ -31,7 +31,7 @@ export default async function AppSidebar() {
           href="/"
         >
           {/* <Users className="h-6 w-6" /> */}
-          <Image src="/people.png" alt="Elevate Logo" height={30} width={30} />
+          <Image src="/icon.png" alt="Elevate Logo" height={30} width={30} />
           <span className="ml-2 text-2xl font-bold">ELEVATE</span>
         </Link>
       </SidebarHeader>
