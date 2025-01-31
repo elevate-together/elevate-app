@@ -1,9 +1,9 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client"; // Import Prisma client
+import db from "@/lib/db";
+import { format } from "date-fns";
 import webpush from "web-push";
-
-const prisma = new PrismaClient();
+import { getDeviceInfo } from "./get-device-info";
 
 webpush.setVapidDetails(
   "mailto:your-email@example.com",
@@ -25,7 +25,15 @@ export async function subscribeDevice(
   message: string;
 }> {
   try {
-    await prisma.device.upsert({
+    const { vendor, os } = await getDeviceInfo();
+    const name =
+      vendor && os
+        ? `${vendor} ${os}`
+        : `Device Added: ${format(new Date(), "yyyy-MM-dd")}`;
+
+    console.log(name);
+
+    await db.device.upsert({
       where: { userId, endpoint: sub.endpoint },
       update: {
         endpoint: sub.endpoint,
@@ -37,7 +45,7 @@ export async function subscribeDevice(
         endpoint: sub.endpoint,
         p256dh: sub.keys.p256dh,
         auth: sub.keys.auth,
-        title: "Test",
+        title: name,
       },
     });
 
@@ -60,7 +68,7 @@ export async function unsubscribeDevice(
   }
 
   try {
-    const device = await prisma.device.delete({
+    const device = await db.device.delete({
       where: { userId, endpoint },
     });
 
@@ -88,7 +96,7 @@ export async function sendNotificationToDevice(
 }> {
   try {
     // Retrieve the device associated with the user and the specified endpoint
-    const device = await prisma.device.findUnique({
+    const device = await db.device.findUnique({
       where: { userId, endpoint }, // Query by userId and endpoint
     });
 
@@ -140,7 +148,7 @@ export async function sendNotificationAllDevices(
 }> {
   try {
     // Retrieve all devices associated with the user
-    const devices = await prisma.device.findMany({
+    const devices = await db.device.findMany({
       where: { userId },
     });
 

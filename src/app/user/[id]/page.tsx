@@ -17,8 +17,10 @@ export default async function Profile({
     return <div className="p-2">Unable to Find User</div>;
   }
 
+
   return (
     <div className="flex flex-col gap-6">
+
       <UserAvatar
         name={user.name}
         image={user.image ?? undefined}

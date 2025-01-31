@@ -3,6 +3,7 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { arrayBufferToBase64, urlBase64ToUint8Array } from "@/lib/utils";
+
 import {
   subscribeDevice,
   unsubscribeDevice,
@@ -171,8 +172,8 @@ export default function PushNotificationManager({
   return (
     <>
       {!supportsNotifications ? (
-        <div className="flex justify-center m-4">
-          <Alert variant="destructive" className="w-full">
+        <div className="flex justify-center">
+          <Alert variant="destructive" className="max-w-xl">
             <TriangleAlert className="h-4 w-4 text-red-500" />
             <AlertDescription>
               Push notifications are not supported in this browser. Make sure
@@ -181,9 +182,9 @@ export default function PushNotificationManager({
           </Alert>
         </div>
       ) : (
-        <div className="flex justify-center m-4">
+        <div className="flex justify-center">
           {isSubscribed ? (
-            <Alert variant="success" className="w-full">
+            <Alert variant="success" className="max-w-xl">
               <AlertTitle className="font-bold">
                 <div className="flex flex-row gap-1 items-center">
                   <Check className="h-4 w-4 text-green-600" />
@@ -212,7 +213,7 @@ export default function PushNotificationManager({
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert variant="warning" className="w-full">
+            <Alert variant="warning" className="max-w-xl">
               <AlertTitle className="font-bold">
                 <div className="flex flex-row gap-1 items-center">
                   <TriangleAlert className="h-4 w-4 text-yellow-700" />

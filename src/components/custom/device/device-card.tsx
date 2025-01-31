@@ -10,7 +10,7 @@ import {
 import { sendNotificationToDevice } from "@/services/push-notification";
 import { Device } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
-import { Bell, MoreVerticalIcon, Pencil } from "lucide-react";
+import { Bell, MoreVerticalIcon } from "lucide-react";
 import { toast } from "sonner";
 
 type DeviceCardProps = {
@@ -38,7 +38,7 @@ export default function DeviceCard({ device, userId }: DeviceCardProps) {
       <div className="text-md font-semibold">
         <h3>{device.title}</h3>
         <p className="text-xs font-normal">
-          Date Added: {format(new Date(device.createdAt), "MM/dd/yy")}
+          Added: {format(new Date(device.createdAt), "MM/dd/yy")}
         </p>
         <p>
           {!isSameDay(
@@ -66,12 +66,12 @@ export default function DeviceCard({ device, userId }: DeviceCardProps) {
                 <div>Test Push</div>
               </div>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log("Hello")}>
+            {/* <DropdownMenuItem onClick={() => console.log("Hello")}>
               <div className="flex flex-row gap-2 items-center">
                 <Pencil size="14px" />
                 <div>Rename</div>
               </div>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
