@@ -204,3 +204,43 @@ export async function getPrayerRequestsByUserId(userId: string): Promise<{
     };
   }
 }
+
+// GET Inprogress Prayer Requests for a User
+export async function getInProgressPrayerRequestsByUserId(
+  userId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  prayerRequests?: PrayerRequest[];
+}> {
+  try {
+    const prayerRequests = await db.prayerRequest.findMany({
+      where: {
+        userId: userId,
+        status: PrayerRequestStatus.IN_PROGRESS,
+      },
+    });
+
+    if (!prayerRequests.length) {
+      return {
+        success: false,
+        message: "No prayer requests found for this user",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Successfully fetched prayer requests for this user",
+      prayerRequests,
+    };
+  } catch (error) {
+    console.error(
+      `Error fetching prayer requests for user with ID ${userId}:`,
+      error
+    );
+    return {
+      success: false,
+      message: "Error fetching prayer requests for the user",
+    };
+  }
+}

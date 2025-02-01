@@ -32,12 +32,12 @@ export default async function AllGroups() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="hidden md:flex w-full justify-end">
-        <PrayerGroupCreate id={user.id} hideOnMobile/>
-      </div>
       {/* Your Groups Section */}
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Your Groups</h2>
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-row items-center justify-between">
+          <div className="text-xl font-semibold h-full">Your Groups</div>
+          <PrayerGroupCreate id={user.id} hideOnMobile />
+        </div>
         {yourGroups?.prayerGroups && yourGroups.prayerGroups.length > 0 ? (
           <div className="flex flex-col gap-2">
             {yourGroups.prayerGroups.map((group) => (

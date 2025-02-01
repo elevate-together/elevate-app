@@ -1,10 +1,10 @@
 "use client";
 
 import { Button, ButtonProps } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { User } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export default function UserView({
+export default function UserViewProfile({
   id,
   ...props
 }: { id: string } & ButtonProps) {
@@ -14,11 +14,11 @@ export default function UserView({
       size="icon"
       variant="secondary"
       onClick={() => {
-        router.push(`/requests/${id}`);
+        router.push(`/user/${id}`);
       }}
       {...props}
     >
-      <ChevronRight />
+      <User />
     </Button>
   );
 }

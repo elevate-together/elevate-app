@@ -1,10 +1,11 @@
 import { auth } from "@/auth";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPrayerRequestsByUserId } from "@/services/prayer-request";
 import { PrayerRequestStatus, User } from "@prisma/client";
-import { Hand, Package, Star } from "lucide-react";
+import { Hand, Package, Star, User as UserIcon } from "lucide-react";
 import PrayerRequestCreate from "./prayer-request-add";
 
 type PrayerRequestTemplateProps = {
@@ -81,7 +82,7 @@ export default async function PrayerRequestTemplate({
                   </div>
                 </div>
               ) : (
-                <div>No current prayer requests</div>
+                <div className="px-3">You have no active prayer requests.</div>
               )}
             </TabsContent>
             <TabsContent value="answered">
@@ -99,7 +100,9 @@ export default async function PrayerRequestTemplate({
                   </div>
                 </div>
               ) : (
-                <div>No answered prayers</div>
+                <div className="px-3">
+                  You have no answered prayer requests.
+                </div>
               )}
             </TabsContent>
             <TabsContent value="past">
@@ -117,16 +120,21 @@ export default async function PrayerRequestTemplate({
                   </div>
                 </div>
               ) : (
-                <div>No past prayers</div>
+                <div className="px-3">You have no past prayer requests.</div>
               )}
             </TabsContent>
           </Tabs>
         </div>
       ) : (
         <div className="flex flex-col gap-5">
-          <h1 className="text-xl font-bold text-left">
-            {`${pageUser.name}'s Prayer Requests`}
-          </h1>
+          <div className="flex flex-row justify-between items-center">
+            <h1 className="text-xl font-bold text-left">
+              {`${pageUser.name}'s Prayer Requests`}
+            </h1>
+            <Button variant="outline" size="icon">
+              <UserIcon />
+            </Button>
+          </div>
 
           <Separator />
 

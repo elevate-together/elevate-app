@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import { Device, User } from "@prisma/client";
+import { Device, PrayerRequest, User } from "@prisma/client";
 // GET All Users
 export async function getAllUsers(): Promise<{
   success: boolean;
@@ -180,5 +180,55 @@ export async function getUserDevices(userId: string): Promise<{
   } catch (error) {
     console.error("Error fetching user devices:", error);
     return { success: false, message: "Failed to fetch devices" };
+  }
+}
+
+export async function getFriendPrayerRequestsForUser(userId: string): Promise<{
+  success: boolean;
+  message: string;
+  prayerRequests?: PrayerRequest[];
+}> {
+  try {
+    // Step 1: Get all prayer groups the user is part of
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        prayerGroup: {
+          include: {
+            users: true, // Get all users in the prayer group
+          },
+        },
+      },
+    });
+
+    // Step 2: Collect all user IDs from the prayer groups the user is a member of
+    const memberIds = userPrayerGroups.flatMap((userPrayerGroup) =>
+      userPrayerGroup.prayerGroup.users.map((user) => user.userId)
+    );
+
+    // Step 3: Get all prayer requests from users that are in these groups
+    const prayerRequests = await db.prayerRequest.findMany({
+      where: {
+        userId: { in: memberIds, not: userId },
+        status: "IN_PROGRESS",
+      },
+      include: {
+        user: true,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Prayer requests fetched successfully.",
+      prayerRequests,
+    };
+  } catch (error: unknown) {
+    console.error("Error fetching users:", error);
+    return {
+      success: false,
+      message: "Error fetching friend prayer requests",
+    };
   }
 }

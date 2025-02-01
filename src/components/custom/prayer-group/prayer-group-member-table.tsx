@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 
+import UserViewPrayer from "@/components/custom/user/user-view-prayer";
 import {
   Table,
   TableBody,
@@ -21,8 +22,8 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import UserView from "../user/user-view";
 import UserAvatar from "../user/user-avatar";
+import UserViewProfile from "../user/user-view-profile";
 
 type UserInfo = Pick<User, "id" | "name" | "email" | "image" | "createdAt">;
 
@@ -69,7 +70,8 @@ export default function PrayerGroupMemberTable({ data }: JoinGroupProps) {
       cell: ({ row }) => {
         return (
           <div className="flex justify-end">
-            <UserView id={row.original.id} variant="ghost" />
+            <UserViewPrayer id={row.original.id} variant="ghost" />
+            <UserViewProfile id={row.original.id} variant="ghost" />
           </div>
         );
       },
