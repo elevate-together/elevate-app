@@ -1,6 +1,7 @@
 self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();
+    console.log(data);
     const options = {
       body: data.body,
       icon: data.icon || "/icon.png",
@@ -20,7 +21,5 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  const destination =
-    event.notification.data.url || "https://www.elevatetogether.life/";
-  event.waitUntil(clients.openWindow(destination));
+  event.waitUntil(clients.openWindow("https://www.elevatetogether.life"));
 });
