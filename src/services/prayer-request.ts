@@ -71,7 +71,7 @@ export async function createPrayerRequest(requestData: {
     const newPrayerRequest = await db.prayerRequest.create({
       data: {
         request: requestData.request,
-        status: requestData.status || PrayerRequestStatus.ARCHIVED, // Default to PENDING
+        status: requestData.status || PrayerRequestStatus.IN_PROGRESS,
         user: {
           connect: { id: requestData.userId }, // Connect to the user by ID
         },

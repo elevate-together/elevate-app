@@ -180,3 +180,27 @@ export async function sendNotificationAllDevices(
     return { success: false, message: "Failed to send notification" };
   }
 }
+
+export async function updateDeviceTitle(
+  deviceId: string,
+  title: string
+): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  try {
+    const device = await db.device.update({
+      where: { id: deviceId },
+      data: { title },
+    });
+
+    if (!device) {
+      return { success: false, message: "Device not found" };
+    }
+
+    return { success: true, message: "Device updated successfully" };
+  } catch (error) {
+    console.error("Error updating device:", error);
+    return { success: false, message: "Failed to update device" };
+  }
+}

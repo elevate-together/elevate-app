@@ -15,7 +15,7 @@ export default function BackButton({ ...props }) {
       {...props}
       variant="ghost"
       size="icon"
-      className="w-7 h-7 "
+      className="hidden md:flex"
       onClick={() => router.back()}
     >
       <ChevronLeft />

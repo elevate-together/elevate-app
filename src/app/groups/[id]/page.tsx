@@ -23,7 +23,7 @@ export default async function Group({
       </div>
       <Separator />
       <div>
-        <div className="text-md font-bold pb-2">All Members</div>
+        <div className="text-base font-bold pb-2">All Members</div>
         <PrayerGroupMembers id={prayerGroup.id} />
       </div>
     </div>

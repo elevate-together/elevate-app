@@ -41,7 +41,7 @@ export default async function AllGroups() {
                 key={group.id}
                 className="flex flex-row items-center gap-3 justify-between p-4 rounded-lg border"
               >
-                <div className="text-md font-semibold">
+                <div className="text-base font-semibold">
                   <h3>{group.name}</h3>
                 </div>
                 <div className="flex flex-row items-center gap-2">

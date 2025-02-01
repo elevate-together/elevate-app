@@ -1,13 +1,10 @@
 "use client";
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { arrayBufferToBase64, urlBase64ToUint8Array } from "@/lib/utils";
 
-import {
-  subscribeDevice,
-  unsubscribeDevice,
-} from "@/services/push-notification";
+import { subscribeDevice, unsubscribeDevice } from "@/services/device";
 import { Check, Loader, TriangleAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -173,31 +170,36 @@ export default function PushNotificationManager({
     <>
       {!supportsNotifications ? (
         <div className="flex justify-center">
-          <Alert variant="destructive" className="max-w-xl">
-            <TriangleAlert className="h-4 w-4 text-red-500" />
-            <AlertDescription>
-              Push notifications are not supported in this browser. Make sure
-              your phone is up to date.
+          <Alert variant="destructive" className="w-full">
+            <AlertDescription className="flex flex-row items-center gap-3">
+              <div>
+                <TriangleAlert className="h-4 w-4 text-red-500" />
+              </div>
+              <div>
+                Push notifications are not supported in this browser. Make sure
+                your phone is up to date.
+              </div>
             </AlertDescription>
           </Alert>
         </div>
       ) : (
         <div className="flex justify-center">
           {isSubscribed ? (
-            <Alert variant="success" className="max-w-xl">
-              <AlertTitle className="font-bold">
-                <div className="flex flex-row gap-1 items-center">
-                  <Check className="h-4 w-4 text-green-600" />
-                  <div className="font-bold">
-                    This devices is subscribed to notifications!
-                  </div>
-                </div>
-              </AlertTitle>
+            <Alert variant="success">
               <AlertDescription>
-                <div className="flex flex-col md:flex-row gap-5">
+                <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
                   <div>
-                    Elevate uses notifications to connect you with your friends.
-                    You can unsubscribe at any time.
+                    <div className="flex flex-row gap-2 items-center">
+                      <Check className="h-4 w-4 text-green-600" />
+                      <div className="font-bold">
+                        This devices is subscribed to notifications!
+                      </div>
+                    </div>
+
+                    <div className="ml-6">
+                      Elevate uses notifications to connect you with your
+                      friends. You can unsubscribe here at any time.
+                    </div>
                   </div>
                   <Button
                     variant="secondary"
@@ -213,19 +215,20 @@ export default function PushNotificationManager({
               </AlertDescription>
             </Alert>
           ) : (
-            <Alert variant="warning" className="max-w-xl">
-              <AlertTitle className="font-bold">
-                <div className="flex flex-row gap-1 items-center">
-                  <TriangleAlert className="h-4 w-4 text-yellow-700" />
-                  <div className="font-bold">Heads Up!</div>
-                </div>
-              </AlertTitle>
+            <Alert variant="warning">
               <AlertDescription>
-                <div className="flex flex-col md:flex-row gap-5">
-                  <p>
-                    This device is not subscribed to notifications. Enable them
-                    to stay in touch with your groups and get reminders.
-                  </p>
+                <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
+                  <div>
+                    <div className="flex flex-row gap-2 items-center">
+                      <TriangleAlert className="h-4 w-4 text-yellow-700" />
+                      <div className="font-bold">Heads Up!</div>
+                    </div>
+
+                    <div className="ml-6">
+                      This device is not subscribed to notifications. Enable
+                      them to stay in touch with your groups and get reminders
+                    </div>
+                  </div>
                   <Button
                     variant="secondary"
                     onClick={handleAddPushSubscription}
@@ -233,7 +236,7 @@ export default function PushNotificationManager({
                   >
                     {isLoading ? (
                       <Loader className="animate-spin h-4 w-4 mr-2" />
-                    ) : null}{" "}
+                    ) : null}
                     Subscribe
                   </Button>
                 </div>

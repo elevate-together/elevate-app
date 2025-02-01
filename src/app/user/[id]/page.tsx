@@ -1,4 +1,4 @@
-import DeviceCard from "@/components/custom/device/device-card";
+import DeviceTable from "@/components/custom/device/device-table";
 import PushNotificationManager from "@/components/custom/functions/push-notification-manager";
 import UserAvatar from "@/components/custom/user/user-avatar";
 import { getUserById, getUserDevices } from "@/services/users";
@@ -17,10 +17,8 @@ export default async function Profile({
     return <div className="p-2">Unable to Find User</div>;
   }
 
-
   return (
     <div className="flex flex-col gap-6">
-
       <UserAvatar
         name={user.name}
         image={user.image ?? undefined}
@@ -28,14 +26,7 @@ export default async function Profile({
         size="large"
       />
       <PushNotificationManager userId={user.id} />
-      {devices && (
-        <div>
-          <div className="text-xl font-semibold mb-2">Your Devices</div>
-          {devices.map((device) => (
-            <DeviceCard key={device.id} userId={user.id} device={device} />
-          ))}
-        </div>
-      )}
+      {devices && <DeviceTable devices={devices} userId={id} />}
     </div>
   );
 }

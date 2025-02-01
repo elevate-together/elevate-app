@@ -2,16 +2,25 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { sendNotificationToDevice } from "@/services/push-notification";
+
+import { sendNotificationToDevice } from "@/services/device";
 import { Device } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
-import { Bell, MoreVerticalIcon } from "lucide-react";
+import { Bell, MoreVerticalIcon, Pencil } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
+import DeviceForm from "./device-form";
 
 type DeviceCardProps = {
   device: Device;
@@ -19,6 +28,8 @@ type DeviceCardProps = {
 };
 
 export default function DeviceCard({ device, userId }: DeviceCardProps) {
+  const [open, setOpen] = useState(false);
+
   const handleTestPush = async () => {
     const { success, message } = await sendNotificationToDevice(
       userId,
@@ -35,7 +46,7 @@ export default function DeviceCard({ device, userId }: DeviceCardProps) {
 
   return (
     <div className="flex flex-row items-center gap-3 justify-between p-4 rounded-lg border">
-      <div className="text-md font-semibold">
+      <div className="text-base font-semibold">
         <h3>{device.title}</h3>
         <p className="text-xs font-normal">
           Added: {format(new Date(device.createdAt), "MM/dd/yy")}
@@ -66,12 +77,28 @@ export default function DeviceCard({ device, userId }: DeviceCardProps) {
                 <div>Test Push</div>
               </div>
             </DropdownMenuItem>
-            {/* <DropdownMenuItem onClick={() => console.log("Hello")}>
-              <div className="flex flex-row gap-2 items-center">
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+              <div
+                className="flex flex-row gap-2 items-center"
+                onClick={() => setOpen(true)}
+              >
                 <Pencil size="14px" />
                 <div>Rename</div>
               </div>
-            </DropdownMenuItem> */}
+            </DropdownMenuItem>
+
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Rename Device</DialogTitle>
+                  <DeviceForm
+                    device={device}
+                    onSubmit={() => setOpen(false)}
+                    onCancel={() => setOpen(false)}
+                  />
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
