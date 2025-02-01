@@ -6,7 +6,7 @@ import webpush from "web-push";
 import { getDeviceInfo } from "./get-device-info";
 
 webpush.setVapidDetails(
-  "mailto:your-email@example.com",
+  "mailto:hebeforeme3@gmail.com",
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
   process.env.VAPID_PRIVATE_KEY!
 );

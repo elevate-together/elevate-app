@@ -11,12 +11,16 @@ self.addEventListener("push", function (event) {
         primaryKey: "2",
       },
     };
-    event.waitUntil(self.registration.showNotification(data.title, options));
+    event.waitUntil(
+      self.registration.showNotification("Someone Prayed For You!", options)
+    );
   }
 });
 
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification click received.");
   event.notification.close();
-  event.waitUntil(clients.openWindow("<https://www.elevatetogether.life/>"));
+  const destination =
+    event.notification.data.url || "https://www.elevatetogether.life/";
+  event.waitUntil(clients.openWindow(destination));
 });
