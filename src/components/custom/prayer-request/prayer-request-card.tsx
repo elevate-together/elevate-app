@@ -47,7 +47,8 @@ export default function PrayerRequestCard({
   const router = useRouter();
 
   const handleSendNotification = async () => {
-    const result = await sendNotificationAllDevices(user.id, "Hello");
+    const message = `${user.name} just prayed for ${prayer.request} `;
+    const result = await sendNotificationAllDevices(user.id, message);
 
     if (result.success) {
       toast.success(result.message);
@@ -128,7 +129,7 @@ export default function PrayerRequestCard({
               )
             )}
           </div>
-          {displayName && <div className="font-bold text-sm">{user.name}</div>}
+          {displayName && <div className="font-bold text-sm">{user.email}</div>}
 
           {isOwner ? (
             <div className="flex flex-row gap-0">

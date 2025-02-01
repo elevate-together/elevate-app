@@ -50,37 +50,41 @@ export default async function Home() {
         <div className="space-y-5">
           <h1 className="text-xl font-bold">{`Welcome ${user.name}`}</h1>
 
-          {FriendSuccess && FriendPrayerRequests && (
-            <div>
-              <h1 className="text-md font-bold mb-3">
-                Ways You Can Pray For Others Today
-              </h1>
-              {FriendPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={user}
-                  prayer={prayer}
-                  isOwner={false}
-                  displayName
-                />
-              ))}
-            </div>
-          )}
+          {FriendSuccess &&
+            FriendPrayerRequests &&
+            FriendPrayerRequests?.length > 0 && (
+              <div>
+                <h1 className="text-md font-bold mb-3">
+                  Ways You Can Pray For Others Today
+                </h1>
+                {FriendPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={user}
+                    prayer={prayer}
+                    isOwner={false}
+                    displayName
+                  />
+                ))}
+              </div>
+            )}
           <Separator />
 
-          {InProgressSuccess && InProgressPrayerRequests && (
-            <div>
-              <h1 className="text-md font-bold mb-3">Your Prayer Requests</h1>
-              {InProgressPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={user}
-                  prayer={prayer}
-                  isOwner={true}
-                />
-              ))}
-            </div>
-          )}
+          {InProgressSuccess &&
+            InProgressPrayerRequests &&
+            InProgressPrayerRequests.length > 0 && (
+              <div>
+                <h1 className="text-md font-bold mb-3">Your Prayer Requests</h1>
+                {InProgressPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={user}
+                    prayer={prayer}
+                    isOwner={true}
+                  />
+                ))}
+              </div>
+            )}
         </div>
       ) : (
         <div className="space-y-3">

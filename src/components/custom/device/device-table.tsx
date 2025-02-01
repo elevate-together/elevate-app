@@ -43,7 +43,7 @@ export default function DeviceTable({ devices, userId }: DeviceTableProps) {
     const { success, message } = await sendNotificationToDevice(
       userId,
       device.endpoint,
-      "Test"
+      "Test Push"
     );
 
     if (success) {
