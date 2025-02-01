@@ -153,7 +153,7 @@ export async function sendNotificationAllDevices(
     });
 
     if (!devices || devices.length === 0) {
-      return { success: false, message: "No devices found for the user" };
+      return { success: false, message: "User doesn't have notifications enabled." };
     }
 
     // Loop through all devices and send notification to each
@@ -173,7 +173,7 @@ export async function sendNotificationAllDevices(
 
     return {
       success: true,
-      message: "Notification sent successfully to all devices",
+      message: "Notification sent successfully.",
     };
   } catch (error) {
     console.error("Error sending push notifications:", error);

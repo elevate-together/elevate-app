@@ -14,7 +14,7 @@ export default function UserView({
       size="icon"
       variant="secondary"
       onClick={() => {
-        router.push(`/user/${id}`);
+        router.push(`/requests/${id}`);
       }}
       {...props}
     >

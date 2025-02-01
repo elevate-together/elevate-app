@@ -1,5 +1,5 @@
-import SignIn from "@/components/custom/functions/sign-in";
-import SignOut from "@/components/custom/functions/sign-out";
+import SignIn from "@/components/custom/user/user-sign-in";
+import SignOut from "@/components/custom/user/user-sign-out";
 
 import {
   DropdownMenu,

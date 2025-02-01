@@ -15,14 +15,17 @@ import { Eye } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import UserAvatar from "../user/user-avatar";
-import JoinGroup from "./user-join-group";
+import JoinGroup from "../user/user-join-group";
 
-type ViewGroupProps = {
+type PrayerGroupDialogProps = {
   group: PrayerGroupWithOwner;
   userId: string;
 };
 
-export default function ViewGroup({ group, userId }: ViewGroupProps) {
+export default function PrayerGroupDialog({
+  group,
+  userId,
+}: PrayerGroupDialogProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 

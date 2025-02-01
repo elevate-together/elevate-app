@@ -1,4 +1,4 @@
-import { PrayerGroupMemberTable } from "@/components/custom/prayer-group/prayer-group-member-table";
+import PrayerGroupMemberTable from "@/components/custom/prayer-group/prayer-group-member-table";
 import { Separator } from "@/components/ui/separator";
 import { getPrayerGroupById } from "@/services/prayer-group";
 import { getUsersByPrayerGroup } from "@/services/user-prayer-group";

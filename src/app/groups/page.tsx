@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import PrayerGroupView from "@/components/custom/functions/prayer-group-view";
-import UserLeaveGroup from "@/components/custom/functions/user-leave-group";
-import { PrayerGroupJoin } from "@/components/custom/prayer-group/prayer-group-join";
+import PrayerGroupJoin from "@/components/custom/prayer-group/prayer-group-join";
+import PrayerGroupView from "@/components/custom/prayer-group/prayer-group-view";
+import UserLeaveGroup from "@/components/custom/user/user-leave-group";
 import { Separator } from "@/components/ui/separator";
 import {
   getPrayerGroupsForUser,

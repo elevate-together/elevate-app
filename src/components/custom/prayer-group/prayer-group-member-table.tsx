@@ -21,7 +21,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import UserView from "../functions/user-view";
+import UserView from "../user/user-view";
 import UserAvatar from "../user/user-avatar";
 
 type UserInfo = Pick<User, "id" | "name" | "email" | "image" | "createdAt">;
@@ -29,7 +29,7 @@ type UserInfo = Pick<User, "id" | "name" | "email" | "image" | "createdAt">;
 type JoinGroupProps = {
   data: UserInfo[];
 };
-export function PrayerGroupMemberTable({ data }: JoinGroupProps) {
+export default function PrayerGroupMemberTable({ data }: JoinGroupProps) {
   const columns: ColumnDef<UserInfo>[] = [
     {
       accessorKey: "name",

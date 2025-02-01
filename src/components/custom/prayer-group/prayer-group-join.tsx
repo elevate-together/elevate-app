@@ -21,15 +21,15 @@ import {
 } from "@/components/ui/table";
 import { PrayerGroupWithOwner } from "@/lib/utils";
 import { User } from "@prisma/client";
-import JoinGroup from "../functions/user-join-group";
-import ViewGroup from "../functions/view-group";
 import UserAvatar from "../user/user-avatar";
+import JoinGroup from "../user/user-join-group";
+import PrayerGroupDialog from "./prayer-group-dialog";
 
 type JoinGroupProps = {
   data: PrayerGroupWithOwner[];
   userId: string;
 };
-export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
+export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
   const columns: ColumnDef<PrayerGroupWithOwner>[] = [
     {
       accessorKey: "name",
@@ -72,7 +72,7 @@ export function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
         const groupId = row.original.id;
         return (
           <div className="flex gap-3 justify-end">
-            <ViewGroup group={row.original} userId={userId} />
+            <PrayerGroupDialog group={row.original} userId={userId} />
             <JoinGroup groupId={groupId} userId={userId} />
           </div>
         );

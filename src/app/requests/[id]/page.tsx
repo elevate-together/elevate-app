@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import PrayerRequestTemplate from "@/components/custom/prayer-request/prayer-request-template";
 import { getUserById } from "@/services/users";
 
@@ -6,17 +7,27 @@ export default async function UserRequests({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const { id: pageId } = await params;
 
-  const { user } = await getUserById(id);
+  const session = await auth();
 
-  if (!user) {
+  if (!session || !session.user || !session.user?.id) {
+    return <div className="p-2">Unable to Find User</div>;
+  }
+
+  const currId = session.user.id;
+
+  const { user: currUser } = await getUserById(currId);
+
+  const { user: pageUser } = await getUserById(pageId);
+
+  if (!currUser || !pageUser) {
     return <div className="p-2">Unable to Find User</div>;
   }
 
   return (
     <div className="flex flex-col gap-6">
-      <PrayerRequestTemplate id={id} user={user} />
+      <PrayerRequestTemplate currUser={currUser} pageUser={pageUser} />
     </div>
   );
 }

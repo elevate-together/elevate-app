@@ -56,7 +56,11 @@ export default function PrayerRequestCreate({
         <DialogHeader>
           <DialogTitle>Add New Prayer Request</DialogTitle>
         </DialogHeader>
-        <PrayerRequestForm userId={id} onSubmit={handleCloseDialog} />
+        <PrayerRequestForm
+          userId={id}
+          onSubmit={handleCloseDialog}
+          onCancel={handleCloseDialog}
+        />
       </DialogContent>
     </Dialog>
   );

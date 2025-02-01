@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
-import SignIn from "@/components/custom/functions/sign-in";
-import SignOut from "@/components/custom/functions/sign-out";
-import { ThemeSwitch } from "@/components/custom/functions/theme-switch";
+import ThemeSwitch from "@/components/custom/functions/theme-switch";
+import SignIn from "@/components/custom/user/user-sign-in";
+import SignOut from "@/components/custom/user/user-sign-out";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default async function Navbar() {

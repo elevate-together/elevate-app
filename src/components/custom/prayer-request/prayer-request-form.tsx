@@ -9,7 +9,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   createPrayerRequest,
   updatePrayerRequest,
@@ -98,7 +98,8 @@ export default function PrayerRequestForm({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Input
+                    <Textarea
+                      className="min-h-[110px]"
                       placeholder="Enter your prayer request here"
                       {...field}
                     />
@@ -108,36 +109,19 @@ export default function PrayerRequestForm({
               )}
             />
 
-            {/* Buttons */}
-            {prayer?.id ? (
-              <div className="flex flex-row gap-4 items-center">
-                <Button
-                  className="w-full"
-                  variant="outline"
-                  type="button"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button className="w-full" type="submit">
-                  Save
-                </Button>
-              </div>
-            ) : (
-              <div className="flex flex-row gap-4 items-center w-full">
-                <Button
-                  variant="outline"
-                  type="button"
-                  onClick={handleCancel}
-                  className="w-full"
-                >
-                  Cancel
-                </Button>
-                <Button className="w-full" type="submit">
-                  Save
-                </Button>
-              </div>
-            )}
+            <div className="flex flex-row gap-4 items-center w-full">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleCancel}
+                className="w-full"
+              >
+                Cancel
+              </Button>
+              <Button className="w-full" type="submit">
+                Save
+              </Button>
+            </div>
           </div>
         </form>
       </Form>
