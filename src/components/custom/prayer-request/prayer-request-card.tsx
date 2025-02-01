@@ -21,7 +21,7 @@ import {
   deletePrayerRequest,
   updatePrayerRequest,
 } from "@/services/prayer-request";
-import { PrayerRequestStatus, type PrayerRequest } from "@prisma/client";
+import { PrayerRequestStatus, User, type PrayerRequest } from "@prisma/client";
 import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
 import { format, isSameDay } from "date-fns";
 import { Bell, Edit2Icon, Hand, Package, Star, Trash } from "lucide-react";
@@ -32,20 +32,22 @@ import PrayerRequestForm from "./prayer-request-form";
 
 type PrayerRequestCardProps = {
   prayer: PrayerRequest;
-  userId: string;
+  user: User;
   isOwner?: boolean;
+  displayName?: boolean;
 };
 
 export default function PrayerRequestCard({
   prayer,
-  userId,
+  user,
   isOwner = false,
+  displayName = false,
 }: PrayerRequestCardProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const handleSendNotification = async () => {
-    const result = await sendNotificationAllDevices(userId, "Hello");
+    const result = await sendNotificationAllDevices(user.id, "Hello");
 
     if (result.success) {
       toast.success(result.message);
@@ -83,8 +85,17 @@ export default function PrayerRequestCard({
     <Card className="shadow-none">
       <CardHeader className="px-5 py-4 pb-0">
         <CardTitle>
-          <div className="flex flex-row justify-between items-start">
+          <div className="flex flex-row justify-between items-start gap-3">
             <div className="font-normal mt-2 mb-3">{prayer.request}</div>
+            {!isOwner && (
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleSendNotification}
+              >
+                <Bell />
+              </Button>
+            )}
           </div>
         </CardTitle>
       </CardHeader>
@@ -117,6 +128,8 @@ export default function PrayerRequestCard({
               )
             )}
           </div>
+          {displayName && <div className="font-bold text-sm">{user.name}</div>}
+
           {isOwner ? (
             <div className="flex flex-row gap-0">
               {prayer.status == PrayerRequestStatus.IN_PROGRESS && (
@@ -133,7 +146,7 @@ export default function PrayerRequestCard({
                     </DialogHeader>
                     <PrayerRequestForm
                       prayer={prayer}
-                      userId={userId}
+                      userId={user.id}
                       onSubmit={() => setOpen(false)}
                       onCancel={() => setOpen(false)}
                     />
@@ -233,15 +246,7 @@ export default function PrayerRequestCard({
                 </TooltipProvider>
               )}
             </div>
-          ) : (
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={handleSendNotification}
-            >
-              <Bell />
-            </Button>
-          )}
+          ) : null}
         </div>
       </CardContent>
     </Card>

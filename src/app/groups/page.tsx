@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+import PrayerGroupCreate from "@/components/custom/prayer-group/prayer-group-create";
 import PrayerGroupJoin from "@/components/custom/prayer-group/prayer-group-join";
 import PrayerGroupView from "@/components/custom/prayer-group/prayer-group-view";
 import UserLeaveGroup from "@/components/custom/user/user-leave-group";
@@ -31,6 +32,9 @@ export default async function AllGroups() {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="hidden md:flex w-full justify-end">
+        <PrayerGroupCreate id={user.id} hideOnMobile/>
+      </div>
       {/* Your Groups Section */}
       <div>
         <h2 className="text-xl font-semibold mb-2">Your Groups</h2>

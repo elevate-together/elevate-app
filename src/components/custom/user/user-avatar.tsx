@@ -9,7 +9,8 @@ type AvatarProps = {
   image: string | undefined;
   icon?: boolean;
   size?: "small" | "medium" | "large";
-  includeEmail?: boolean | null;
+  includeEmail?: boolean;
+  boldName?: boolean;
 };
 
 export default function UserAvatar({
@@ -19,6 +20,7 @@ export default function UserAvatar({
   icon = false,
   size = "medium",
   includeEmail = true,
+  boldName = false,
 }: AvatarProps) {
   return (
     <div
@@ -37,7 +39,9 @@ export default function UserAvatar({
 
       <div className="flex flex-col gap-0 items-start">
         <div
-          className={`text-sm ${includeEmail ? "font-semibold" : "font-normal"} 
+          className={`text-sm ${
+            includeEmail || boldName ? "font-semibold" : "font-normal"
+          } 
     ${size === "large" ? "text-xl" : ""} p-0 m-0`}
         >
           {name}

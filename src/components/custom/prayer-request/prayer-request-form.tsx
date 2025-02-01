@@ -62,14 +62,14 @@ export default function PrayerRequestForm({
       result = await createPrayerRequest({ request, userId });
     }
 
-    if (result?.success && result?.prayerRequest) {
-      toast.success(result?.message || "An error occurred.");
+    if (result.success && result?.prayerRequest) {
+      toast.success(result.message);
       router.refresh();
       if (onSubmit) {
         onSubmit();
       }
     } else {
-      toast.error(result?.message || "An error occurred.");
+      toast.error(result.message);
     }
 
     form.reset();

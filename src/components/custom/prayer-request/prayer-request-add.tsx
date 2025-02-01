@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -38,7 +39,7 @@ export default function PrayerRequestCreate({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {isMobile && !isMenu ? (
-          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
+          <Button size="icon" variant={isMenu ? "ghost" : "secondary"} >
             <Plus />
           </Button>
         ) : (
@@ -52,7 +53,10 @@ export default function PrayerRequestCreate({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="max-w-sm">
+      <DialogContent
+        className="max-w-sm"
+        aria-describedby="Add New Prayer Request"
+      >
         <DialogHeader>
           <DialogTitle>Add New Prayer Request</DialogTitle>
         </DialogHeader>
@@ -61,6 +65,7 @@ export default function PrayerRequestCreate({
           onSubmit={handleCloseDialog}
           onCancel={handleCloseDialog}
         />
+        <DialogDescription hidden>Add New Prayer Request</DialogDescription>
       </DialogContent>
     </Dialog>
   );

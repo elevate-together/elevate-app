@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import type { PrayerGroup } from "@prisma/client";
+import type { PrayerGroup, PrayerRequest } from "@prisma/client";
 
 import type { User } from "@prisma/client";
 
@@ -76,20 +76,29 @@ export async function createPrayerGroup(groupData: {
   prayerGroup?: PrayerGroup & { owner: User };
 }> {
   try {
+    // Create the new prayer group
     const newPrayerGroup = await db.prayerGroup.create({
       data: {
         name: groupData.name,
         description: groupData.description,
-        owner: { connect: { id: groupData.ownerId } }, // Connect the owner
+        owner: { connect: { id: groupData.ownerId } }, // Connect the owner as the owner of the prayer group
       },
       include: {
-        owner: true, // Include owner details (all `User` fields)
+        owner: true, // Include the owner information in the result
+      },
+    });
+
+    // Add the owner as a member of the prayer group
+    await db.userPrayerGroup.create({
+      data: {
+        userId: groupData.ownerId, // The owner is also a member
+        prayerGroupId: newPrayerGroup.id, // The newly created prayer group's ID
       },
     });
 
     return {
       success: true,
-      message: "Successfully created prayer group",
+      message: "Successfully created prayer group.",
       prayerGroup: newPrayerGroup,
     };
   } catch (error) {
@@ -100,6 +109,7 @@ export async function createPrayerGroup(groupData: {
     };
   }
 }
+
 export async function updatePrayerGroup(
   id: string,
   groupData: { name?: string; description?: string }
@@ -174,6 +184,55 @@ export async function deletePrayerGroup(
     return {
       success: false,
       message: "Error deleting prayer group",
+    };
+  }
+}
+
+export async function getInProgressPrayerRequestsByGroupId(
+  groupId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  prayerRequests?: (PrayerRequest & { user: User })[];
+}> {
+  try {
+    // Fetch prayer requests for the given group with 'IN_PROGRESS' status
+    const prayerRequests = await db.prayerRequest.findMany({
+      where: {
+        user: {
+          prayerGroups: {
+            some: {
+              prayerGroupId: groupId,
+            },
+          },
+        },
+        status: "IN_PROGRESS", // Check for 'IN_PROGRESS' status
+      },
+      include: {
+        user: true, // Include user details along with prayer requests
+      },
+    });
+
+    if (prayerRequests.length === 0) {
+      return {
+        success: false,
+        message: "No in-progress prayer requests found for this group",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Successfully fetched in-progress prayer requests",
+      prayerRequests,
+    };
+  } catch (error) {
+    console.error(
+      `Error fetching in-progress prayer requests for group ${groupId}:`,
+      error
+    );
+    return {
+      success: false,
+      message: "Error fetching in-progress prayer requests",
     };
   }
 }

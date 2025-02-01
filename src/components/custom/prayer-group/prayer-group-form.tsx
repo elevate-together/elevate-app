@@ -35,19 +35,19 @@ const formSchema = z.object({
     .optional(),
 });
 
-type PrayerFormProps = {
+type PrayerGroupFormProps = {
   ownerId: string;
   onSubmit: (group: PrayerGroup) => void;
   onCancel: () => void; // Optional callback for the cancel action
   group?: PrayerGroup; // The group object is optional for the "create" form case
 };
 
-export default function PrayerForm({
+export default function PrayerGroupForm({
   ownerId,
   onSubmit,
   group,
   onCancel,
-}: PrayerFormProps) {
+}: PrayerGroupFormProps) {
   const router = useRouter();
   // Initialize form with default values if user exists
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,13 +65,14 @@ export default function PrayerForm({
     if (group?.id) {
       // Update the user
       result = await updatePrayerGroup(group.id, values);
-      router.refresh();
     } else {
       // Create a new user
       result = await createPrayerGroup({ name, ownerId, description });
     }
 
     if (result.success && result.prayerGroup) {
+      toast.success(result.message);
+      router.refresh();
       onSubmit(result.prayerGroup);
     } else {
       toast.error(result.message || "An error occurred.");

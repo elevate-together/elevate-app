@@ -73,7 +73,7 @@ export default async function PrayerRequestTemplate({
                     {inProgressRequests.map((prayer) => (
                       <PrayerRequestCard
                         key={prayer.id}
-                        userId={currUser.id}
+                        user={currUser}
                         prayer={prayer}
                         isOwner={isOwner}
                       />
@@ -91,7 +91,7 @@ export default async function PrayerRequestTemplate({
                     {answeredRequests.map((prayer) => (
                       <PrayerRequestCard
                         key={prayer.id}
-                        userId={currUser.id}
+                        user={currUser}
                         prayer={prayer}
                         isOwner={isOwner}
                       />
@@ -109,7 +109,7 @@ export default async function PrayerRequestTemplate({
                     {archivedRequests.map((prayer) => (
                       <PrayerRequestCard
                         key={prayer.id}
-                        userId={currUser.id}
+                        user={currUser}
                         prayer={prayer}
                         isOwner={isOwner}
                       />
@@ -125,7 +125,7 @@ export default async function PrayerRequestTemplate({
       ) : (
         <div className="flex flex-col gap-5">
           <h1 className="text-xl font-bold text-left">
-            {`${pageUser.email}'s Prayer Requests`}
+            {`${pageUser.name}'s Prayer Requests`}
           </h1>
 
           <Separator />
@@ -136,7 +136,7 @@ export default async function PrayerRequestTemplate({
                 {inProgressRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}
-                    userId={pageUser.id}
+                    user={pageUser}
                     prayer={prayer}
                     isOwner={isOwner}
                   />

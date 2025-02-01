@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import PrayerForm from "./prayer-group-form";
+import PrayerGroupForm from "./prayer-group-form";
 
 type PrayerGroupCreateProps = {
   id: string;
@@ -30,7 +31,10 @@ export default function PrayerGroupCreate({
 
   if (hideOnMobile && isMobile) return null;
 
-  const handleCloseDialog = () => {
+  const handleCancel = () => {
+    setIsOpen(false);
+  };
+  const handleSubmit = () => {
     setIsOpen(false);
   };
 
@@ -50,11 +54,12 @@ export default function PrayerGroupCreate({
         <DialogHeader>
           <DialogTitle>Create New Prayer Group</DialogTitle>
         </DialogHeader>
-        <PrayerForm
+        <PrayerGroupForm
           ownerId={id}
-          onSubmit={handleCloseDialog}
-          onCancel={handleCloseDialog}
+          onSubmit={handleSubmit}
+          onCancel={handleCancel}
         />
+        <DialogDescription hidden>Create New Prayer Group</DialogDescription>
       </DialogContent>
     </Dialog>
   );

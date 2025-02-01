@@ -49,10 +49,13 @@ export default function PrayerGroupDialog({
             })}
           </DialogDescription>
         </DialogHeader>
-        <div className="flex flex-col gap-2">
-          <p className="text-sm font-semibold">Description:</p>
-          <div>{group.description}</div>
-        </div>
+
+        {group.description && (
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-semibold">Description:</p>
+            <div>{group.description}</div>
+          </div>
+        )}
 
         <div className="flex flex-col gap-2">
           <p className="text-sm font-semibold">Owner:</p>
