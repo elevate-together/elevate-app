@@ -2,6 +2,7 @@
 
 import db from "@/lib/db";
 import { Device, PrayerRequest, User } from "@prisma/client";
+
 // GET All Users
 export async function getAllUsers(): Promise<{
   success: boolean;
@@ -186,14 +187,12 @@ export async function getUserDevices(userId: string): Promise<{
 export async function getFriendPrayerRequestsForUser(userId: string): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequest[];
+  prayerRequests?: (PrayerRequest & { user: User })[];
 }> {
   try {
     // Step 1: Get all prayer groups the user is part of
     const userPrayerGroups = await db.userPrayerGroup.findMany({
-      where: {
-        userId: userId,
-      },
+      where: { userId },
       include: {
         prayerGroup: {
           include: {
@@ -208,27 +207,29 @@ export async function getFriendPrayerRequestsForUser(userId: string): Promise<{
       userPrayerGroup.prayerGroup.users.map((user) => user.userId)
     );
 
-    // Step 3: Get all prayer requests from users that are in these groups
+    // Step 3: Get all prayer requests from users in these groups (excluding the requesting user)
     const prayerRequests = await db.prayerRequest.findMany({
       where: {
-        userId: { in: memberIds, not: userId },
+        userId: { in: memberIds, not: userId }, // Exclude the requesting user
         status: "IN_PROGRESS",
       },
       include: {
-        user: true,
+        user: true, // Include user details with each prayer request
       },
     });
 
     return {
       success: true,
-      message: "Prayer requests fetched successfully.",
+      message: prayerRequests.length
+        ? "Successfully fetched friend prayer requests."
+        : "No in-progress prayer requests found for friends.",
       prayerRequests,
     };
-  } catch (error: unknown) {
-    console.error("Error fetching users:", error);
+  } catch (error) {
+    console.error("Error fetching friend prayer requests:", error);
     return {
       success: false,
-      message: "Error fetching friend prayer requests",
+      message: "Error fetching friend prayer requests.",
     };
   }
 }

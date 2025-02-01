@@ -153,7 +153,10 @@ export async function sendNotificationAllDevices(
     });
 
     if (!devices || devices.length === 0) {
-      return { success: false, message: "User doesn't have notifications enabled." };
+      return {
+        success: true,
+        message: "User doesn't have notifications enabled",
+      };
     }
 
     // Loop through all devices and send notification to each

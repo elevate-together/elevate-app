@@ -51,7 +51,11 @@ export default function PrayerRequestCard({
     const result = await sendNotificationAllDevices(user.id, message);
 
     if (result.success) {
-      toast.success(result.message);
+      if ((result.message = "User doesn't have notifications enabled"))
+        toast.warning(result.message);
+      else {
+        toast.success(result.message);
+      }
       router.refresh();
     } else {
       toast.error(result.message);
@@ -129,7 +133,7 @@ export default function PrayerRequestCard({
               )
             )}
           </div>
-          {displayName && <div className="font-bold text-sm">{user.email}</div>}
+          {displayName && <div className="font-bold text-sm">{user.name}</div>}
 
           {isOwner ? (
             <div className="flex flex-row gap-0">

@@ -60,7 +60,7 @@ export default async function Home() {
                 {FriendPrayerRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}
-                    user={user}
+                    user={prayer.user}
                     prayer={prayer}
                     isOwner={false}
                     displayName
