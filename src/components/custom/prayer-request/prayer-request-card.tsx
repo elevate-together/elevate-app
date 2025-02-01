@@ -51,7 +51,7 @@ export default function PrayerRequestCard({
     const result = await sendNotificationAllDevices(user.id, message);
 
     if (result.success) {
-      if ((result.message = "User doesn't have notifications enabled"))
+      if (result.message == "User doesn't have notifications enabled")
         toast.warning(result.message);
       else {
         toast.success(result.message);
