@@ -89,7 +89,8 @@ export async function unsubscribeDevice(
 export async function sendNotificationToDevice(
   userId: string,
   endpoint: string,
-  message: string
+  message: string,
+  title?: string
 ): Promise<{
   success: boolean;
   message: string;
@@ -113,12 +114,14 @@ export async function sendNotificationToDevice(
       },
     };
 
+    const fallbackTitle = title || "Notification";
+
     // Send the push notification to the specific device
     try {
       await webpush.sendNotification(
         subscription,
         JSON.stringify({
-          title: "Notification",
+          title: fallbackTitle,
           body: message,
           icon: "/icon.png",
         })
@@ -141,7 +144,8 @@ export async function sendNotificationToDevice(
 }
 export async function sendNotificationAllDevices(
   userId: string,
-  message: string
+  message: string,
+  title?: string
 ): Promise<{
   success: boolean;
   message: string;
@@ -164,7 +168,8 @@ export async function sendNotificationAllDevices(
       const response = await sendNotificationToDevice(
         userId,
         device.endpoint,
-        message
+        message,
+        title
       );
 
       if (!response.success) {
