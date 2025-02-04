@@ -24,16 +24,17 @@ export const menu_items = [
     icon: User,
     auth: true,
   },
-  {
-    title: "Your Groups",
-    url: "/groups",
-    icon: Users,
-    auth: true,
-  },
+
   {
     title: "Your Requests",
     url: "/requests/{id}",
     icon: HelpingHandIcon,
+    auth: true,
+  },
+  {
+    title: "Find a Group",
+    url: "/groups",
+    icon: Users,
     auth: true,
   },
 ];

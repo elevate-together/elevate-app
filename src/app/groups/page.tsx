@@ -35,7 +35,7 @@ export default async function AllGroups() {
       {/* Your Groups Section */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-row items-center justify-between">
-          <div className="text-xl font-semibold h-full">Your Groups</div>
+          <div className="text-xl font-semibold h-full">Current Groups</div>
           <PrayerGroupCreate id={user.id} hideOnMobile />
         </div>
         {yourGroups?.prayerGroups && yourGroups.prayerGroups.length > 0 ? (

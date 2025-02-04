@@ -1,7 +1,7 @@
 self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();
-    console.log(data);
+    const title = data.title || "Notification";
     const options = {
       body: data.body,
       icon: data.icon || "/icon.png",
@@ -12,9 +12,7 @@ self.addEventListener("push", function (event) {
         primaryKey: "2",
       },
     };
-    event.waitUntil(
-      self.registration.showNotification("Someone Prayed For You!", options)
-    );
+    event.waitUntil(self.registration.showNotification(title, options));
   }
 });
 

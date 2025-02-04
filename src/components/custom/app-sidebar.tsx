@@ -9,11 +9,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { menu_items as items } from "@/lib/utils";
+import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import Image from "next/image";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import PrayerGroupCreate from "./prayer-group/prayer-group-create";
 import PrayerRequestCreate from "./prayer-request/prayer-request-add";
 import UserInfo from "./user/user-info";
@@ -23,6 +26,12 @@ export default async function AppSidebar() {
 
   const { id, name, email, image } = session?.user || {};
 
+  if (!session || !id) {
+    redirect("/");
+  }
+
+  const { prayerGroups: userPrayerGroups } = await getPrayerGroupsForUser(id);
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -30,7 +39,6 @@ export default async function AppSidebar() {
           className="flex flex-row items-center justify-center mt-4"
           href="/"
         >
-          {/* <Users className="h-6 w-6" /> */}
           <Image src="/icon.png" alt="Elevate Logo" height={30} width={30} />
           <span className="ml-2 text-2xl font-bold">ELEVATE</span>
         </Link>
@@ -48,8 +56,8 @@ export default async function AppSidebar() {
                       {item.auth ? (
                         session?.user ? (
                           <a href={url}>
-                            <item.icon width={16} />
-                            <span>{item.title}</span>
+                            <item.icon />
+                            <span className="text-">{item.title}</span>
                           </a>
                         ) : null
                       ) : (
@@ -66,11 +74,33 @@ export default async function AppSidebar() {
               <SidebarSeparator />
 
               {session && id && (
-                <SidebarMenuItem>
-                  <PrayerRequestCreate id={id} isMenu />
-                  <PrayerGroupCreate id={id} isMenu />
-                </SidebarMenuItem>
+                <div>
+                  <SidebarMenuItem>
+                    <PrayerRequestCreate id={id} isMenu />
+                  </SidebarMenuItem>
+
+                  <SidebarMenuItem>
+                    <PrayerGroupCreate id={id} isMenu />
+                  </SidebarMenuItem>
+                </div>
               )}
+              <SidebarSeparator />
+
+              <SidebarHeader>
+                <div className="font-semibold">Your Groups</div>
+              </SidebarHeader>
+
+              {userPrayerGroups &&
+                userPrayerGroups.length > 0 &&
+                userPrayerGroups.map((group) => (
+                  <SidebarMenuSub key={group.id}>
+                    <SidebarMenuButton>
+                      <a href={`/groups/${group.id}`}>
+                        <span className="text-">{group.name}</span>
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuSub>
+                ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
