@@ -3,7 +3,6 @@ import DeviceTable from "@/components/custom/device/device-table";
 import PushNotificationManager from "@/components/custom/functions/push-notification-manager";
 import { Separator } from "@/components/ui/separator";
 import { getUserById, getUserDevices } from "@/services/users";
-
 export default async function Profile({
   params,
 }: {

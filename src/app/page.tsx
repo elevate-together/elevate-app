@@ -11,7 +11,7 @@ export default async function Home() {
   if (!session || !session.user) {
     return (
       <div className="space-y-3">
-        <h1 className="text-xl font-bold">Welcome to Elevate</h1>
+        <h1 className="text-2xl font-bold">Welcome to Elevate</h1>
         <p>
           At Elevate Together, our mission is to foster deeper connections
           within communities by enhancing the power of prayer. We believe that
@@ -48,13 +48,13 @@ export default async function Home() {
     <div className="ml-2">
       {user ? (
         <div className="space-y-5">
-          <h1 className="text-xl font-bold">{`Welcome ${user.name}`}</h1>
+          <h1 className="text-2xl font-bold">{`Welcome ${user.name}`}</h1>
 
           {FriendSuccess &&
             FriendPrayerRequests &&
             FriendPrayerRequests?.length > 0 && (
               <div>
-                <h1 className="text-md font-bold mb-3">
+                <h1 className="text-lg font-bold mb-3">
                   Ways You Can Pray For Others Today
                 </h1>
                 {FriendPrayerRequests.map((prayer) => (
@@ -74,7 +74,7 @@ export default async function Home() {
             InProgressPrayerRequests &&
             InProgressPrayerRequests.length > 0 && (
               <div>
-                <h1 className="text-md font-bold mb-3">Your Prayer Requests</h1>
+                <h1 className="text-lg font-bold mb-3">Your Prayer Requests</h1>
                 {InProgressPrayerRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}
@@ -88,7 +88,7 @@ export default async function Home() {
         </div>
       ) : (
         <div className="space-y-3">
-          <h1 className="text-xl font-bold">Welcome to Elevate</h1>
+          <h1 className="text-2xl font-bold">Welcome to Elevate</h1>
           <p>
             At Elevate Together, our mission is to foster deeper connections
             within communities by enhancing the power of prayer. We believe that
