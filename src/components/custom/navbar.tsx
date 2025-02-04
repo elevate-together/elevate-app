@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import ThemeSwitch from "@/components/custom/functions/theme-switch";
 import SignIn from "@/components/custom/user/user-sign-in";
 import SignOut from "@/components/custom/user/user-sign-out";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -10,12 +9,12 @@ export default async function Navbar() {
     <div className="flex flex-row justify-between w-full p-2">
       <div className="flex flex-row justify-start">
         <SidebarTrigger />
-        <ThemeSwitch />
+        {/* <ThemeSwitch /> */}
       </div>
 
       {session && session.user?.id ? (
         <div className="flex flex-row gap-4">
-          <SignOut hideOnMobile />
+          <SignOut hideOnMobile variant="secondary" />
         </div>
       ) : (
         <div>

@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getInProgressPrayerRequestsByUserId } from "@/services/prayer-request";
 import { getFriendPrayerRequestsForUser, getUserById } from "@/services/users";
 
@@ -49,42 +50,55 @@ export default async function Home() {
       {user ? (
         <div className="space-y-5">
           <h1 className="text-2xl font-bold">{`Welcome ${user.name}`}</h1>
-
-          {FriendSuccess &&
-            FriendPrayerRequests &&
-            FriendPrayerRequests?.length > 0 && (
-              <div>
-                <h1 className="text-lg font-bold mb-3">
-                  Ways You Can Pray For Others Today
-                </h1>
-                {FriendPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={false}
-                    displayName
-                  />
-                ))}
-              </div>
-            )}
           <Separator />
-
-          {InProgressSuccess &&
-            InProgressPrayerRequests &&
-            InProgressPrayerRequests.length > 0 && (
-              <div>
-                <h1 className="text-lg font-bold mb-3">Your Prayer Requests</h1>
-                {InProgressPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={user}
-                    prayer={prayer}
-                    isOwner={true}
-                  />
-                ))}
-              </div>
-            )}
+          <h1 className="text-md font-semibold mb-3">How You Can Pray Today</h1>
+          <Tabs defaultValue="community" className="w-full">
+            <TabsList>
+              {FriendSuccess &&
+                FriendPrayerRequests &&
+                FriendPrayerRequests?.length > 0 && (
+                  <TabsTrigger value="community">Community</TabsTrigger>
+                )}
+              {InProgressSuccess &&
+                InProgressPrayerRequests &&
+                InProgressPrayerRequests.length > 0 && (
+                  <TabsTrigger value="personal">Personal</TabsTrigger>
+                )}
+            </TabsList>
+            <TabsContent value="community">
+              {FriendSuccess &&
+                FriendPrayerRequests &&
+                FriendPrayerRequests?.length > 0 && (
+                  <div>
+                    {FriendPrayerRequests.map((prayer) => (
+                      <PrayerRequestCard
+                        key={prayer.id}
+                        user={prayer.user}
+                        prayer={prayer}
+                        isOwner={false}
+                        displayName
+                      />
+                    ))}
+                  </div>
+                )}
+            </TabsContent>
+            <TabsContent value="personal">
+              {InProgressSuccess &&
+                InProgressPrayerRequests &&
+                InProgressPrayerRequests.length > 0 && (
+                  <div>
+                    {InProgressPrayerRequests.map((prayer) => (
+                      <PrayerRequestCard
+                        key={prayer.id}
+                        user={user}
+                        prayer={prayer}
+                        isOwner={true}
+                      />
+                    ))}
+                  </div>
+                )}
+            </TabsContent>
+          </Tabs>
         </div>
       ) : (
         <div className="space-y-3">
