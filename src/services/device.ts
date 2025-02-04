@@ -116,6 +116,8 @@ export async function sendNotificationToDevice(
 
     const fallbackTitle = title || "Notification";
 
+     console.log(fallbackTitle);
+
     // Send the push notification to the specific device
     try {
       await webpush.sendNotification(

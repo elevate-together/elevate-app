@@ -16,7 +16,6 @@ import { menu_items as items } from "@/lib/utils";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import PrayerGroupCreate from "./prayer-group/prayer-group-create";
 import PrayerRequestCreate from "./prayer-request/prayer-request-add";
 import UserInfo from "./user/user-info";
@@ -26,11 +25,11 @@ export default async function AppSidebar() {
 
   const { id, name, email, image } = session?.user || {};
 
-  if (!session || !id) {
-    redirect("/");
+  let userPrayerGroups; // Declare the variable outside the block
+  if (id) {
+    const { prayerGroups } = await getPrayerGroupsForUser(id);
+    userPrayerGroups = prayerGroups;
   }
-
-  const { prayerGroups: userPrayerGroups } = await getPrayerGroupsForUser(id);
 
   return (
     <Sidebar>
@@ -82,25 +81,27 @@ export default async function AppSidebar() {
                   <SidebarMenuItem>
                     <PrayerGroupCreate id={id} isMenu />
                   </SidebarMenuItem>
+                  <SidebarSeparator />
                 </div>
               )}
-              <SidebarSeparator />
 
-              <SidebarHeader>
-                <div className="font-semibold">Your Groups</div>
-              </SidebarHeader>
+              {userPrayerGroups && userPrayerGroups.length > 0 && (
+                <div>
+                  <SidebarHeader>
+                    <div className="font-semibold">Your Groups</div>
+                  </SidebarHeader>
 
-              {userPrayerGroups &&
-                userPrayerGroups.length > 0 &&
-                userPrayerGroups.map((group) => (
-                  <SidebarMenuSub key={group.id}>
-                    <SidebarMenuButton>
-                      <a href={`/groups/${group.id}`}>
-                        <span className="text-">{group.name}</span>
-                      </a>
-                    </SidebarMenuButton>
-                  </SidebarMenuSub>
-                ))}
+                  {userPrayerGroups.map((group) => (
+                    <SidebarMenuSub key={group.id}>
+                      <SidebarMenuButton>
+                        <a href={`/groups/${group.id}`}>
+                          <span className="text-">{group.name}</span>
+                        </a>
+                      </SidebarMenuButton>
+                    </SidebarMenuSub>
+                  ))}
+                </div>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
