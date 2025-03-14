@@ -99,7 +99,7 @@ export default function PrayerRequestForm({
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="min-h-[110px]"
+                      className="min-h-[270px] md: min-h-[150px]"
                       placeholder="Enter your prayer request here"
                       {...field}
                     />

@@ -12,6 +12,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -26,20 +36,58 @@ export default function PrayerRequestCreate({
   isMenu = false,
   hideOnMobile = false,
 }: PrayerGroupCreateProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+
   const isMobile = useIsMobile();
 
   if (hideOnMobile && isMobile) return null;
 
   const handleCloseDialog = () => {
-    setIsOpen(false);
+    setIsOpenDialog(false);
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+  const handleCloseDrawer = () => {
+    setIsOpenDrawer(false);
+  };
+
+  return isMobile ? (
+    <Drawer open={isOpenDrawer} onOpenChange={setIsOpenDrawer}>
+      <DrawerTrigger asChild>
+        {isMobile && !isMenu ? (
+          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
+            <Plus />
+          </Button>
+        ) : (
+          <Button
+            className={`${
+              isMenu ? "flex justify-start items-center w-full p-2" : ""
+            }`}
+            variant={isMenu ? "ghost" : "secondary"}
+          >
+            <Plus /> Add Prayer Request
+          </Button>
+        )}
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="mx-auto w-full max-w-sm m-5">
+          <DrawerHeader>
+            <DrawerTitle>Add New Prayer Request</DrawerTitle>
+          </DrawerHeader>
+          <PrayerRequestForm
+            userId={id}
+            onSubmit={handleCloseDrawer}
+            onCancel={handleCloseDrawer}
+          />
+        </div>
+        <DrawerFooter></DrawerFooter>
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
       <DialogTrigger asChild>
         {isMobile && !isMenu ? (
-          <Button size="icon" variant={isMenu ? "ghost" : "secondary"} >
+          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
             <Plus />
           </Button>
         ) : (

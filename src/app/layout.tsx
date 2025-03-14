@@ -9,6 +9,7 @@ import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import MobileFooter from "@/components/custom/mobile-footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -55,6 +56,7 @@ export default function RootLayout({
                 <div className="w-full h-full">{children}</div>
               </div>
             </main>
+            <MobileFooter />
             <Toaster
               toastOptions={{
                 classNames: {

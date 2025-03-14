@@ -32,88 +32,90 @@ export default async function AppSidebar() {
   }
 
   return (
-    <Sidebar>
-      <SidebarHeader>
-        <Link
-          className="flex flex-row items-center justify-center mt-4"
-          href="/"
-        >
-          <Image src="/icon.png" alt="Elevate Logo" height={30} width={30} />
-          <span className="ml-2 text-2xl font-bold">ELEVATE</span>
-        </Link>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                // Replace placeholder `{id}` with actual user ID if applicable
-                const url = item.url.replace("{id}", id || "");
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild>
-                      {item.auth ? (
-                        session?.user ? (
-                          <a href={url}>
+    <div className="hidden md:block">
+      <Sidebar>
+        <SidebarHeader>
+          <Link
+            className="flex flex-row items-center justify-center mt-4"
+            href="/"
+          >
+            <Image src="/icon.png" alt="Elevate Logo" height={30} width={30} />
+            <span className="ml-2 text-2xl font-bold">ELEVATE</span>
+          </Link>
+        </SidebarHeader>
+        <SidebarContent>
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => {
+                  // Replace placeholder `{id}` with actual user ID if applicable
+                  const url = item.url.replace("{id}", id || "");
+                  return (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton asChild>
+                        {item.auth ? (
+                          session?.user ? (
+                            <a href={url}>
+                              <item.icon />
+                              <span className="text-">{item.title}</span>
+                            </a>
+                          ) : null
+                        ) : (
+                          <a href={item.url}>
                             <item.icon />
-                            <span className="text-">{item.title}</span>
+                            <span>{item.title}</span>
                           </a>
-                        ) : null
-                      ) : (
-                        <a href={item.url}>
-                          <item.icon />
-                          <span>{item.title}</span>
-                        </a>
-                      )}
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-
-              <SidebarSeparator />
-
-              {session && id && (
-                <div>
-                  <SidebarMenuItem>
-                    <PrayerRequestCreate id={id} isMenu />
-                  </SidebarMenuItem>
-
-                  <SidebarMenuItem>
-                    <PrayerGroupCreate id={id} isMenu />
-                  </SidebarMenuItem>
-                  <SidebarSeparator />
-                </div>
-              )}
-
-              {userPrayerGroups && userPrayerGroups.length > 0 && (
-                <div>
-                  <SidebarHeader>
-                    <div className="font-semibold">Your Groups</div>
-                  </SidebarHeader>
-
-                  {userPrayerGroups.map((group) => (
-                    <SidebarMenuSub key={group.id}>
-                      <SidebarMenuButton>
-                        <a href={`/groups/${group.id}`}>
-                          <span className="text-">{group.name}</span>
-                        </a>
+                        )}
                       </SidebarMenuButton>
-                    </SidebarMenuSub>
-                  ))}
-                </div>
-              )}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarFooter>
-        <UserInfo
-          name={name ?? ""}
-          email={email ?? ""}
-          image={image ?? ""}
-          id={id ?? undefined}
-        />
-      </SidebarFooter>
-    </Sidebar>
+                    </SidebarMenuItem>
+                  );
+                })}
+
+                <SidebarSeparator />
+
+                {session && id && (
+                  <div>
+                    <SidebarMenuItem>
+                      <PrayerRequestCreate id={id} isMenu />
+                    </SidebarMenuItem>
+
+                    <SidebarMenuItem>
+                      <PrayerGroupCreate id={id} isMenu />
+                    </SidebarMenuItem>
+                    <SidebarSeparator />
+                  </div>
+                )}
+
+                {userPrayerGroups && userPrayerGroups.length > 0 && (
+                  <div>
+                    <SidebarHeader>
+                      <div className="font-semibold">Your Groups</div>
+                    </SidebarHeader>
+
+                    {userPrayerGroups.map((group) => (
+                      <SidebarMenuSub key={group.id}>
+                        <SidebarMenuButton>
+                          <a href={`/groups/${group.id}`}>
+                            <span className="text-">{group.name}</span>
+                          </a>
+                        </SidebarMenuButton>
+                      </SidebarMenuSub>
+                    ))}
+                  </div>
+                )}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </SidebarContent>
+        <SidebarFooter>
+          <UserInfo
+            name={name ?? ""}
+            email={email ?? ""}
+            image={image ?? ""}
+            id={id ?? undefined}
+          />
+        </SidebarFooter>
+      </Sidebar>
+    </div>
   );
 }
