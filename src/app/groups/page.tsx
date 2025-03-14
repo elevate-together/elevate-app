@@ -43,7 +43,7 @@ export default async function AllGroups() {
             {yourGroups.prayerGroups.map((group) => (
               <div
                 key={group.id}
-                className="flex flex-row items-center gap-3 justify-between p-4 rounded-lg border"
+                className=" bg-card flex flex-row items-center gap-3 justify-between p-4 rounded-lg border"
               >
                 <div className="text-base font-semibold">
                   <h3>{group.name}</h3>
