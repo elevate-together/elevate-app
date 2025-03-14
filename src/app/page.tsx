@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getInProgressPrayerRequestsByUserId } from "@/services/prayer-request";
 import { getFriendPrayerRequestsForUser, getUserById } from "@/services/users";
@@ -49,8 +48,6 @@ export default async function Home() {
     <div className="ml-2">
       {user ? (
         <div className="space-y-5">
-          <h1 className="text-2xl font-bold">{`Welcome ${user.name}`}</h1>
-          <Separator />
           <h1 className="text-md font-semibold mb-3">How You Can Pray Today</h1>
           <Tabs defaultValue="community" className="w-full">
             <TabsList>
@@ -76,6 +73,7 @@ export default async function Home() {
                         user={prayer.user}
                         prayer={prayer}
                         isOwner={false}
+                        currUserName={user.name}
                         displayName
                       />
                     ))}

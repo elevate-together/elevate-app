@@ -1,3 +1,5 @@
+"use server"
+
 import PrayerGroupMemberTable from "@/components/custom/prayer-group/prayer-group-member-table";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
 import { Separator } from "@/components/ui/separator";
@@ -6,16 +8,35 @@ import {
   getPrayerGroupById,
 } from "@/services/prayer-group";
 import { getUsersByPrayerGroup } from "@/services/user-prayer-group";
+import { auth } from "@/auth";
+import { getUserById } from "@/services/users";
 
 export default async function Group({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
 
+  const { id } = await params;
+  
   const { prayerGroup } = await getPrayerGroupById(id);
   const { users } = await getUsersByPrayerGroup(id);
+
+  const session = await auth();
+
+  // User is not signed in
+  if (!session || !session.user) {
+    return null;
+  }
+
+  // Getting current user info
+  const userId = session?.user.id;
+
+  if (!userId) {
+    return <div>Error loading user data</div>;
+  }
+
+  const { user: currUser } = await getUserById(userId);
 
   const { prayerRequests: inProgressRequests } =
     await getInProgressPrayerRequestsByGroupId(id);
@@ -43,6 +64,7 @@ export default async function Group({
                 user={prayer.user}
                 prayer={prayer}
                 isOwner={false}
+                currUserName={currUser?.name ?? ""}
                 displayName
               />
             ))}

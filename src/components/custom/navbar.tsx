@@ -6,7 +6,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 export default async function Navbar() {
   const session = await auth();
   return (
-    <div className="hidden md:flex bg-card flex-row justify-between w-full p-2">
+    <div className="flex md:flex bg-card flex-row justify-between w-full p-2">
       <div className="flex flex-row justify-start">
         <SidebarTrigger />
         {/* <ThemeSwitch /> */}

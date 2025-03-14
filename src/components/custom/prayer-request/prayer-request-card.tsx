@@ -35,6 +35,7 @@ type PrayerRequestCardProps = {
   user: User;
   isOwner?: boolean;
   displayName?: boolean;
+  currUserName?: string;
 };
 
 export default function PrayerRequestCard({
@@ -42,17 +43,19 @@ export default function PrayerRequestCard({
   user,
   isOwner = false,
   displayName = false,
+  currUserName = "",
 }: PrayerRequestCardProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const handleSendNotification = async () => {
-    const title = user?.name
-      ? user.name.includes(" ")
-        ? `${user.name.split(" ")[0]} just prayed for you!`
-        : `${user.name} just prayed for you!`
-      : "Someone just prayed for you!";
-    const message = `${user.name} just prayed for ${prayer.request} `;
+    const title =
+      currUserName != ""
+        ? currUserName.includes(" ")
+          ? `${currUserName.split(" ")[0]} just prayed for you!`
+          : `${currUserName} just prayed for you!`
+        : "Someone just prayed for you!";
+    const message = `${currUserName} just prayed for ${prayer.request} `;
     const result = await sendNotificationAllDevices(user.id, message, title);
 
     if (result.success) {
