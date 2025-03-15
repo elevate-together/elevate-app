@@ -9,8 +9,8 @@ import { UserRoundPlus } from "lucide-react";
 export default function WelcomePage() {
   const isMobile = useIsMobile();
   return (
-    <div className="flex flex-col md:flex-row pl-5 items-center justify-center gap-8 md:gap-10 h-[90vh] md:justify-evenly">
-      <div className="max-w-[400px] md:max-w-full px-9 flex flex-col flex-center">
+    <div className="flex flex-col md:flex-row  items-center justify-end pb-9 md:pb-0 gap-8 md:gap-10 h-[90vh] md:justify-evenly ml-5">
+      <div className="max-w-[353px] px-6 md:max-w-full md:mx-9 flex flex-col flex-center">
         <div className="flex flexp-col items-center gap-1">
           <Image
             src="/icon.png"

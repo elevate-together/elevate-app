@@ -10,7 +10,7 @@ export default async function MobileFooter() {
     return null;
   }
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-card text-primary p-3 flex justify-around items-center border block md:hidden pb-6">
+    <footer className="fixed bottom-0 left-0 right-0 bg-card text-primary p-3 flex justify-around items-center border block md:hidden pb-7">
       <Link href="/groups" className="flex flex-col items-center">
         <Users />
         <span className="text-sm">Groups</span>

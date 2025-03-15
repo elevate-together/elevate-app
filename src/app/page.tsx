@@ -39,7 +39,7 @@ export default async function Home() {
   } = await getInProgressPrayerRequestsByUserId(id);
 
   return (
-    <div className="ml-2">
+    <div className="ml-5 h-full">
       <div className="space-y-5">
         <h1 className="text-md font-semibold mb-3">How You Can Pray Today</h1>
         <Tabs defaultValue="community" className="w-full">

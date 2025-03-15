@@ -12,7 +12,7 @@ export default async function Navbar() {
   }
 
   return (
-    <div>
+    <div className="hidden md:block">
       <div className="flex md:flex bg-card flex-row justify-between w-full p-2">
         <div className="flex flex-row justify-start">
           <SidebarTrigger />
