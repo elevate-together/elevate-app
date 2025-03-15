@@ -23,6 +23,10 @@ import UserInfo from "./user/user-info";
 export default async function AppSidebar() {
   const session = await auth();
 
+  if (session == null) {
+    return null;
+  }
+
   const { id, name, email, image } = session?.user || {};
 
   let userPrayerGroups; // Declare the variable outside the block

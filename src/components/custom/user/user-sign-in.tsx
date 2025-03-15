@@ -1,11 +1,12 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { handleSignIn } from "@/lib/signInOutActions"; 
+import { handleSignIn } from "@/lib/signInOutActions";
 import { Loader, LogIn } from "lucide-react";
 import { useState } from "react";
+import { ButtonProps } from "@/components/ui/button";
 
-export default function SignIn({ ...prop }) {
+export default function SignIn({ children, ...prop }: ButtonProps) {
   const [isLoading, setLoading] = useState(false);
 
   const handleClick = async () => {
@@ -21,16 +22,34 @@ export default function SignIn({ ...prop }) {
 
   return (
     <div className="w-full">
-      <Button
-        className="w-full"
-        onClick={handleClick}
-        {...prop}
-        disabled={isLoading}
-      >
-        {isLoading ? <Loader className="animate-spin h-4 w-4 mr-2" /> : null}
-        <LogIn />
-        Sign In
-      </Button>
+      {isLoading ? (
+        <Button
+          className="w-full"
+          onClick={handleClick}
+          {...prop}
+          disabled={isLoading}
+        >
+          <Loader className="animate-spin h-4 w-4 mr-2" />
+        </Button>
+      ) : children ? (
+        <Button
+          className="w-full"
+          onClick={handleClick}
+          {...prop}
+          disabled={isLoading}
+        >
+          {children}
+        </Button>
+      ) : (
+        <Button
+          className="w-full"
+          onClick={handleClick}
+          {...prop}
+          disabled={isLoading}
+        >
+          <LogIn /> Sign In
+        </Button>
+      )}
     </div>
   );
 }

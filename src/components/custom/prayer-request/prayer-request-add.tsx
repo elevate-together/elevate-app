@@ -15,6 +15,7 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
@@ -68,9 +69,12 @@ export default function PrayerRequestCreate({
         )}
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm m-5">
-          <DrawerHeader>
-            <DrawerTitle>Add New Prayer Request</DrawerTitle>
+        <div className="mx-auto w-full max-w-sm py-5 px-8">
+          <DrawerHeader className="text-left p-0">
+            <DrawerTitle>New Prayer Request</DrawerTitle>
+            <DrawerDescription>
+              Let others know how they can be praying for you.
+            </DrawerDescription>
           </DrawerHeader>
           <PrayerRequestForm
             userId={id}
@@ -105,6 +109,9 @@ export default function PrayerRequestCreate({
       >
         <DialogHeader>
           <DialogTitle>Add New Prayer Request</DialogTitle>
+          <DialogDescription>
+            Let others know how they can be praying for you.
+          </DialogDescription>
         </DialogHeader>
         <PrayerRequestForm
           userId={id}

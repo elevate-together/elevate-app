@@ -3,7 +3,6 @@ import BackButton from "@/components/custom/functions/back-button";
 import Navbar from "@/components/custom/navbar";
 import ServiceWorker from "@/components/service-worker";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Separator } from "@/components/ui/separator";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
@@ -42,18 +41,15 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
+          <SidebarProvider className="w-full h-screen">
             <AppSidebar />
-            <main className="w-full">
-              {/* Navbar */}
+            <main className="flex flex-col w-full h-screen">
               <Navbar />
-
-              <Separator />
-              <div className="grid grid-cols-[auto_1fr] gap-2 p-7 pl-3 w-full">
+              <div className="flex flex-cols gap-1 pr-6 pt-6 pl-1">
                 <div>
                   <BackButton />
                 </div>
-                <div className="w-full h-full">{children}</div>
+                <div className="flex-1 ">{children}</div>
               </div>
             </main>
             <MobileFooter />
