@@ -35,23 +35,17 @@ export default function PrayerRequestCreate({
   isMenu = false,
   hideOnMobile = false,
 }: PrayerGroupCreateProps) {
-  const [isOpenDialog, setIsOpenDialog] = useState(false);
-  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   if (hideOnMobile && isMobile) return null;
 
-  const handleCloseDialog = () => {
-    setIsOpenDialog(false);
-  };
-
-  const handleCloseDrawer = () => {
-    setIsOpenDrawer(false);
+  const handleClose = () => {
+    setIsOpen(false);
   };
 
   return isMobile ? (
-    <Drawer open={isOpenDrawer} onOpenChange={setIsOpenDrawer}>
+    <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         {isMobile && !isMenu ? (
           <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
@@ -69,7 +63,7 @@ export default function PrayerRequestCreate({
         )}
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-8">
+        <div className="mx-auto w-full max-w-sm py-5 px-5 md:p-0">
           <DrawerHeader className="text-left p-0">
             <DrawerTitle>New Prayer Request</DrawerTitle>
             <DrawerDescription>
@@ -78,15 +72,16 @@ export default function PrayerRequestCreate({
           </DrawerHeader>
           <PrayerRequestForm
             userId={id}
-            onSubmit={handleCloseDrawer}
-            onCancel={handleCloseDrawer}
+            onSubmit={handleClose}
+            onCancel={handleClose}
+            isOpen={isOpen && isMobile}
           />
         </div>
         <DrawerFooter></DrawerFooter>
       </DrawerContent>
     </Drawer>
   ) : (
-    <Dialog open={isOpenDialog} onOpenChange={setIsOpenDialog}>
+    <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {isMobile && !isMenu ? (
           <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
@@ -114,9 +109,10 @@ export default function PrayerRequestCreate({
           </DialogDescription>
         </DialogHeader>
         <PrayerRequestForm
+          isOpen={isOpen && !isMobile}
           userId={id}
-          onSubmit={handleCloseDialog}
-          onCancel={handleCloseDialog}
+          onSubmit={handleClose}
+          onCancel={handleClose}
         />
         <DialogDescription hidden>Add New Prayer Request</DialogDescription>
       </DialogContent>

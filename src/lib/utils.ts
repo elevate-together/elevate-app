@@ -9,6 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export type PrayerGroupWithOwner = PrayerGroup & {
   owner: UserDef;
+  memberCount: number;
 };
 
 export const menu_items = [

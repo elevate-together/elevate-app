@@ -43,13 +43,13 @@ export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
       accessorKey: "owner",
       enableHiding: false,
       header: () => (
-        <div className="lg:block hidden">Owner</div> // Hides the column header on mobile
+        <div className="hidden lg:block">Owner</div> // Hides the column header on mobile
       ),
       cell: ({ row }) => {
         const owner: User = row.getValue("owner");
 
         return (
-          <div className="capitalize lg:block hidden">
+          <div className="capitalize hidden lg:block">
             {owner && owner.name && owner.image ? (
               <UserAvatar
                 name={owner.name}

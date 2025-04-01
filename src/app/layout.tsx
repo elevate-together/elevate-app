@@ -45,7 +45,7 @@ export default function RootLayout({
             <AppSidebar />
             <main className="flex flex-col w-full h-screen">
               <Navbar />
-              <div className="min-h-[calc(100vh-86px)] md:min-h-[calc(100vh-52px)] flex flex-cols gap-1 pt-6 pr-6 pl-1">
+              <div className="min-h-[calc(100vh-86px)] md:min-h-[calc(100vh-52px)] flex flex-cols gap-1 pt-6 pr-6 pl-6 md:pl-1">
                 <div>
                   <BackButton />
                 </div>

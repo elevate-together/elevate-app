@@ -6,21 +6,40 @@ import type { PrayerGroup, PrayerRequest } from "@prisma/client";
 import type { User } from "@prisma/client";
 
 /// GET All PrayerGroups
-export async function getAllPrayerGroups(): Promise<{
+// GET all PrayerGroups with member count
+export async function getPrayerGroups(): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: (PrayerGroup & { owner: User })[]; // Use the `User` type here
+  prayerGroups?: (PrayerGroup & { owner: User; memberCount: number })[]; // Add the member count to the response
 }> {
   try {
     const prayerGroups = await db.prayerGroup.findMany({
       include: {
-        owner: true, // Prisma will include all `User` fields by default
+        owner: true, // Include the owner with all fields from the `User` model
+        users: true, // Include the users (members) of the prayer group
       },
     });
+
+    if (!prayerGroups || prayerGroups.length === 0) {
+      return {
+        success: false,
+        message: "Couldn't fetch prayer groups or no groups found",
+      };
+    }
+
+    // Add memberCount to each prayer group
+    const prayerGroupsWithMemberCount = prayerGroups.map((prayerGroup) => {
+      const memberCount = prayerGroup.users?.length || 0;
+      return {
+        ...prayerGroup,
+        memberCount, 
+      };
+    });
+
     return {
       success: true,
       message: "Successfully fetched all prayer groups",
-      prayerGroups,
+      prayerGroups: prayerGroupsWithMemberCount, 
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);
@@ -35,13 +54,14 @@ export async function getAllPrayerGroups(): Promise<{
 export async function getPrayerGroupById(id: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User }; // Use the `User` type here as well
+  prayerGroup?: PrayerGroup & { owner: User; memberCount: number }; // Use the `User` type here as well
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
       include: {
         owner: true, // Include the owner with all fields from the `User` model
+        users: true,
       },
     });
 
@@ -52,10 +72,15 @@ export async function getPrayerGroupById(id: string): Promise<{
       };
     }
 
+    const memberCount = prayerGroup.users?.length || 0;
+
     return {
       success: true,
       message: "Prayer group found",
-      prayerGroup, // Single PrayerGroup object with owner of type `User`
+      prayerGroup: {
+        ...prayerGroup, // Include the existing prayer group data
+        memberCount, // Add the member count
+      },
     };
   } catch (error) {
     console.error(`Error fetching prayer group with ID ${id}:`, error);

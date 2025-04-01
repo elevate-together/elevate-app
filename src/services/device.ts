@@ -31,8 +31,6 @@ export async function subscribeDevice(
         ? `${vendor} ${os}`
         : `Device Added: ${format(new Date(), "yyyy-MM-dd")}`;
 
-    console.log(name);
-
     await db.device.upsert({
       where: { userId, endpoint: sub.endpoint },
       update: {

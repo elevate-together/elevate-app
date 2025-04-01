@@ -8,62 +8,67 @@ generator client {
 }
 
 model User {
-  id            String            @id @default(auto()) @map("_id") @db.ObjectId
-  name          String
-  email         String            @unique
-  emailVerified DateTime?
-  image         String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  prayerGroups  UserPrayerGroup[] @relation("UserToPrayerGroup")
-  accounts      Account[]
-  ownedPrayerGroups   PrayerGroup[] 
+  id                String            @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  email             String            @unique
+  emailVerified     DateTime?
+  image             String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  prayerGroups      UserPrayerGroup[] @relation("UserToPrayerGroup")
+  accounts          Account[]
+  ownedPrayerGroups PrayerGroup[]     @relation("UserOwnedPrayerGroups")
   prayerRequests    PrayerRequest[]
-  devices       Device[]
+  devices           Device[]
 }
 
 model Device {
-  id            String   @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  userId        String   @db.ObjectId
-  endpoint      String   @unique // Ensure endpoint is unique for each user
-  p256dh        String
-  auth          String
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  userId    String   @db.ObjectId
+  endpoint  String   @unique // Ensure endpoint is unique for each user
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, endpoint]) // Add a composite unique constraint
 }
 
-enum PrayerRequestStatus {
-  ARCHIVED
-  ANSWERED
-  IN_PROGRESS
+model PrayerRequest {
+  id         String              @id @default(auto()) @map("_id") @db.ObjectId
+  request    String
+  status     PrayerRequestStatus @default(IN_PROGRESS)
+  visibility Visibility          @default(PRIVATE)
+  createdAt  DateTime            @default(now())
+  updatedAt  DateTime            @updatedAt
+
+  userId             String               @db.ObjectId
+  user               User                 @relation(fields: [userId], references: [id])
+  PrayerRequestShare PrayerRequestShare[]
 }
 
-model PrayerRequest {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  request   String  
-  status    PrayerRequestStatus @default(IN_PROGRESS)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  // Relation to User: a PrayerRequest belongs to a User
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id])
+model PrayerRequestShare {
+  id              String    @id @default(auto()) @map("_id") @db.ObjectId
+  prayerRequestId String    @db.ObjectId
+  sharedWithId    String    @db.ObjectId
+  sharedWithType  ShareType
+  createdAt       DateTime  @default(now())
+
+  prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
 }
 
 model PrayerGroup {
-  id           String             @id @default(auto()) @map("_id") @db.ObjectId
-  name         String
-  description  String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-  users        UserPrayerGroup[]  @relation("UserToPrayerGroup")
-  ownerId      String             @db.ObjectId
-  owner        User               @relation(fields: [ownerId], references: [id]) // Relation to User model
+  id          String            @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  users       UserPrayerGroup[] @relation("UserToPrayerGroup")
+  ownerId     String            @db.ObjectId
+  owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id])
 }
 
 model UserPrayerGroup {
@@ -98,4 +103,21 @@ model Account {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+}
+
+enum PrayerRequestStatus {
+  ARCHIVED
+  ANSWERED
+  IN_PROGRESS
+}
+
+enum Visibility {
+  PRIVATE
+  PUBLIC
+  SHARED
+}
+
+enum ShareType {
+  USER
+  GROUP
 }

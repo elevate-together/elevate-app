@@ -3,8 +3,9 @@ import { addUserToPrayerGroup } from "@/services/user-prayer-group";
 import { Star } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { ButtonProps } from "@/components/ui/button";
 
-type JoinGroupProps = {
+type JoinGroupProps = ButtonProps & {
   userId: string;
   groupId: string;
   onClose?: () => void;
@@ -14,6 +15,7 @@ export default function UserJoinGroup({
   userId,
   groupId,
   onClose,
+  ...props
 }: JoinGroupProps) {
   const router = useRouter();
   const joinGroup = async () => {
@@ -35,7 +37,7 @@ export default function UserJoinGroup({
   };
 
   return (
-    <Button className="p-2" onClick={joinGroup}>
+    <Button className="p-2" onClick={joinGroup} {...props}>
       <Star />
       Join
     </Button>

@@ -1,7 +1,13 @@
 "use server";
 
 import db from "@/lib/db";
-import { PrayerRequest, PrayerRequestStatus } from "@prisma/client";
+import { PrayerRequest, PrayerRequestStatus, Visibility } from "@prisma/client";
+import { sendNotificationAllDevices } from "./device";
+import {
+  getPrayerGroupsForUser,
+  getUsersInPrayerGroup,
+} from "./user-prayer-group";
+import { getUserById } from "./users";
 
 // GET All Prayer Requests
 export async function getAllPrayerRequests(): Promise<{
@@ -60,23 +66,99 @@ export async function getPrayerRequestById(id: string): Promise<{
 // CREATE a New Prayer Request
 export async function createPrayerRequest(requestData: {
   request: string;
-  status?: PrayerRequestStatus; // 'ARCHIVED' by default if not provided
+  notify: boolean;
+  sharedWith: { type: string; id: string }[];
   userId: string;
+  status?: PrayerRequestStatus;
 }): Promise<{
   success: boolean;
   message: string;
   prayerRequest?: PrayerRequest;
 }> {
   try {
-    const newPrayerRequest = await db.prayerRequest.create({
-      data: {
-        request: requestData.request,
-        status: requestData.status || PrayerRequestStatus.IN_PROGRESS,
-        user: {
-          connect: { id: requestData.userId }, // Connect to the user by ID
+    const { request, notify, sharedWith, userId, status } = requestData;
+    const requestStatus = status || PrayerRequestStatus.IN_PROGRESS;
+
+    const hasPublicType = sharedWith.some((item) => item.type === "public");
+    const hasPrivateType = sharedWith.some((item) => item.type === "private");
+
+    const { user } = await getUserById(userId);
+
+    let newPrayerRequest;
+
+    if (hasPublicType) {
+      console.log("This prayer request will be shared publicly.");
+
+      newPrayerRequest = await db.prayerRequest.create({
+        data: {
+          request,
+          status: requestStatus,
+          visibility: Visibility.PUBLIC,
+          user: { connect: { id: userId } },
         },
-      },
-    });
+      });
+
+      if (notify) {
+        console.log("Sending Notifications to prayer groups...");
+
+        const data = await getPrayerGroupsForUser(userId);
+        const usersToNotify = new Set<string>(); // Set to store unique user IDs
+
+        if (data.prayerGroups) {
+          for (const group of data.prayerGroups) {
+            const groupData = await getUsersInPrayerGroup(group.id);
+
+            if (groupData.success && groupData.users) {
+              groupData.users.forEach((user) => usersToNotify.add(user.id));
+            }
+          }
+        }
+
+        console.log(usersToNotify);
+
+        // Convert the Set to an array and notify each user
+        await Promise.all(
+          [...usersToNotify].map(async (tempId) => {
+            await sendNotificationAllDevices(
+              tempId,
+              user?.name
+                ? `${user.name} added a new prayer request `
+                : "Someone added a new prayer request"
+            );
+          })
+        );
+
+        console.log(
+          `Notifications sent to ${usersToNotify.size} unique users.`
+        );
+      }
+    } else if (hasPrivateType) {
+      console.log("This prayer request will be shared privately.");
+
+      newPrayerRequest = await db.prayerRequest.create({
+        data: {
+          request,
+          status: requestStatus,
+          visibility: Visibility.PRIVATE,
+          user: { connect: { id: userId } },
+        },
+      });
+
+      if (notify) {
+        console.log("Sending Notifications...");
+        await sendNotificationAllDevices(
+          userId,
+          "New personal prayer request added"
+        );
+      }
+    } else {
+      console.log("TODO");
+      return {
+        success: false,
+        message:
+          "Error: No valid visibility type selected (public or private).",
+      };
+    }
 
     return {
       success: true,

@@ -144,9 +144,14 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
 export async function getPrayerGroupsNotIn(userId: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: (PrayerGroup & { owner: User })[]; // Include owner in the return type
+  prayerGroups?: (PrayerGroup & {
+    owner: User;
+    memberCount: number;
+    users?: Pick<User, "name">[]; // Add the users with selected fields
+  })[];
 }> {
   try {
+    // Fetch the prayer groups where the user is not part of the group
     const prayerGroups = await db.prayerGroup.findMany({
       where: {
         users: {
@@ -159,14 +164,39 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
       },
       include: {
         owner: true, // Include the related owner user object
+        users: {
+          select: {
+            user: {
+              // Use `user` field from the `UserPrayerGroup` relation
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
+    });
+
+    // Add member count to each prayer group and include the selected user fields
+    const prayerGroupsWithMemberCount = prayerGroups.map((prayerGroup) => {
+      const memberCount = prayerGroup.users?.length || 0;
+      // Extracting only the user details from the `UserPrayerGroup` relation
+      const users = prayerGroup.users?.map(
+        (userPrayerGroup) => userPrayerGroup.user
+      );
+
+      return {
+        ...prayerGroup,
+        memberCount, // Add member count to each prayer group
+        users, // Attach the selected user fields
+      };
     });
 
     return {
       success: true,
       message:
         "Prayer groups you are not part of have been retrieved successfully.",
-      prayerGroups, // Now includes the 'owner' field in each prayer group
+      prayerGroups: prayerGroupsWithMemberCount, // Return the updated prayer groups with member counts and selected user fields
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);
@@ -222,7 +252,7 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
 export async function getPrayerGroupsForUser(userId: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: (PrayerGroup & { owner: User })[]; // Include owner in the return type
+  prayerGroups?: (PrayerGroup & { owner: User; memberCount: number })[]; // Include owner and memberCount in the return type
 }> {
   try {
     const prayerGroups = await db.prayerGroup.findMany({
@@ -235,14 +265,31 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
       },
       include: {
         owner: true, // Include the related owner user object
+        users: true, // Include the users (members) of the prayer group to count them
       },
+    });
+
+    if (!prayerGroups || prayerGroups.length === 0) {
+      return {
+        success: false,
+        message: "You are not part of any prayer groups.",
+      };
+    }
+
+    // Add member count to each prayer group
+    const prayerGroupsWithMemberCount = prayerGroups.map((prayerGroup) => {
+      const memberCount = prayerGroup.users?.length || 0; // Calculate the member count
+      return {
+        ...prayerGroup,
+        memberCount, // Add member count to the prayer group object
+      };
     });
 
     return {
       success: true,
       message:
         "Prayer groups you are part of have been retrieved successfully.",
-      prayerGroups,
+      prayerGroups: prayerGroupsWithMemberCount, // Return the updated prayer groups with member counts
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups for the user:", error);
