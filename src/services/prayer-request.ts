@@ -98,23 +98,23 @@ export async function createPrayerRequest(requestData: {
         },
       });
 
+      const usersToNotify: string[] = []; // Use an array instead of a Set
       if (notify) {
         console.log("Sending Notifications to prayer groups...");
-
         const data = await getPrayerGroupsForUser(userId);
-        const usersToNotify = new Set<string>(); // Set to store unique user IDs
-
         if (data.prayerGroups) {
           for (const group of data.prayerGroups) {
             const groupData = await getUsersInPrayerGroup(group.id);
 
             if (groupData.success && groupData.users) {
-              groupData.users.forEach((user) => usersToNotify.add(user.id));
+              groupData.users.forEach((user) => {
+                if (!usersToNotify.includes(user.id)) {
+                  usersToNotify.push(user.id);
+                }
+              });
             }
           }
         }
-
-        console.log(usersToNotify);
 
         // Convert the Set to an array and notify each user
         await Promise.all(
@@ -129,7 +129,7 @@ export async function createPrayerRequest(requestData: {
         );
 
         console.log(
-          `Notifications sent to ${usersToNotify.size} unique users.`
+          `Notifications sent to ${usersToNotify.length} unique users.`
         );
       }
     } else if (hasPrivateType) {
