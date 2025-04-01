@@ -123,7 +123,8 @@ export async function createPrayerRequest(requestData: {
               tempId,
               user?.name
                 ? `${user.name} added a new prayer request `
-                : "Someone added a new prayer request"
+                : "Someone added a new prayer request",
+              "New Prayer Request"
             );
           })
         );
@@ -148,7 +149,8 @@ export async function createPrayerRequest(requestData: {
         console.log("Sending Notifications...");
         await sendNotificationAllDevices(
           userId,
-          "New personal prayer request added"
+          "New personal prayer request added",
+          "New Prayer Request"
         );
       }
     } else {
