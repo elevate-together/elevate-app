@@ -19,7 +19,7 @@ import {
 import { sendNotificationAllDevices } from "@/services/device";
 import {
   deletePrayerRequest,
-  updatePrayerRequest,
+  updatePrayerRequestStatus,
 } from "@/services/prayer-request";
 import { PrayerRequestStatus, User, type PrayerRequest } from "@prisma/client";
 import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
@@ -71,9 +71,7 @@ export default function PrayerRequestCard({
   };
 
   const handleUpdateStatus = async (status: PrayerRequestStatus) => {
-    const result = await updatePrayerRequest(prayer.id, {
-      status: status,
-    });
+    const result = await updatePrayerRequestStatus(prayer.id, status);
 
     if (result.success) {
       toast.success(result.message);
@@ -160,6 +158,7 @@ export default function PrayerRequestCard({
                     <PrayerRequestForm
                       prayer={prayer}
                       userId={user.id}
+                      isOpen={open}
                       onSubmit={() => setOpen(false)}
                       onCancel={() => setOpen(false)}
                     />
@@ -174,6 +173,7 @@ export default function PrayerRequestCard({
                       <Trash />
                     </Button>
                   </DialogTrigger>
+
                   <DialogContent className="max-w-md">
                     <DialogHeader>
                       <DialogTitle>

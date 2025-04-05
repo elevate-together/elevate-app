@@ -7,7 +7,8 @@ import { PrayerRequest, PrayerRequestShare } from "@prisma/client";
 export async function createPrayerRequestShare(
   prayerRequestId: string,
   sharedWithId: string,
-  sharedWithType: "USER" | "GROUP"
+  sharedWithType: "USER" | "GROUP",
+  ownerId: string
 ): Promise<{
   success: boolean;
   message: string;
@@ -19,6 +20,7 @@ export async function createPrayerRequestShare(
         prayerRequestId,
         sharedWithId,
         sharedWithType,
+        ownerId,
       },
     });
 

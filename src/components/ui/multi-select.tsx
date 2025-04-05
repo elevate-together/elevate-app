@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { ChevronDown, XIcon, ChevronUp } from "lucide-react";
+import { ChevronDown, XIcon, ChevronUp, Loader } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
@@ -13,10 +13,7 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-/**
- * Variants for the multi-select component to handle different styles.
- * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
- */
+// Variants for the multi-select component to handle different styles.
 const multiSelectVariants = cva("px-2 py-1 mr-1", {
   variants: {
     variant: {
@@ -29,9 +26,7 @@ const multiSelectVariants = cva("px-2 py-1 mr-1", {
   },
 });
 
-/**
- * Props for MultiSelect component
- */
+// Props for MultiSelect component
 export interface MultiSelectProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
@@ -42,17 +37,13 @@ export interface MultiSelectProps
     icon?: React.ComponentType<{ className?: string }>;
   }[];
   onValueChange: (value: string[]) => void;
-  defaultValue?: string[];
+  selectedValues: string[]; // Accept selectedValues from parent
+  setSelectedValues: React.Dispatch<React.SetStateAction<string[]>>; // Accept setSelectedValues function from parent
   placeholder?: string;
   maxCount?: number;
   specialSelection?: boolean;
   isParentOpen?: boolean;
-
-  /**
-   * The modality of the popover. When set to true, interaction with outside elements
-   * will be disabled and only popover content will be visible to screen readers.
-   * Optional, defaults to false.
-   */
+  loading?: boolean;
   modalPopover?: boolean;
   asChild?: boolean;
   className?: string;
@@ -66,43 +57,43 @@ export const MultiSelect = React.forwardRef<
     {
       options,
       onValueChange,
+      selectedValues,
+      setSelectedValues,
       variant,
-      defaultValue = [],
       placeholder = "Select options",
       specialSelection = false,
       maxCount = 3,
       modalPopover = false,
       isParentOpen = false,
-      // asChild = false,
       className,
+      loading = false,
       ...props
     },
     ref
   ) => {
-    const [selectedValues, setSelectedValues] =
-      React.useState<string[]>(defaultValue);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
     const toggleOption = (option: string) => {
-      let newSelectedValues;
+      const isSelected = selectedValues.includes(option);
+      const isExclusive = option === "1" || option === "2";
+
+      let newSelectedValues: string[];
 
       if (specialSelection) {
-        if (option === "1" || option === "2") {
-          // If '1' or '2' is selected, deselect all other options and select only the clicked one
+        if (isExclusive) {
+          // Exclusive options replace everything
           newSelectedValues = [option];
         } else {
-          newSelectedValues = selectedValues.includes(option)
-            ? selectedValues.filter((value) => value !== option)
-            : [
-                ...selectedValues.filter(
-                  (value) => value !== "1" && value !== "2"
-                ),
-                option,
-              ];
+          // Remove exclusive selections if non-exclusive option is picked
+          const cleaned = selectedValues.filter((v) => v !== "1" && v !== "2");
+
+          newSelectedValues = isSelected
+            ? cleaned.filter((v) => v !== option)
+            : [...cleaned, option];
         }
       } else {
-        newSelectedValues = selectedValues.includes(option)
-          ? selectedValues.filter((value) => value !== option)
+        newSelectedValues = isSelected
+          ? selectedValues.filter((v) => v !== option)
           : [...selectedValues, option];
       }
 
@@ -128,15 +119,16 @@ export const MultiSelect = React.forwardRef<
         <PopoverTrigger asChild>
           <Button
             ref={ref}
-            {...props}
             onClick={handleTogglePopover}
+            aria-label="Select options"
             className={cn(
-              "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit [&_svg]:pointer-events-auto shadow-none",
+              "flex w-full p-1 rounded-md border min-h-10 h-auto items-center justify-between bg-inherit hover:bg-inherit shadow-none",
               isPopoverOpen ? "border-black" : "border-border",
               className
             )}
+            {...props}
           >
-            {selectedValues.length > 0 ? (
+            {selectedValues.length > 0 && !loading ? (
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-wrap items-center">
                   {selectedValues.slice(0, maxCount).map((value) => {
@@ -158,7 +150,6 @@ export const MultiSelect = React.forwardRef<
                       </Badge>
                     );
                   })}
-                  <Separator orientation="vertical" />
                   {selectedValues.length > maxCount && (
                     <Badge
                       className={cn(
@@ -205,28 +196,36 @@ export const MultiSelect = React.forwardRef<
           onEscapeKeyDown={() => setIsPopoverOpen(false)}
         >
           <div>
-            <ScrollArea className="max-h-[200px]" isHidden>
-              <div className="flex flex-col">
-                {options.map((option, index) => {
-                  const isSelected = selectedValues.includes(option.value);
+            {!loading ? (
+              <div>
+                <ScrollArea className="max-h-[200px]" isHidden>
+                  <div className="flex flex-col">
+                    {options.map((option, index) => {
+                      const isSelected = selectedValues.includes(option.value);
 
-                  return (
-                    <Button
-                      key={option.value}
-                      variant={isSelected ? "secondary" : "outline"}
-                      className={cn(
-                        "border-none rounded-none flex-1 justify-start hover:bg-selected",
-                        index == 0 && "rounded-t-md",
-                        index == 0 && "border border-b-2 border-green-500"
-                      )}
-                      onClick={() => toggleOption(option.value)}
-                    >
-                      <span>{option.label}</span>
-                    </Button>
-                  );
-                })}
+                      return (
+                        <Button
+                          key={option.value}
+                          variant={isSelected ? "secondary" : "outline"}
+                          className={cn(
+                            "border-none rounded-none flex-1 justify-start hover:bg-selected",
+                            index == 0 && "rounded-t-md",
+                            index == 0 && "border border-b-2 border-green-500"
+                          )}
+                          onClick={() => toggleOption(option.value)}
+                        >
+                          <span>{option.label}</span>
+                        </Button>
+                      );
+                    })}
+                  </div>
+                </ScrollArea>
               </div>
-            </ScrollArea>
+            ) : (
+              <div className="flex items-center justify-center w-full mx-auto min-w-[175px] min-h-[100px]">
+                <Loader className="h-4 w-4 animate-spin text-muted-foreground" />
+              </div>
+            )}
             <Separator />
             <div className="flex items-center justify-between">
               {selectedValues.length > 0 && (
@@ -252,7 +251,7 @@ export const MultiSelect = React.forwardRef<
                   selectedValues.length <= 0 && "rounded-bl-md"
                 )}
               >
-                Close
+                Ok
               </Button>
             </div>
           </div>

@@ -8,25 +8,26 @@ generator client {
 }
 
 model User {
-  id                String            @id @default(auto()) @map("_id") @db.ObjectId
-  name              String
-  email             String            @unique
-  emailVerified     DateTime?
-  image             String?
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
-  prayerGroups      UserPrayerGroup[] @relation("UserToPrayerGroup")
-  accounts          Account[]
-  ownedPrayerGroups PrayerGroup[]     @relation("UserOwnedPrayerGroups")
-  prayerRequests    PrayerRequest[]
-  devices           Device[]
+  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
+  name               String
+  email              String               @unique
+  emailVerified      DateTime?
+  image              String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  prayerGroups       UserPrayerGroup[]    @relation("UserToPrayerGroup")
+  accounts           Account[]
+  ownedPrayerGroups  PrayerGroup[]        @relation("UserOwnedPrayerGroups")
+  prayerRequests     PrayerRequest[]
+  devices            Device[]
+  PrayerRequestShare PrayerRequestShare[]
 }
 
 model Device {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   userId    String   @db.ObjectId
-  endpoint  String   @unique // Ensure endpoint is unique for each user
+  endpoint  String   @unique
   p256dh    String
   auth      String
   createdAt DateTime @default(now())
@@ -34,7 +35,8 @@ model Device {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, endpoint]) // Add a composite unique constraint
+  @@unique([userId, endpoint])
+  @@index([userId])
 }
 
 model PrayerRequest {
@@ -46,8 +48,11 @@ model PrayerRequest {
   updatedAt  DateTime            @updatedAt
 
   userId             String               @db.ObjectId
-  user               User                 @relation(fields: [userId], references: [id])
+  user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   PrayerRequestShare PrayerRequestShare[]
+
+  @@index([userId])
+  @@index([visibility])
 }
 
 model PrayerRequestShare {
@@ -55,9 +60,14 @@ model PrayerRequestShare {
   prayerRequestId String    @db.ObjectId
   sharedWithId    String    @db.ObjectId
   sharedWithType  ShareType
+  ownerId         String    @db.ObjectId
   createdAt       DateTime  @default(now())
 
   prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
+  owner         User          @relation(fields: [ownerId], references: [id])
+
+  @@index([sharedWithId])
+  @@index([prayerRequestId])
 }
 
 model PrayerGroup {
@@ -69,6 +79,8 @@ model PrayerGroup {
   users       UserPrayerGroup[] @relation("UserToPrayerGroup")
   ownerId     String            @db.ObjectId
   owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id])
+
+  @@index([ownerId])
 }
 
 model UserPrayerGroup {
@@ -76,13 +88,15 @@ model UserPrayerGroup {
   userId        String @db.ObjectId
   prayerGroupId String @db.ObjectId
 
-  user        User        @relation("UserToPrayerGroup", fields: [userId], references: [id])
-  prayerGroup PrayerGroup @relation("UserToPrayerGroup", fields: [prayerGroupId], references: [id])
+  user        User        @relation("UserToPrayerGroup", fields: [userId], references: [id], onDelete: Cascade)
+  prayerGroup PrayerGroup @relation("UserToPrayerGroup", fields: [prayerGroupId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([userId, prayerGroupId]) // Ensure uniqueness in many-to-many relationships
+  @@unique([userId, prayerGroupId])
+  @@index([userId])
+  @@index([prayerGroupId])
 }
 
 model Account {
@@ -103,6 +117,7 @@ model Account {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 enum PrayerRequestStatus {

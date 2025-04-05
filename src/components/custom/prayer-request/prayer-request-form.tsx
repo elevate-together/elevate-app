@@ -13,10 +13,17 @@ import {
 import { MultiSelect } from "@/components/ui/multi-select";
 import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
-
-import { createPrayerRequest } from "@/services/prayer-request";
+import {
+  createPrayerRequest,
+  getSharedGroupIds,
+  updatePrayerRequest,
+} from "@/services/prayer-request";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { PrayerRequest } from "@prisma/client";
+import {
+  PrayerRequestStatus,
+  Visibility,
+  type PrayerRequest,
+} from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -30,15 +37,14 @@ const formSchema = z.object({
   request: z.string().min(1, { message: "Request cannot be left blank" }),
   sharedWith: z
     .array(z.string().min(1))
-    .min(1)
-    .nonempty("Please select who you want to share it with"),
+    .min(1, "Please select who you want to share it with"),
   notify: z.boolean(),
 });
 
 type UserFormProps = {
-  prayer?: PrayerRequest; // The user object is optional for the "create" form case
-  onCancel?: () => void; // Optional callback for the cancel action
-  onSubmit?: () => void; // Optional callback for the cancel action
+  prayer?: PrayerRequest;
+  onCancel?: () => void;
+  onSubmit?: () => void;
   isOpen?: boolean;
   userId: string;
 };
@@ -56,50 +62,68 @@ export default function PrayerRequestForm({
     { value: string; label: string; type: string }[]
   >([]);
 
-  useEffect(() => {
-    async function fetchData() {
-      const res = await fetch("/api/auth/session");
-      const session = await res.json();
+  const [loading, setLoading] = useState(false);
+  const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
-      if (!session?.user?.id) return;
-      const constants = [
-        { value: "1", label: "Everyone", type: "public" },
-        { value: "2", label: "Just Myself", type: "private" },
-      ];
-
-      let { prayerGroups } = await getPrayerGroupsForUser(session.user.id);
-      if (!prayerGroups) prayerGroups = [];
-
-      setOptions([
-        ...constants,
-        ...prayerGroups.map((group) => ({
-          value: group.id,
-          label: group.name,
-          type: "group",
-        })),
-      ]);
-    }
-
-    fetchData();
-  }, []);
-
-  // Initialize form with default values if prayer exists
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       request: prayer?.request || "",
-      sharedWith: ["1"],
+      sharedWith: [],
       notify: true,
     },
   });
 
   const isNotify = form.watch("notify");
 
-  // Handle the form submission (for creating or updating)
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      const res = await fetch("/api/auth/session");
+      const session = await res.json();
+
+      if (!session?.user?.id) return;
+
+      const constants = [
+        { value: "1", label: "Everyone", type: "public" },
+        { value: "2", label: "Just Myself", type: "private" },
+      ];
+
+      const { prayerGroups } = await getPrayerGroupsForUser(session.user.id);
+      const formattedGroups = (prayerGroups || []).map((group) => ({
+        value: group.id,
+        label: group.name,
+        type: "group",
+      }));
+
+      setOptions([...constants, ...formattedGroups]);
+
+      if (prayer?.id) {
+        if (prayer.visibility === Visibility.PUBLIC) {
+          setSelectedValues(["1"]);
+          form.setValue("sharedWith", ["1"]);
+        } else if (prayer.visibility === Visibility.PRIVATE) {
+          setSelectedValues(["2"]);
+          form.setValue("sharedWith", ["2"]);
+        } else {
+          const { sharedWith } = await getSharedGroupIds(session.user.id);
+          setSelectedValues(sharedWith || []);
+          form.setValue("sharedWith", sharedWith || []);
+        }
+      } else {
+        setSelectedValues(["1"]);
+        form.setValue("sharedWith", ["1"]);
+      }
+
+      setLoading(false);
+    }
+
+    fetchData();
+  }, [prayer, form]);
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     const { request, notify, sharedWith } = values;
 
-    // Filter and map to include type
     const sharedWithWithType = sharedWith
       .map((id) => {
         const match = options.find((option) => option.value === id);
@@ -107,48 +131,43 @@ export default function PrayerRequestForm({
       })
       .filter((item): item is { id: string; type: string } => item !== null);
 
-    // if (prayer?.id) {
-    //   // Update the prayer request
-    //   result = await updatePrayerRequest(prayer.id, { request });
-    // } else {
-    //   // Create a new prayer request
-    const result = await createPrayerRequest({
-      request,
-      notify,
-      sharedWith: sharedWithWithType,
-      userId,
-    });
-    // }
+    let result;
+    if (prayer?.id) {
+      const requestData = {
+        request,
+        status: PrayerRequestStatus.IN_PROGRESS,
+        sharedWith: sharedWithWithType,
+      };
+      result = await updatePrayerRequest(prayer.id, requestData, userId);
+    } else {
+      result = await createPrayerRequest({
+        request,
+        notify,
+        sharedWith: sharedWithWithType,
+        userId,
+      });
+    }
 
     if (result.success && result?.prayerRequest) {
       toast.success(result.message);
       router.refresh();
-      if (onSubmit) {
-        onSubmit();
-      }
+      onSubmit?.();
     } else {
       toast.error(result.message);
     }
-
-    resetForm();
   };
 
-  // Handle the cancel action, reset the form
   const resetForm = () => {
     form.reset({
       request: prayer?.request || "",
       notify: true,
+      sharedWith: selectedValues,
     });
-    form.setValue("sharedWith", ["1"], { shouldDirty: true });
   };
 
-  // Handle the cancel action, reset the form
   const handleCancel = () => {
     resetForm();
-
-    if (onCancel) {
-      onCancel();
-    }
+    onCancel?.();
   };
 
   return (
@@ -157,7 +176,7 @@ export default function PrayerRequestForm({
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <div className="flex flex-col gap-3">
             <div className="flex flex-col justify-center gap-2">
-              <FormLabel>Share With</FormLabel>
+              <p className="text-sm">Share With</p>
               <div className="flex items-center gap-2">
                 <FormField
                   control={form.control}
@@ -168,35 +187,40 @@ export default function PrayerRequestForm({
                         <MultiSelect
                           options={options}
                           onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          selectedValues={selectedValues}
+                          setSelectedValues={setSelectedValues}
                           specialSelection
                           placeholder="Request Visibility"
                           modalPopover={true}
                           isParentOpen={isOpen}
                           maxCount={3}
+                          loading={loading}
                         />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="notify"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Toggle
-                          pressed={field.value}
-                          onPressedChange={field.onChange}
-                          aria-label="Toggle italic"
-                        >
-                          <Bell className="h-4 w-4" />
-                        </Toggle>
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
+
+                {!prayer?.id && (
+                  <FormField
+                    control={form.control}
+                    name="notify"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Toggle
+                            pressed={field.value}
+                            onPressedChange={field.onChange}
+                            aria-label="Toggle notify"
+                          >
+                            <Bell className="h-4 w-4" />
+                          </Toggle>
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
               <FormDescription>
                 Everyone selected will have access to this request—you can

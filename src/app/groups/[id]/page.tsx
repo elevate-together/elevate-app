@@ -1,26 +1,27 @@
-"use server"
+"use server";
 
 import PrayerGroupMemberTable from "@/components/custom/prayer-group/prayer-group-member-table";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
 import { Separator } from "@/components/ui/separator";
-import {
-  getInProgressPrayerRequestsByGroupId,
-  getPrayerGroupById,
-} from "@/services/prayer-group";
+import { getPrayerGroupById } from "@/services/prayer-group";
 import { getUsersByPrayerGroup } from "@/services/user-prayer-group";
 import { auth } from "@/auth";
 import { getUserById } from "@/services/users";
+import {
+  getPrayerRequestsForGroup,
+  getPublicPrayerRequestsForGroup,
+} from "@/services/prayer-request";
 
 export default async function Group({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-
   const { id } = await params;
-  
+
   const { prayerGroup } = await getPrayerGroupById(id);
   const { users } = await getUsersByPrayerGroup(id);
+  const { data: SharedWithGroupReq } = await getPrayerRequestsForGroup(id);
 
   const session = await auth();
 
@@ -38,8 +39,9 @@ export default async function Group({
 
   const { user: currUser } = await getUserById(userId);
 
-  const { prayerRequests: inProgressRequests } =
-    await getInProgressPrayerRequestsByGroupId(id);
+  const { data: inProgressRequests } = await getPublicPrayerRequestsForGroup(
+    id
+  );
 
   console.log(inProgressRequests);
 
@@ -54,15 +56,37 @@ export default async function Group({
         <h2 className="text-sm ">{prayerGroup.description}</h2>
       </div>
       <Separator />
-      <div className="text-base font-bold">Current Prayer Requests</div>
+      <div className="text-base font-bold">
+        Prayer Requests Shared With This Group:{" "}
+      </div>
+      {SharedWithGroupReq ? (
+        <div>
+          <div className="flex flex-col gap-3">
+            {SharedWithGroupReq.map((prayer) => (
+              <PrayerRequestCard
+                key={prayer.prayerRequest.id}
+                user={prayer.user}
+                prayer={prayer.prayerRequest}
+                isOwner={false}
+                currUserName={currUser?.name ?? ""}
+                displayName
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div>{`${prayerGroup.name} doesn't have any prayer requests right now.`}</div>
+      )}
+      <Separator />
+      <div className="text-base font-bold">Other Prayer Requests</div>
       {inProgressRequests ? (
         <div>
           <div className="flex flex-col gap-3">
             {inProgressRequests.map((prayer) => (
               <PrayerRequestCard
-                key={prayer.id}
+                key={prayer.prayerRequest.id}
                 user={prayer.user}
-                prayer={prayer}
+                prayer={prayer.prayerRequest}
                 isOwner={false}
                 currUserName={currUser?.name ?? ""}
                 displayName
