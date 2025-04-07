@@ -6,17 +6,16 @@ import type { PrayerGroup, PrayerRequest } from "@prisma/client";
 import type { User } from "@prisma/client";
 
 /// GET All PrayerGroups
-// GET all PrayerGroups with member count
 export async function getPrayerGroups(): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: (PrayerGroup & { owner: User; memberCount: number })[]; // Add the member count to the response
+  prayerGroups?: (PrayerGroup & { owner: User; memberCount: number })[];
 }> {
   try {
     const prayerGroups = await db.prayerGroup.findMany({
       include: {
-        owner: true, // Include the owner with all fields from the `User` model
-        users: true, // Include the users (members) of the prayer group
+        owner: true,
+        users: true,
       },
     });
 
@@ -32,14 +31,14 @@ export async function getPrayerGroups(): Promise<{
       const memberCount = prayerGroup.users?.length || 0;
       return {
         ...prayerGroup,
-        memberCount, 
+        memberCount,
       };
     });
 
     return {
       success: true,
       message: "Successfully fetched all prayer groups",
-      prayerGroups: prayerGroupsWithMemberCount, 
+      prayerGroups: prayerGroupsWithMemberCount,
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);

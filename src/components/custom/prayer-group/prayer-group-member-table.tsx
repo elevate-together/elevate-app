@@ -43,7 +43,6 @@ export default function PrayerGroupMemberTable({ data }: JoinGroupProps) {
             email={row.original.email}
             image={row.original.image ?? undefined}
             size="small"
-            includeEmail={false}
           />
         );
       },

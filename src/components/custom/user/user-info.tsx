@@ -25,14 +25,25 @@ export default function UserInfo({ id, name, email, image }: UserInfoProps) {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="p-2 my-3 rounded-lg w-full hover:bg-accent">
-              <UserAvatar name={name} email={email} image={image} icon />
+              <UserAvatar
+                name={name}
+                email={email}
+                image={image}
+                icon
+                includeEmail
+              />
             </div>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent sideOffset={7} className="p-2">
             <DropdownMenuLabel>
               <div>
-                <UserAvatar name={name} email={email} image={image} />
+                <UserAvatar
+                  name={name}
+                  email={email}
+                  image={image}
+                  includeEmail
+                />
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1 " />

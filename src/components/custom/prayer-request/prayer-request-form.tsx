@@ -15,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Toggle } from "@/components/ui/toggle";
 import {
   createPrayerRequest,
-  getSharedGroupIds,
   updatePrayerRequest,
 } from "@/services/prayer-request";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,6 +30,7 @@ import { z } from "zod";
 import { Bell } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
+import { getSharedGroupIds } from "@/services/prayer-request-share";
 
 // Validation Schema
 const formSchema = z.object({

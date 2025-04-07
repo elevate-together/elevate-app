@@ -28,12 +28,16 @@ type PrayerGroupCreateProps = {
   id: string;
   isMenu?: boolean;
   hideOnMobile?: boolean;
+  includeText?: boolean;
+  className?: string;
 };
 
 export default function PrayerRequestCreate({
   id,
   isMenu = false,
   hideOnMobile = false,
+  includeText = false,
+  className = "",
 }: PrayerGroupCreateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -48,8 +52,13 @@ export default function PrayerRequestCreate({
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         {isMobile && !isMenu ? (
-          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
+          <Button
+            size={includeText ? "default" : "icon"}
+            variant={isMenu ? "ghost" : "secondary"}
+            className={className}
+          >
             <Plus />
+            {includeText && "Add"}
           </Button>
         ) : (
           <Button
@@ -84,8 +93,13 @@ export default function PrayerRequestCreate({
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         {isMobile && !isMenu ? (
-          <Button size="icon" variant={isMenu ? "ghost" : "secondary"}>
+          <Button
+            size={includeText ? "default" : "icon"}
+            variant={isMenu ? "ghost" : "secondary"}
+            className={className}
+          >
             <Plus />
+            {includeText && "Add"}
           </Button>
         ) : (
           <Button

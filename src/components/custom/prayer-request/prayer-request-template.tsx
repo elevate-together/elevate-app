@@ -6,7 +6,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getPrayerRequestsByUserId } from "@/services/prayer-request";
 import { PrayerRequestStatus, User } from "@prisma/client";
 import { Hand, Package, Star, User as UserIcon } from "lucide-react";
-import PrayerRequestCreate from "./prayer-request-add";
 
 type PrayerRequestTemplateProps = {
   currUser: User;
@@ -43,15 +42,8 @@ export default async function PrayerRequestTemplate({
     <div>
       {isOwner ? (
         <div className="flex flex-col gap-5">
-          <div className="flex flex-row justify-between">
-            <h1 className="text-xl font-bold h-full self-center">
-              Your Prayers
-            </h1>
-            <PrayerRequestCreate id={currUser.id} />
-          </div>
-          <Separator />
           <Tabs defaultValue="request" className="w-full">
-            <TabsList>
+            <TabsList className="mx-3">
               <TabsTrigger value="request">
                 <Hand size="15px" strokeWidth="1.7px" className="mr-1" />
                 Requests
@@ -69,17 +61,15 @@ export default async function PrayerRequestTemplate({
             </TabsList>
             <TabsContent value="request">
               {inProgressRequests ? (
-                <div>
-                  <div className="flex flex-col gap-3">
-                    {inProgressRequests.map((prayer) => (
-                      <PrayerRequestCard
-                        key={prayer.id}
-                        user={currUser}
-                        prayer={prayer}
-                        isOwner={isOwner}
-                      />
-                    ))}
-                  </div>
+                <div className="flex flex-col">
+                  {inProgressRequests.map((prayer) => (
+                    <PrayerRequestCard
+                      key={prayer.id}
+                      user={currUser}
+                      prayer={prayer}
+                      isOwner={isOwner}
+                    />
+                  ))}
                 </div>
               ) : (
                 <div className="px-3">You have no active prayer requests.</div>
@@ -88,7 +78,7 @@ export default async function PrayerRequestTemplate({
             <TabsContent value="answered">
               {answeredRequests ? (
                 <div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col">
                     {answeredRequests.map((prayer) => (
                       <PrayerRequestCard
                         key={prayer.id}
@@ -108,7 +98,7 @@ export default async function PrayerRequestTemplate({
             <TabsContent value="past">
               {archivedRequests ? (
                 <div>
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col">
                     {archivedRequests.map((prayer) => (
                       <PrayerRequestCard
                         key={prayer.id}
@@ -140,7 +130,7 @@ export default async function PrayerRequestTemplate({
 
           {inProgressRequests ? (
             <div>
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col">
                 {inProgressRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}

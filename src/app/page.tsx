@@ -2,8 +2,9 @@ import { auth } from "@/auth";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
 import WelcomePage from "@/components/custom/templates/welcome-page/welcome-page";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getInProgressPrayerRequestsByUserId } from "@/services/prayer-request";
-import { getFriendPrayerRequestsForUser, getUserById } from "@/services/users";
+import { getPersonalPrayerRequestsForUser } from "@/services/prayer-request";
+import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share";
+import { getUserById } from "@/services/users";
 
 export default async function Home() {
   const session = await auth();
@@ -11,7 +12,7 @@ export default async function Home() {
   // User is not signed in
   if (!session || !session.user) {
     return (
-      <div className="h-80vh bg-green">
+      <div className="h-80vh">
         <WelcomePage />
       </div>
     );
@@ -31,18 +32,17 @@ export default async function Home() {
   }
 
   const { success: FriendSuccess, prayerRequests: FriendPrayerRequests } =
-    await getFriendPrayerRequestsForUser(id);
+    await getPrayerRequestsSharedWithUser(id);
 
   const {
     success: InProgressSuccess,
     prayerRequests: InProgressPrayerRequests,
-  } = await getInProgressPrayerRequestsByUserId(id);
+  } = await getPersonalPrayerRequestsForUser(id);
 
   return (
-    <div className="ml-5 h-full">
+    <div className="md:ml-5 h-full w-full">
       <div className="space-y-5">
-        <h1 className="text-md font-semibold mb-3">How You Can Pray Today</h1>
-        <Tabs defaultValue="community" className="w-full">
+        <Tabs defaultValue="community" className="w-full ">
           <TabsList>
             {FriendSuccess &&
               FriendPrayerRequests &&
@@ -67,7 +67,6 @@ export default async function Home() {
                       prayer={prayer}
                       isOwner={false}
                       currUserName={user.name}
-                      displayName
                     />
                   ))}
                 </div>

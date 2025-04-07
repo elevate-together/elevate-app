@@ -4,6 +4,8 @@ import db from "@/lib/db";
 import { format } from "date-fns";
 import webpush from "web-push";
 import { getDeviceInfo } from "./get-device-info";
+import { getUsersInPrayerGroup } from "./user-prayer-group";
+import { getUserById } from "./users";
 
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
@@ -84,6 +86,37 @@ export async function unsubscribeDevice(
   }
 }
 
+export const sendNotificationToGroups = async (
+  sharedWithGroups: { id: string }[],
+  userId: string
+) => {
+  const usersToNotify: string[] = [];
+
+  for (const group of sharedWithGroups) {
+    const groupData = await getUsersInPrayerGroup(group.id);
+    if (groupData.success && groupData.users) {
+      groupData.users.forEach((user) => {
+        if (!usersToNotify.includes(user.id)) {
+          usersToNotify.push(user.id);
+        }
+      });
+    }
+  }
+
+  const { user } = await getUserById(userId);
+  await Promise.all(
+    usersToNotify.map(async (tempId) => {
+      await sendNotificationAllDevices(
+        tempId,
+        `${user?.name || "Someone"} shared a prayer request with you!`,
+        "New Prayer Request"
+      );
+    })
+  );
+
+  console.log(`Notifications sent to ${usersToNotify.length} unique users.`);
+};
+
 export async function sendNotificationToDevice(
   userId: string,
   endpoint: string,
@@ -114,7 +147,7 @@ export async function sendNotificationToDevice(
 
     const fallbackTitle = title || "Notification";
 
-     console.log(fallbackTitle);
+    console.log(fallbackTitle);
 
     // Send the push notification to the specific device
     try {

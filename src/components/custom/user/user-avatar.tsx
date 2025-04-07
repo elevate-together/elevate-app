@@ -6,11 +6,12 @@ import { EllipsisVertical } from "lucide-react";
 type AvatarProps = {
   name: string;
   email: string;
-  image: string | undefined;
+  image?: string;
   icon?: boolean;
   size?: "small" | "medium" | "large";
   includeEmail?: boolean;
   boldName?: boolean;
+  secondLine?: React.ReactNode;
 };
 
 export default function UserAvatar({
@@ -19,43 +20,56 @@ export default function UserAvatar({
   image,
   icon = false,
   size = "medium",
-  includeEmail = true,
+  includeEmail = false,
   boldName = false,
+  secondLine = "",
 }: AvatarProps) {
-  return (
-    <div
-      className={`flex flex-row items-center ${
-        icon ? "justify-between" : "justify-start gap-2"
-      }`}
-    >
-      <Avatar
-        className={`${
-          size === "medium" ? "" : size === "large" ? "w-11 h-11" : "w-8 h-8"
-        }`}
-      >
-        <AvatarImage className="" src={image ?? undefined} />
-        <AvatarFallback>{name?.at(0) ?? "A"}</AvatarFallback>
-      </Avatar>
+  const sizeClasses = {
+    small: "w-8 h-8 text-xs",
+    medium: "w-9 h-9 text-sm",
+    large: "w-11 h-11 text-xl",
+  };
 
-      <div className="flex flex-col gap-0 items-start">
-        <div
-          className={`text-sm ${
-            includeEmail || boldName ? "font-semibold" : "font-normal"
-          } 
-    ${size === "large" ? "text-xl" : ""} p-0 m-0`}
-        >
-          {name}
-        </div>
-        {includeEmail && (
-          <p
-            className={` ${
-              size == "large" ? "text-sm" : "text-xs"
-            } font-normal text-muted-foreground p-0 m-0`}
+  const avatarSizeClass = sizeClasses[size];
+  const nameFontWeight =
+    boldName || includeEmail ? "font-semibold" : "font-normal";
+  const emailTextSize = size === "large" ? "text-sm" : "text-xs";
+
+  return (
+    <div className={"flex flex-row items-center justify-between"}>
+      <div className={"flex flex-row items-center justify-start gap-2"}>
+        <Avatar className={avatarSizeClass}>
+          <AvatarImage src={image ?? undefined} />
+          <AvatarFallback>
+            {name?.charAt(0).toUpperCase() || "?"}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex flex-col items-start gap-0 leading-tight">
+          <div
+            className={`p-0 m-0 ${nameFontWeight} ${
+              size === "large" ? "text-xl" : "text-sm"
+            }`}
           >
-            {email}
-          </p>
-        )}
+            {name}
+          </div>
+          {includeEmail && (
+            <p
+              className={`p-0 m-0 ${emailTextSize} font-normal text-muted-foreground`}
+            >
+              {email}
+            </p>
+          )}
+          {secondLine && !includeEmail && (
+            <p
+              className={`p-0 m-0 ${emailTextSize} font-normal text-muted-foreground`}
+            >
+              {secondLine}
+            </p>
+          )}
+        </div>
       </div>
+
       {icon && <EllipsisVertical width={17} />}
     </div>
   );

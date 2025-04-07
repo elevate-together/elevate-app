@@ -7,10 +7,8 @@ import { getPrayerGroupById } from "@/services/prayer-group";
 import { getUsersByPrayerGroup } from "@/services/user-prayer-group";
 import { auth } from "@/auth";
 import { getUserById } from "@/services/users";
-import {
-  getPrayerRequestsForGroup,
-  getPublicPrayerRequestsForGroup,
-} from "@/services/prayer-request";
+import { getPrayerRequestsForGroup } from "@/services/prayer-request-share";
+import { getPublicPrayerRequestsForGroup } from "@/services/prayer-request-share";
 
 export default async function Group({
   params,
@@ -69,7 +67,6 @@ export default async function Group({
                 prayer={prayer.prayerRequest}
                 isOwner={false}
                 currUserName={currUser?.name ?? ""}
-                displayName
               />
             ))}
           </div>
@@ -89,7 +86,6 @@ export default async function Group({
                 prayer={prayer.prayerRequest}
                 isOwner={false}
                 currUserName={currUser?.name ?? ""}
-                displayName
               />
             ))}
           </div>

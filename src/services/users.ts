@@ -1,7 +1,8 @@
 "use server";
 
 import db from "@/lib/db";
-import { Device, PrayerRequest, User } from "@prisma/client";
+import { ResponseMessage } from "@/lib/utils";
+import { Device, User } from "@prisma/client";
 
 // GET All Users
 export async function getAllUsers(): Promise<{
@@ -126,9 +127,7 @@ export async function updateUser(
 }
 
 // DELETE a User by ID
-export async function deleteUser(
-  id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deleteUser(id: string): Promise<ResponseMessage> {
   try {
     const user = await db.user.findUnique({
       where: { id },
@@ -158,6 +157,7 @@ export async function deleteUser(
   }
 }
 
+// GET device info for a user
 export async function getUserDevices(userId: string): Promise<{
   success: boolean;
   message: string;
@@ -181,55 +181,5 @@ export async function getUserDevices(userId: string): Promise<{
   } catch (error) {
     console.error("Error fetching user devices:", error);
     return { success: false, message: "Failed to fetch devices" };
-  }
-}
-
-export async function getFriendPrayerRequestsForUser(userId: string): Promise<{
-  success: boolean;
-  message: string;
-  prayerRequests?: (PrayerRequest & { user: User })[];
-}> {
-  try {
-    // Step 1: Get all prayer groups the user is part of
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
-      where: { userId },
-      include: {
-        prayerGroup: {
-          include: {
-            users: true, // Get all users in the prayer group
-          },
-        },
-      },
-    });
-
-    // Step 2: Collect all user IDs from the prayer groups the user is a member of
-    const memberIds = userPrayerGroups.flatMap((userPrayerGroup) =>
-      userPrayerGroup.prayerGroup.users.map((user) => user.userId)
-    );
-
-    // Step 3: Get all prayer requests from users in these groups (excluding the requesting user)
-    const prayerRequests = await db.prayerRequest.findMany({
-      where: {
-        userId: { in: memberIds, not: userId }, // Exclude the requesting user
-        status: "IN_PROGRESS",
-      },
-      include: {
-        user: true, // Include user details with each prayer request
-      },
-    });
-
-    return {
-      success: true,
-      message: prayerRequests.length
-        ? "Successfully fetched friend prayer requests."
-        : "No in-progress prayer requests found for friends.",
-      prayerRequests,
-    };
-  } catch (error) {
-    console.error("Error fetching friend prayer requests:", error);
-    return {
-      success: false,
-      message: "Error fetching friend prayer requests.",
-    };
   }
 }

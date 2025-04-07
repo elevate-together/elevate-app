@@ -1,12 +1,8 @@
 "use server";
 
 import db from "@/lib/db";
+import { ResponseMessage } from "@/lib/utils";
 import { PrayerGroup, User } from "@prisma/client";
-
-type ResponseMessage = {
-  success: boolean;
-  message: string;
-};
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(

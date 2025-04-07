@@ -1,40 +1,45 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { sendNotificationAllDevices } from "@/services/device";
-import {
-  deletePrayerRequest,
-  updatePrayerRequestStatus,
-} from "@/services/prayer-request";
+import { updatePrayerRequestStatus } from "@/services/prayer-request";
 import { PrayerRequestStatus, User, type PrayerRequest } from "@prisma/client";
-import { DialogClose, DialogDescription } from "@radix-ui/react-dialog";
-import { format, isSameDay } from "date-fns";
-import { Bell, Edit2Icon, Hand, Package, Star, Trash } from "lucide-react";
+import { format, isSameSecond } from "date-fns";
+import {
+  Bell,
+  Hand,
+  HandHelpingIcon,
+  Package,
+  Star,
+  Ellipsis,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { toast } from "sonner";
-import PrayerRequestForm from "./prayer-request-form";
+import UserAvatar from "../user/user-avatar";
+import PrayerRequestDelete from "./prayer-request-delete";
+import PrayerRequestEdit from "./prayer-request-edit";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+} from "@radix-ui/react-dropdown-menu";
+import {
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
 
 type PrayerRequestCardProps = {
   prayer: PrayerRequest;
   user: User;
   isOwner?: boolean;
-  displayName?: boolean;
   currUserName?: string;
 };
 
@@ -42,10 +47,8 @@ export default function PrayerRequestCard({
   prayer,
   user,
   isOwner = false,
-  displayName = false,
   currUserName = "",
 }: PrayerRequestCardProps) {
-  const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const handleSendNotification = async () => {
@@ -81,187 +84,149 @@ export default function PrayerRequestCard({
     }
   };
 
-  const handleDeleteRequest = async () => {
-    const result = await deletePrayerRequest(prayer.id);
-
-    if (result.success) {
-      toast.success(result.message);
-      router.refresh();
-    } else {
-      toast.error(result.message);
-    }
-  };
-
   return (
-    <Card className="shadow-none">
-      <CardHeader className="px-5 py-4 pb-0">
+    <Card className="rounded-none mb-2 shadow border-none">
+      <CardHeader className="pb-3">
         <CardTitle>
-          <div className="flex flex-row justify-between items-start gap-3">
-            <div className="font-normal mt-2 mb-3">{prayer.request}</div>
-            {!isOwner && (
-              <Button
-                size="icon"
-                variant="ghost"
-                onClick={handleSendNotification}
-              >
-                <Bell />
-              </Button>
-            )}
+          <div className="flex justify-between items-start">
+            <UserAvatar
+              name={user.name}
+              email={user.email}
+              image={user.image || undefined}
+              size="medium"
+              secondLine={
+                <span className="flex items-center gap-1">
+                  <HandHelpingIcon className="w-4 h-4" />
+                  {format(new Date(prayer.createdAt), "PPP")}
+                </span>
+              }
+              boldName
+            />
+            <div className="flex flex-row justify-between items-start gap-3">
+              {!isOwner ? (
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={handleSendNotification}
+                >
+                  <Bell />
+                </Button>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button size="icon" variant="ghost">
+                      <Ellipsis className="w-12 h-12" />
+                    </Button>
+                  </DropdownMenuTrigger>
+
+                  <DropdownMenuContent
+                    className="w-[130px] bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
+                    side="bottom"
+                    align="end"
+                  >
+                    <DropdownMenuLabel className="ml-1">
+                      Prayer Actions
+                    </DropdownMenuLabel>
+                    <Separator />
+                    {prayer.status === PrayerRequestStatus.IN_PROGRESS && (
+                      <DropdownMenuItem asChild>
+                        <PrayerRequestEdit
+                          prayer={prayer}
+                          userId={user.id}
+                          includeText
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent "
+                        />
+                      </DropdownMenuItem>
+                    )}
+
+                    {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                      <DropdownMenuItem asChild>
+                        <PrayerRequestDelete
+                          id={prayer.id}
+                          includeText
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent"
+                        />
+                      </DropdownMenuItem>
+                    )}
+
+                    {prayer.status !== PrayerRequestStatus.ARCHIVED && (
+                      <DropdownMenuItem asChild>
+                        <Button
+                          size="default"
+                          variant="ghost"
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                          onClick={() =>
+                            handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
+                          }
+                        >
+                          <Package className="h-4 w-4" />
+                          Archive
+                        </Button>
+                      </DropdownMenuItem>
+                    )}
+
+                    {prayer.status !== PrayerRequestStatus.IN_PROGRESS && (
+                      <DropdownMenuItem asChild>
+                        <Button
+                          size="default"
+                          variant="ghost"
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                          onClick={() =>
+                            handleUpdateStatus(PrayerRequestStatus.IN_PROGRESS)
+                          }
+                        >
+                          <Hand className="h-4 w-4" />
+                          Request
+                        </Button>
+                      </DropdownMenuItem>
+                    )}
+
+                    {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                      <DropdownMenuItem asChild>
+                        <Button
+                          size="default"
+                          variant="ghost"
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                          onClick={() =>
+                            handleUpdateStatus(PrayerRequestStatus.ANSWERED)
+                          }
+                        >
+                          <Star className="h-4 w-4" />
+                          Answered
+                        </Button>
+                      </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
+            </div>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="px-5 pb-4">
-        <div className="flex flex-row items-center justify-between">
+      <CardContent className=" pb-0">
+        <div>{prayer.request}</div>
+      </CardContent>
+      <CardFooter>
+        <div className="flex flex-row items-center justify-between mt-2">
           <div className="flex flex-col ">
-            <div
-              className={`${
-                prayer.status === PrayerRequestStatus.ANSWERED
-                  ? "font-normal text-xs"
-                  : "font-semibold text-sm"
-              }`}
-            >
-              {prayer.status === PrayerRequestStatus.ANSWERED
-                ? `Created: ${format(new Date(prayer.createdAt), "MM/dd/yy")}`
-                : format(new Date(prayer.createdAt), "MMMM d, yyyy")}
-            </div>
             {prayer.status === PrayerRequestStatus.ANSWERED ? (
-              <div className="text-xs font-semibold">
+              <div className="text-sm font-semibold">
                 Answered: {format(new Date(prayer.updatedAt), "MM/dd/yy")}
               </div>
             ) : (
-              !isSameDay(
+              !isSameSecond(
                 new Date(prayer.createdAt),
                 new Date(prayer.updatedAt)
               ) && (
                 <div className="text-xs">
-                  Last Updated: {format(new Date(prayer.updatedAt), "MM/dd/yy")}
+                  Updated:{" "}
+                  {format(new Date(prayer.updatedAt), "MM/dd/yy 'at' hh:mm a")}
                 </div>
               )
             )}
           </div>
-          {displayName && <div className="font-bold text-sm">{user.name}</div>}
-
-          {isOwner ? (
-            <div className="flex flex-row gap-0">
-              {prayer.status == PrayerRequestStatus.IN_PROGRESS && (
-                <Dialog open={open} onOpenChange={setOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="icon" variant="ghost">
-                      <Edit2Icon />
-                    </Button>
-                  </DialogTrigger>
-
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>Edit Prayer Request</DialogTitle>
-                    </DialogHeader>
-                    <PrayerRequestForm
-                      prayer={prayer}
-                      userId={user.id}
-                      isOpen={open}
-                      onSubmit={() => setOpen(false)}
-                      onCancel={() => setOpen(false)}
-                    />
-                  </DialogContent>
-                </Dialog>
-              )}
-
-              {prayer.status != PrayerRequestStatus.ANSWERED && (
-                <Dialog>
-                  <DialogTrigger asChild>
-                    <Button size="icon" variant="ghost">
-                      <Trash />
-                    </Button>
-                  </DialogTrigger>
-
-                  <DialogContent className="max-w-md">
-                    <DialogHeader>
-                      <DialogTitle>
-                        Are you sure you want to delete this prayer request?
-                      </DialogTitle>
-                    </DialogHeader>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete
-                      your prayer request.
-                    </DialogDescription>
-                    <DialogFooter>
-                      <DialogClose asChild>
-                        <Button variant="secondary">Cancel</Button>
-                      </DialogClose>
-                      <Button type="submit" onClick={handleDeleteRequest}>
-                        Confirm
-                      </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              )}
-
-              {prayer.status != PrayerRequestStatus.ARCHIVED && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() =>
-                          handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
-                        }
-                      >
-                        <Package />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Archive</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-
-              {prayer.status != PrayerRequestStatus.IN_PROGRESS && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() =>
-                          handleUpdateStatus(PrayerRequestStatus.IN_PROGRESS)
-                        }
-                      >
-                        <Hand />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Request</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-
-              {prayer.status != PrayerRequestStatus.ANSWERED && (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() =>
-                          handleUpdateStatus(PrayerRequestStatus.ANSWERED)
-                        }
-                      >
-                        <Star />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Mark as Answered</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              )}
-            </div>
-          ) : null}
         </div>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }
