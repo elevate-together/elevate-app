@@ -18,7 +18,7 @@ import {
   HandHelpingIcon,
   Package,
   Star,
-  Ellipsis,
+  EllipsisVertical,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -26,15 +26,14 @@ import UserAvatar from "../user/user-avatar";
 import PrayerRequestDelete from "./prayer-request-delete";
 import PrayerRequestEdit from "./prayer-request-edit";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-} from "@radix-ui/react-dropdown-menu";
-import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
+import { useState } from "react";
 
 type PrayerRequestCardProps = {
   prayer: PrayerRequest;
@@ -50,6 +49,7 @@ export default function PrayerRequestCard({
   currUserName = "",
 }: PrayerRequestCardProps) {
   const router = useRouter();
+  const [isOpen, setIsPopoverOpen] = useState(false);
 
   const handleSendNotification = async () => {
     const title =
@@ -112,92 +112,87 @@ export default function PrayerRequestCard({
                   <Bell />
                 </Button>
               ) : (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button size="icon" variant="ghost">
-                      <Ellipsis className="w-12 h-12" />
-                    </Button>
-                  </DropdownMenuTrigger>
+                <div>
+                  {prayer.status === PrayerRequestStatus.IN_PROGRESS && (
+                    <PrayerRequestEdit prayer={prayer} userId={user.id} />
+                  )}
+                  <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost">
+                        <EllipsisVertical />
+                      </Button>
+                    </DropdownMenuTrigger>
 
-                  <DropdownMenuContent
-                    className="w-[130px] bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
-                    side="bottom"
-                    align="end"
-                  >
-                    <DropdownMenuLabel className="ml-1">
-                      Prayer Actions
-                    </DropdownMenuLabel>
-                    <Separator />
-                    {prayer.status === PrayerRequestStatus.IN_PROGRESS && (
-                      <DropdownMenuItem asChild>
-                        <PrayerRequestEdit
-                          prayer={prayer}
-                          userId={user.id}
-                          includeText
-                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent "
-                        />
-                      </DropdownMenuItem>
-                    )}
+                    <DropdownMenuContent
+                      className="w-[130px] bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
+                      side="bottom"
+                      align="end"
+                    >
+                      <DropdownMenuLabel>Prayer Actions</DropdownMenuLabel>
+                      <Separator />
 
-                    {prayer.status !== PrayerRequestStatus.ANSWERED && (
-                      <DropdownMenuItem asChild>
-                        <PrayerRequestDelete
-                          id={prayer.id}
-                          includeText
-                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent"
-                        />
-                      </DropdownMenuItem>
-                    )}
+                      {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                        <DropdownMenuItem asChild>
+                          <PrayerRequestDelete
+                            id={prayer.id}
+                            includeText
+                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent"
+                          />
+                        </DropdownMenuItem>
+                      )}
 
-                    {prayer.status !== PrayerRequestStatus.ARCHIVED && (
-                      <DropdownMenuItem asChild>
-                        <Button
-                          size="default"
-                          variant="ghost"
-                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
-                          onClick={() =>
-                            handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
-                          }
-                        >
-                          <Package className="h-4 w-4" />
-                          Archive
-                        </Button>
-                      </DropdownMenuItem>
-                    )}
+                      {prayer.status !== PrayerRequestStatus.ARCHIVED && (
+                        <DropdownMenuItem asChild>
+                          <Button
+                            size="default"
+                            variant="ghost"
+                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            onClick={() =>
+                              handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
+                            }
+                          >
+                            <Package className="h-4 w-4" />
+                            Archive
+                          </Button>
+                        </DropdownMenuItem>
+                      )}
 
-                    {prayer.status !== PrayerRequestStatus.IN_PROGRESS && (
-                      <DropdownMenuItem asChild>
-                        <Button
-                          size="default"
-                          variant="ghost"
-                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
-                          onClick={() =>
-                            handleUpdateStatus(PrayerRequestStatus.IN_PROGRESS)
-                          }
-                        >
-                          <Hand className="h-4 w-4" />
-                          Request
-                        </Button>
-                      </DropdownMenuItem>
-                    )}
+                      {prayer.status !== PrayerRequestStatus.IN_PROGRESS && (
+                        <DropdownMenuItem asChild>
+                          <Button
+                            size="default"
+                            variant="ghost"
+                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            onClick={() =>
+                              handleUpdateStatus(
+                                PrayerRequestStatus.IN_PROGRESS
+                              )
+                            }
+                          >
+                            <Hand className="h-4 w-4" />
+                            Request
+                          </Button>
+                        </DropdownMenuItem>
+                      )}
 
-                    {prayer.status !== PrayerRequestStatus.ANSWERED && (
-                      <DropdownMenuItem asChild>
-                        <Button
-                          size="default"
-                          variant="ghost"
-                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
-                          onClick={() =>
-                            handleUpdateStatus(PrayerRequestStatus.ANSWERED)
-                          }
-                        >
-                          <Star className="h-4 w-4" />
-                          Answered
-                        </Button>
-                      </DropdownMenuItem>
-                    )}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                      {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                        <DropdownMenuItem asChild>
+                          <Button
+                            size="default"
+                            variant="ghost"
+                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            onClick={() =>
+                              handleUpdateStatus(PrayerRequestStatus.ANSWERED)
+                            }
+                          >
+                            <Star className="h-4 w-4" />
+                            Answered
+                          </Button>
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               )}
             </div>
           </div>

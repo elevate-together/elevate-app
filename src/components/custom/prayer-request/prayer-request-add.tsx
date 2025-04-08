@@ -16,7 +16,6 @@ import {
   Drawer,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
@@ -86,7 +85,6 @@ export default function PrayerRequestCreate({
             isOpen={isOpen && isMobile}
           />
         </div>
-        <DrawerFooter></DrawerFooter>
       </DrawerContent>
     </Drawer>
   ) : (

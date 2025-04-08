@@ -14,6 +14,14 @@ import {
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import PrayerGroupForm from "./prayer-group-form";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
 
 type PrayerGroupCreateProps = {
   id: string;
@@ -38,10 +46,38 @@ export default function PrayerGroupCreate({
     setIsOpen(false);
   };
 
-  return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+  return isMobile ? (
+    <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
+      <DrawerTrigger asChild>
+        <Button
+          aria-label="Create a new prayer group"
+          className={`${
+            isMenu ? "flex justify-start items-center w-full p-2" : ""
+          }`}
+          variant={isMenu ? "ghost" : "secondary"}
+        >
+          <Plus /> Create New Group
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent>
+        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-6">
+          <DrawerHeader className="text-left px-0 py-3">
+            <DrawerTitle>Create New Prayer Group</DrawerTitle>
+          </DrawerHeader>
+          <PrayerGroupForm
+            ownerId={id}
+            onSubmit={handleSubmit}
+            onCancel={handleCancel}
+          />
+          <DrawerDescription hidden>Create New Prayer Group</DrawerDescription>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          aria-label="Create a new prayer group"
           className={`${
             isMenu ? "flex justify-start items-center w-full p-2" : ""
           }`}

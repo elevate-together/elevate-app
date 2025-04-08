@@ -104,7 +104,7 @@ export default function PrayerGroupForm({
                     <FormLabel>Group Name</FormLabel>
                     <FormControl>
                       <Input
-                        className="w-full"
+                        className="w-full bg-transparent"
                         placeholder="Exodus '25 Group"
                         {...field}
                       />

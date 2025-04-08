@@ -27,7 +27,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Bell } from "lucide-react";
+import { Bell, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import { getSharedGroupIds } from "@/services/prayer-request-share";
@@ -62,7 +62,8 @@ export default function PrayerRequestForm({
     { value: string; label: string; type: string }[]
   >([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loadingPane, setLoadingPane] = useState(false);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -78,7 +79,7 @@ export default function PrayerRequestForm({
 
   useEffect(() => {
     async function fetchData() {
-      setLoading(true);
+      setLoadingPane(true);
       const res = await fetch("/api/auth/session");
       const session = await res.json();
 
@@ -115,15 +116,15 @@ export default function PrayerRequestForm({
         form.setValue("sharedWith", ["1"]);
       }
 
-      setLoading(false);
+      setLoadingPane(false);
     }
 
     fetchData();
   }, [prayer, form]);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    setLoadingSubmit(true);
     const { request, notify, sharedWith } = values;
-
     const sharedWithWithType = sharedWith
       .map((id) => {
         const match = options.find((option) => option.value === id);
@@ -155,6 +156,8 @@ export default function PrayerRequestForm({
     } else {
       toast.error(result.message);
     }
+    resetForm();
+    setLoadingSubmit(false);
   };
 
   const resetForm = () => {
@@ -194,7 +197,7 @@ export default function PrayerRequestForm({
                           modalPopover={true}
                           isParentOpen={isOpen}
                           maxCount={3}
-                          loading={loading}
+                          loading={loadingPane}
                         />
                       </FormControl>
                       <FormMessage />
@@ -254,11 +257,16 @@ export default function PrayerRequestForm({
                 type="button"
                 onClick={handleCancel}
                 className="w-full"
+                disabled={loadingSubmit}
               >
                 Cancel
               </Button>
-              <Button className="w-full" type="submit">
-                Save
+              <Button className="w-full" type="submit" disabled={loadingSubmit}>
+                {loadingSubmit ? (
+                  <Loader className="h-4 w-4 animate-spin" />
+                ) : (
+                  "Save"
+                )}
               </Button>
             </div>
           </div>

@@ -40,19 +40,21 @@ export default function PrayerRequestEdit({
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  const triggerButton = (
+    <Button
+      size={includeText ? "default" : "icon"}
+      variant="ghost"
+      aria-label="Edit prayer request"
+      className={className}
+    >
+      <Edit2Icon />
+      {includeText && "Edit"}
+    </Button>
+  );
+
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
-        <Button
-          size={includeText ? "default" : "icon"}
-          variant="ghost"
-          aria-label="Edit prayer request"
-          className={className}
-        >
-          <Edit2Icon />
-          {includeText && "Edit"}
-        </Button>
-      </DrawerTrigger>
+      <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
       <DrawerContent aria-describedby={undefined}>
         <div className="mx-auto w-full max-w-sm py-5 px-5 md:p-0">
           <DrawerHeader className="text-left p-0">
@@ -62,6 +64,8 @@ export default function PrayerRequestEdit({
             userId={userId}
             prayer={prayer}
             isOpen={isOpen && isMobile}
+            onSubmit={() => setIsOpen(false)}
+            onCancel={() => setIsOpen(false)}
           />
         </div>
         <DrawerFooter></DrawerFooter>
@@ -69,19 +73,7 @@ export default function PrayerRequestEdit({
     </Drawer>
   ) : (
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <DrawerTrigger asChild>
-          <Button
-            size={includeText ? "default" : "icon"}
-            variant="ghost"
-            aria-label="Edit prayer request"
-            className={className}
-          >
-            <Edit2Icon />
-            {includeText && "Edit"}
-          </Button>
-        </DrawerTrigger>
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="max-w-md" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle>Edit Prayer Request</DialogTitle>
