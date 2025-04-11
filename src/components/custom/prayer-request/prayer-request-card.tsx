@@ -19,6 +19,7 @@ import {
   Package,
   Star,
   EllipsisVertical,
+  Loader,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -50,8 +51,10 @@ export default function PrayerRequestCard({
 }: PrayerRequestCardProps) {
   const router = useRouter();
   const [isOpen, setIsPopoverOpen] = useState(false);
+  const [notificationLoading, setNotificationLoading] = useState(false);
 
   const handleSendNotification = async () => {
+    setNotificationLoading(true);
     const title =
       currUserName != ""
         ? currUserName.includes(" ")
@@ -71,6 +74,7 @@ export default function PrayerRequestCard({
     } else {
       toast.error(result.message);
     }
+    setNotificationLoading(false);
   };
 
   const handleUpdateStatus = async (status: PrayerRequestStatus) => {
@@ -109,7 +113,11 @@ export default function PrayerRequestCard({
                   variant="ghost"
                   onClick={handleSendNotification}
                 >
-                  <Bell />
+                  {notificationLoading ? (
+                    <Loader className="animate-spin" />
+                  ) : (
+                    <Bell />
+                  )}
                 </Button>
               ) : (
                 <div>
