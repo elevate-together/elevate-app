@@ -36,8 +36,13 @@ import DeviceForm from "./device-form";
 type DeviceTableProps = {
   devices: Device[];
   userId: string;
+  onDeviceChange?: () => void;
 };
-export default function DeviceTable({ devices, userId }: DeviceTableProps) {
+export default function DeviceTable({
+  devices,
+  userId,
+  onDeviceChange = () => null,
+}: DeviceTableProps) {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
@@ -62,6 +67,9 @@ export default function DeviceTable({ devices, userId }: DeviceTableProps) {
     if (success) {
       toast.success(message);
       router.refresh();
+      if (onDeviceChange) {
+        onDeviceChange();
+      }
     } else {
       toast.error(message);
     }

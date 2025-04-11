@@ -245,3 +245,16 @@ export async function updateDeviceTitle(
     return { success: false, message: "Failed to update device" };
   }
 }
+
+export async function checkIfDeviceExists(endpoint: string): Promise<boolean> {
+  try {
+    const device = await db.device.findUnique({
+      where: { endpoint },
+    });
+
+    return !!device; // Return true if device exists, else false
+  } catch (error) {
+    console.error("Error checking device existence:", error);
+    return false;
+  }
+}

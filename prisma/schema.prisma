@@ -15,12 +15,32 @@ model User {
   image              String?
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
+
   prayerGroups       UserPrayerGroup[]    @relation("UserToPrayerGroup")
   accounts           Account[]
   ownedPrayerGroups  PrayerGroup[]        @relation("UserOwnedPrayerGroups")
   prayerRequests     PrayerRequest[]
   devices            Device[]
   PrayerRequestShare PrayerRequestShare[]
+  sentFriendRequests UserFriend[]         @relation("SentFriendRequests")
+  receivedFriendRequests UserFriend[]     @relation("ReceivedFriendRequests")
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+}
+
+model UserFriend {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  status         FriendStatus
+  senderId       String       @db.ObjectId
+  receiverId     String       @db.ObjectId
+
+  sender         User         @relation("SentFriendRequests", fields: [senderId], references: [id])
+  receiver       User         @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+
+  @@unique([senderId, receiverId])
 }
 
 model Device {
@@ -117,7 +137,7 @@ model Account {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  @@index([userId])
+  // @@index([userId])
 }
 
 enum PrayerRequestStatus {

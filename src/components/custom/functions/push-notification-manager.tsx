@@ -4,7 +4,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { arrayBufferToBase64, urlBase64ToUint8Array } from "@/lib/utils";
 
-import { subscribeDevice, unsubscribeDevice } from "@/services/device";
+import {
+  checkIfDeviceExists,
+  subscribeDevice,
+  unsubscribeDevice,
+} from "@/services/device";
 import { Check, Loader, TriangleAlert } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,8 +16,10 @@ import { toast } from "sonner";
 
 export default function PushNotificationManager({
   userId,
+  refreshTrigger,
 }: {
   userId: string;
+  refreshTrigger?: number;
 }) {
   const router = useRouter();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
@@ -25,7 +31,7 @@ export default function PushNotificationManager({
     const checkNotifications = async () => {
       if ("serviceWorker" in navigator && "PushManager" in window) {
         setSupportsNotifications(true);
-        await checkSubscription();
+        await checkSubscription(); // Check subscription status when the component mounts
       } else {
         setSupportsNotifications(false);
       }
@@ -34,36 +40,60 @@ export default function PushNotificationManager({
     };
 
     checkNotifications();
-
-    // Listen for subscription changes
-    const handleSubscriptionChange = () => {
-      checkSubscription();
-    };
-
-    window.addEventListener("subscriptionChange", handleSubscriptionChange);
-
-    // Cleanup on unmount
-    return () => {
-      window.removeEventListener(
-        "subscriptionChange",
-        handleSubscriptionChange
-      );
-    };
-  }, []);
+  }, [refreshTrigger]);
 
   const checkSubscription = async () => {
     try {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
-      setIsSubscribed(!!subscription);
-    } catch (error) {
-      console.error("Error checking subscription status:", error);
+
+      if (!subscription) {
+        setIsSubscribed(false);
+        return;
+      }
+
+      const endpoint = subscription.endpoint;
+
+      // Call the service function to check if the device exists in DB
+      const exists = await checkIfDeviceExists(endpoint);
+
+      if (!exists) {
+        console.log(
+          "Subscription exists in browser but not in DB, unsubscribing."
+        );
+        await subscription.unsubscribe(); // Clean up the subscription in the browser
+      }
+
+      setIsSubscribed(exists);
+    } catch (err) {
+      console.error("Error checking subscription:", err);
+      setIsSubscribed(false);
+    }
+  };
+
+  const checkNotificationPermission = async () => {
+    try {
+      if (Notification.permission !== "granted") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+          toast.error("You need to allow notifications to subscribe.");
+          return false;
+        }
+      }
+      return true;
+    } catch (err) {
+      console.error("Error requesting permission for notifications:", err);
+      toast.error("Error requesting notification permissions.");
+      return false;
     }
   };
 
   const handleAddPushSubscription = async () => {
     let sub;
     try {
+      const permissionGranted = await checkNotificationPermission();
+      if (!permissionGranted) return;
+
       // Register the service worker
       const registration = await navigator.serviceWorker.register("/sw.js");
       if (!registration) return;
@@ -176,8 +206,8 @@ export default function PushNotificationManager({
                 <TriangleAlert className="h-4 w-4 text-red-500" />
               </div>
               <div>
-                Push notifications are not supported in this browser. Make sure
-                your phone is up to date.
+                Push notifications are not supported in this browser. If on
+                mobile make sure that you add elevate to your homescreen first.
               </div>
             </AlertDescription>
           </Alert>

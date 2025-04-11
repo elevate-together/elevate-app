@@ -10,14 +10,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     strategy: "jwt",
   },
   pages: {
-    signIn: "/signin",
+    signIn: "/",
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // get user from db with the email
-        // if there is no user with the email, create new user
-        // else set the user data to token
         token.id = user.id;
         token.email = user.email;
       }

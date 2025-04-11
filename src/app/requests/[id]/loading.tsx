@@ -1,5 +1,6 @@
-import LoadingProgress from "@/components/custom/functions/loading-progress";
+"use client";
+// import LoadingProgress from "@/components/custom/functions/loading-progress";
 
 export default function Loading() {
-  return <LoadingProgress />;
+  return <div>Hello</div>;
 }

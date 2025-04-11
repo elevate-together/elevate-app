@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
-import DeviceTable from "@/components/custom/device/device-table";
-import PushNotificationManager from "@/components/custom/functions/push-notification-manager";
+import UserProfileDevices from "@/components/custom/user/user-profile-devices";
 import { Separator } from "@/components/ui/separator";
 import { getUserById, getUserDevices } from "@/services/users";
 export default async function Profile({
@@ -28,24 +27,7 @@ export default async function Profile({
   return (
     <div className="space-y-6">
       {isOwner ? (
-        <div className="space-y-6">
-          <PushNotificationManager userId={pageUser.id} />
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Your Info</h2>
-            <Separator className="my-4" />
-            <div className="flex flex-col gap-4 md:flex-row md:gap-8 mx-4">
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-semibold">Name:</div>
-                <div>{pageUser.name}</div>
-              </div>
-              <div className="flex flex-col gap-1">
-                <div className="text-sm font-semibold">Email:</div>
-                <div>{pageUser.email}</div>
-              </div>
-            </div>
-          </div>
-          {devices && <DeviceTable devices={devices} userId={pageId} />}
-        </div>
+        <UserProfileDevices devices={devices} user={pageUser} />
       ) : (
         <div>
           <h2 className="text-xl font-semibold mb-2">
