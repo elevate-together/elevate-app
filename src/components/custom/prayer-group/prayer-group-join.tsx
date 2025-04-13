@@ -19,18 +19,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PrayerGroupWithOwner } from "@/lib/utils";
+import { PrayerGroupForPreview } from "@/lib/utils";
 import { User } from "@prisma/client";
 import UserAvatar from "../user/user-avatar";
 import JoinGroup from "../user/user-join-group";
 import PrayerGroupDialog from "./prayer-group-dialog";
 
 type JoinGroupProps = {
-  data: PrayerGroupWithOwner[];
+  data: PrayerGroupForPreview[];
   userId: string;
 };
 export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
-  const columns: ColumnDef<PrayerGroupWithOwner>[] = [
+  const columns: ColumnDef<PrayerGroupForPreview>[] = [
     {
       accessorKey: "name",
       enableHiding: false,

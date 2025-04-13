@@ -7,7 +7,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type PrayerGroupWithOwner = PrayerGroup & {
+export type PrayerGroupForPreview = PrayerGroup & {
   owner: UserDef;
   memberCount: number;
 };

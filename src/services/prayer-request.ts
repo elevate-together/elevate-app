@@ -4,7 +4,7 @@ import db from "@/lib/db";
 import {
   PrayerRequest,
   PrayerRequestStatus,
-  Visibility,
+  PrayerVisibility,
   ShareType,
 } from "@prisma/client";
 import { sendNotificationAllDevices, sendNotificationToGroups } from "./device";
@@ -71,7 +71,7 @@ export async function createPrayerRequest(requestData: {
 
     let newPrayerRequest: PrayerRequest | undefined = undefined;
 
-    const createPrayerRequestEntry = async (visibility: Visibility) => {
+    const createPrayerRequestEntry = async (visibility: PrayerVisibility) => {
       return await db.prayerRequest.create({
         data: {
           request,
@@ -84,7 +84,9 @@ export async function createPrayerRequest(requestData: {
 
     // Share the prayer request with everyone
     if (hasPublicType) {
-      newPrayerRequest = await createPrayerRequestEntry(Visibility.PUBLIC);
+      newPrayerRequest = await createPrayerRequestEntry(
+        PrayerVisibility.PUBLIC
+      );
 
       // send a notification to all users in groups
       if (notify) {
@@ -96,7 +98,9 @@ export async function createPrayerRequest(requestData: {
     }
     // Just share with yourself
     else if (hasPrivateType) {
-      newPrayerRequest = await createPrayerRequestEntry(Visibility.PRIVATE);
+      newPrayerRequest = await createPrayerRequestEntry(
+        PrayerVisibility.PRIVATE
+      );
       if (notify) {
         await sendNotificationAllDevices(
           userId,
@@ -107,7 +111,9 @@ export async function createPrayerRequest(requestData: {
     }
     // Share with groups, create entry in the join table for which groups
     else if (sharedWithGroups.length > 0) {
-      newPrayerRequest = await createPrayerRequestEntry(Visibility.SHARED);
+      newPrayerRequest = await createPrayerRequestEntry(
+        PrayerVisibility.SHARED
+      );
       if (newPrayerRequest != undefined && newPrayerRequest.id) {
         await Promise.all(
           sharedWithGroups.map(async (share) => {
@@ -180,11 +186,11 @@ export async function updatePrayerRequest(
     const existingShares = await db.prayerRequestShare.findMany({
       where: { prayerRequestId: id },
     });
-    const visibility: Visibility = hasPublicType
-      ? Visibility.PUBLIC
+    const visibility: PrayerVisibility = hasPublicType
+      ? PrayerVisibility.PUBLIC
       : hasPrivateType
-      ? Visibility.PRIVATE
-      : Visibility.SHARED;
+      ? PrayerVisibility.PRIVATE
+      : PrayerVisibility.SHARED;
 
     const updatedData = {
       request,
@@ -339,7 +345,7 @@ export async function getPersonalPrayerRequestsForUser(
       where: {
         userId: userId,
         status: PrayerRequestStatus.IN_PROGRESS,
-        visibility: Visibility.PRIVATE,
+        visibility: PrayerVisibility.PRIVATE,
       },
     });
 

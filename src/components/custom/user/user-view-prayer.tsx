@@ -11,14 +11,14 @@ export default function UserViewPrayer({
   const router = useRouter();
   return (
     <Button
-      size="icon"
-      variant="secondary"
+      variant="ghost"
       onClick={() => {
         router.push(`/requests/${id}`);
       }}
       {...props}
     >
       <HelpingHand />
+      Prayer Requests
     </Button>
   );
 }

@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
+
 import {
   Table,
   TableBody,
@@ -21,90 +22,18 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import UserAvatar from "../user/user-avatar";
-import { useRouter } from "next/navigation";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  EllipsisVertical,
-  HelpingHandIcon,
-  Loader,
-  User as UserIco,
-  X,
-} from "lucide-react";
-import { useState } from "react";
-import { toast } from "sonner";
-import { removeUserFromPrayerGroup } from "@/services/user-prayer-group";
-
-type UserInfo = Pick<User, "id" | "name" | "email" | "image" | "createdAt">;
+import PrayerGroupUpdateStatus from "./prayer-group-accept";
+import PrayerGroupDecline from "./prayer-group-decline";
 
 type JoinGroupProps = {
-  data: UserInfo[];
+  data: User[];
   groupId: string;
-  isOwner?: boolean;
 };
-export default function PrayerGroupMemberTable({
+export default function PrayerGroupPendingTable({
   data,
-  isOwner = false,
   groupId,
 }: JoinGroupProps) {
-  const [loading, setLoading] = useState(false);
-  const router = useRouter();
-
-  const handleRemoveUser = async (userId: string) => {
-    setLoading(true);
-    const result = await removeUserFromPrayerGroup(userId, groupId);
-    if (result.success) {
-      toast.success(result.message);
-      router.refresh();
-    } else {
-      toast.error(result.message);
-    }
-    setLoading(false);
-  };
-
-  function MemberActionMenu({ userId }: { userId: string }) {
-    const router = useRouter();
-
-    return (
-      <div className="flex justify-end w-full">
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon">
-              <EllipsisVertical className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent side="bottom" align="end">
-            <DropdownMenuItem
-              onClick={() => router.push(`/requests/${userId}`)}
-            >
-              <HelpingHandIcon className="h-4 w-4" />
-              Prayer Requests
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => router.push(`/user/${userId}`)}>
-              <UserIco className="h-4 w-4" />
-              Profile
-            </DropdownMenuItem>
-            {isOwner && (
-              <DropdownMenuItem
-                disabled={loading}
-                onClick={() => handleRemoveUser(userId)}
-                className="text-red-500 focus:text-red-600"
-              >
-                {loading ? <Loader className="spinner animate-spin" /> : <X />}
-                Remove
-              </DropdownMenuItem>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-    );
-  }
-
-  const columns: ColumnDef<UserInfo>[] = [
+  const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
       enableHiding: false,
@@ -122,10 +51,24 @@ export default function PrayerGroupMemberTable({
       },
     },
     {
+      accessorKey: "email",
+      enableHiding: false,
+      header: () => <div className="lg:block hidden">Email</div>,
+      cell: ({ row }) => {
+        return (
+          <div className=" lg:block hidden">
+            <div className="font-medium invisible md:visible">
+              {row.original.email}
+            </div>
+          </div>
+        );
+      },
+    },
+    {
       accessorKey: "createdAt",
       enableHiding: false,
       header: () => (
-        <div className="lg:block hidden">Joined</div> // Hides the column header on mobile
+        <div className="lg:block hidden">Request Date</div> // Hides the column header on mobile
       ),
       cell: ({ row }) => {
         return (
@@ -140,7 +83,17 @@ export default function PrayerGroupMemberTable({
     {
       id: "join",
       enableHiding: false,
-      cell: ({ row }) => <MemberActionMenu userId={row.original.id} />,
+      cell: ({ row }) => {
+        return (
+          <div className="flex justify-end">
+            <PrayerGroupDecline userId={row.original.id} groupId={groupId} />
+            <PrayerGroupUpdateStatus
+              userId={row.original.id}
+              groupId={groupId}
+            />
+          </div>
+        );
+      },
     },
   ];
 
@@ -155,15 +108,15 @@ export default function PrayerGroupMemberTable({
   return (
     <div className="flex flex-col gap-4 w-full mt-5">
       <div>
-        <div className="text-base font-bold mb-1">All Members</div>
+        <div className="text-base font-bold mb-1">Pending Members</div>
         <div className="text-muted-foreground text-sm">
-          As a member of this group, you can view all group prayer requests.
-          Please keep shared information private and within the group.
+          Review and approve or decline requests from users wanting to join the
+          group. Accepted members will gain access to all group prayer requests.
         </div>
       </div>
       <div className="flex items-center">
         <Input
-          placeholder="Find Member..."
+          placeholder="Search..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn("name")?.setFilterValue(event.target.value)

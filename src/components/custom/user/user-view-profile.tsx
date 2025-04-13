@@ -11,7 +11,6 @@ export default function UserViewProfile({
   const router = useRouter();
   return (
     <Button
-      size="icon"
       variant="secondary"
       onClick={() => {
         router.push(`/user/${id}`);
@@ -19,6 +18,7 @@ export default function UserViewProfile({
       {...props}
     >
       <User />
+      Profile
     </Button>
   );
 }

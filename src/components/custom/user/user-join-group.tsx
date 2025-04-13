@@ -9,12 +9,14 @@ type JoinGroupProps = ButtonProps & {
   userId: string;
   groupId: string;
   onClose?: () => void;
+  requestToJoin?: boolean;
 };
 
 export default function UserJoinGroup({
   userId,
   groupId,
   onClose,
+  requestToJoin = false,
   ...props
 }: JoinGroupProps) {
   const router = useRouter();
@@ -39,7 +41,7 @@ export default function UserJoinGroup({
   return (
     <Button className="p-2" onClick={joinGroup} {...props}>
       <Star />
-      Join
+      {requestToJoin ? "Request to Join" : "Join"}
     </Button>
   );
 }

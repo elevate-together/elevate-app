@@ -31,7 +31,7 @@ type PrayerGroupCreateProps = {
   className?: string;
 };
 
-export default function PrayerRequestCreate({
+export default function PrayerRequestAdd({
   id,
   isMenu = false,
   hideOnMobile = false,

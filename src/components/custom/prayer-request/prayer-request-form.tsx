@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,7 +19,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   PrayerRequestStatus,
-  Visibility,
+  PrayerVisibility,
   type PrayerRequest,
 } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -100,10 +99,10 @@ export default function PrayerRequestForm({
       setOptions([...constants, ...formattedGroups]);
 
       if (prayer?.id) {
-        if (prayer.visibility === Visibility.PUBLIC) {
+        if (prayer.visibility === PrayerVisibility.PUBLIC) {
           setSelectedValues(["1"]);
           form.setValue("sharedWith", ["1"]);
-        } else if (prayer.visibility === Visibility.PRIVATE) {
+        } else if (prayer.visibility === PrayerVisibility.PRIVATE) {
           setSelectedValues(["2"]);
           form.setValue("sharedWith", ["2"]);
         } else {
@@ -193,7 +192,7 @@ export default function PrayerRequestForm({
                           selectedValues={selectedValues}
                           setSelectedValues={setSelectedValues}
                           specialSelection
-                          placeholder="Request Visibility"
+                          placeholder="Request PrayerVisibility"
                           modalPopover={true}
                           isParentOpen={isOpen}
                           maxCount={3}
@@ -225,13 +224,13 @@ export default function PrayerRequestForm({
                   />
                 )}
               </div>
-              <FormDescription>
+              <p className="text-xs text-muted-foreground leading-sm">
                 Everyone selected will have access to this request—you can
                 update it anytime.
                 {isNotify
                   ? " Notifications will be sent to all selected recipients. Toggle to disable."
                   : " Notifications are disabled. Toggle to enable and notify selected recipients of your request."}
-              </FormDescription>
+              </p>
             </div>
             <FormField
               control={form.control}

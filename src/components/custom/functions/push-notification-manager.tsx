@@ -23,7 +23,8 @@ export default function PushNotificationManager({
 }) {
   const router = useRouter();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isStartLoading, setIsStartLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [supportsNotifications, setSupportsNotifications] =
     useState<boolean>(false);
 
@@ -36,7 +37,7 @@ export default function PushNotificationManager({
         setSupportsNotifications(false);
       }
 
-      setIsLoading(false);
+      setIsStartLoading(false);
     };
 
     checkNotifications();
@@ -91,6 +92,7 @@ export default function PushNotificationManager({
   const handleAddPushSubscription = async () => {
     let sub;
     try {
+      setIsLoading(true);
       const permissionGranted = await checkNotificationPermission();
       if (!permissionGranted) return;
 
@@ -163,6 +165,7 @@ export default function PushNotificationManager({
 
   const handleRemovePushSubscription = async () => {
     try {
+      setIsLoading(true);
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
 
@@ -189,10 +192,12 @@ export default function PushNotificationManager({
       }
     } catch (error) {
       console.error("Error unsubscribing:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (isLoading) {
+  if (isStartLoading) {
     return null;
   }
 
@@ -235,11 +240,13 @@ export default function PushNotificationManager({
                     variant="secondary"
                     onClick={handleRemovePushSubscription}
                     disabled={isLoading}
+                    className="min-w-[102px]"
                   >
                     {isLoading ? (
                       <Loader className="animate-spin h-4 w-4 mr-2" />
-                    ) : null}
-                    Unubscribe
+                    ) : (
+                      "Unubscribe"
+                    )}
                   </Button>
                 </div>
               </AlertDescription>
@@ -263,11 +270,13 @@ export default function PushNotificationManager({
                     variant="secondary"
                     onClick={handleAddPushSubscription}
                     disabled={isLoading}
+                    className="min-w-[102px]"
                   >
                     {isLoading ? (
                       <Loader className="animate-spin h-4 w-4 mr-2" />
-                    ) : null}
-                    Subscribe
+                    ) : (
+                      "Subscribe"
+                    )}
                   </Button>
                 </div>
               </AlertDescription>

@@ -40,9 +40,16 @@ export default async function Home() {
   } = await getPersonalPrayerRequestsForUser(id);
 
   return (
-    <div className="md:ml-5 h-full w-full">
+    <div className="h-full w-full">
       <div className="space-y-5">
-        <Tabs defaultValue="community" className="w-full ">
+        <Tabs
+          defaultValue={
+            FriendPrayerRequests && FriendPrayerRequests?.length > 0
+              ? "community"
+              : "personal"
+          }
+          className="w-full "
+        >
           <TabsList>
             {FriendSuccess &&
               FriendPrayerRequests &&

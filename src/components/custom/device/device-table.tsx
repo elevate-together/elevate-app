@@ -79,7 +79,7 @@ export default function DeviceTable({
     <div>
       <h2 className="text-xl font-semibold mb-2">Your Devices</h2>
 
-      <Table>
+      <Table className="bg-transparent">
         <TableCaption className="w-[80%] m-auto text-xs">
           {`All registered devices - Please note that if you're using a mobile
           device and remove the app from your home screen, you will need to

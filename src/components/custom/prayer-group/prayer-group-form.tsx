@@ -11,35 +11,38 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createPrayerGroup, updatePrayerGroup } from "@/services/prayer-group";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { PrayerGroup } from "@prisma/client";
+import { GroupType, type PrayerGroup } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useState } from "react";
+import { Loader } from "lucide-react";
 
-// Validation Schema
 const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Name cannot be left blank",
-  }),
+  name: z.string().min(1, { message: "Name cannot be left blank" }),
   description: z
     .string()
-    .min(1, {
-      message: "Description must be at least 1 character",
-    })
-    .max(250, {
-      message: "Description must be less than 250 characters",
-    })
+    .min(1, { message: "Description must be at least 1 character" })
+    .max(250, { message: "Description must be less than 250 characters" })
     .optional(),
+  groupType: z.enum([GroupType.PUBLIC, GroupType.PRIVATE]),
 });
 
 type PrayerGroupFormProps = {
   ownerId: string;
-  onSubmit: (group: PrayerGroup) => void;
-  onCancel: () => void; // Optional callback for the cancel action
-  group?: PrayerGroup; // The group object is optional for the "create" form case
+  onSubmit: () => void;
+  onCancel: () => void;
+  group?: PrayerGroup;
 };
 
 export default function PrayerGroupForm({
@@ -49,43 +52,48 @@ export default function PrayerGroupForm({
   onCancel,
 }: PrayerGroupFormProps) {
   const router = useRouter();
-  // Initialize form with default values if user exists
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: group?.name || "",
+      description: group?.description || "",
+      groupType: group?.groupType || GroupType.PUBLIC,
     },
   });
 
-  // Handle the form submission (for creating or updating)
+  const isPublic = form.watch("groupType") === GroupType.PUBLIC;
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { name, description } = values;
     let result;
+    setLoading(true);
 
     if (group?.id) {
-      // Update the user
       result = await updatePrayerGroup(group.id, values);
     } else {
-      // Create a new user
-      result = await createPrayerGroup({ name, ownerId, description });
+      result = await createPrayerGroup({
+        ...values,
+        ownerId,
+      });
     }
 
     if (result.success && result.prayerGroup) {
       toast.success(result.message);
       router.refresh();
-      onSubmit(result.prayerGroup);
+      onSubmit();
     } else {
       toast.error(result.message || "An error occurred.");
     }
-
+    setLoading(false);
     form.reset();
   };
 
-  // Handle the cancel action, reset the form
   const handleCancel = () => {
     form.reset({
       name: group?.name || "",
       description: group?.description || "",
+      groupType: group?.groupType || GroupType.PUBLIC,
     });
     onCancel();
   };
@@ -95,12 +103,12 @@ export default function PrayerGroupForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <div className="flex flex-col gap-4 w-full">
-            <div>
+            <div className="flex gap-3">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem className="flex-[2]">
                     <FormLabel>Group Name</FormLabel>
                     <FormControl>
                       <Input
@@ -113,46 +121,81 @@ export default function PrayerGroupForm({
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        className="w-full min-h-32"
-                        placeholder="Description (optional)"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
 
-            {group?.id ? (
-              <div className="flex flex-row gap-4 items-center">
-                <Button variant="outline" onClick={handleCancel}>
-                  Cancel
-                </Button>
-                <Button type="submit">Save</Button>
-              </div>
+              {!group?.name && (
+                <FormField
+                  control={form.control}
+                  name="groupType"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Group Type</FormLabel>
+                      <FormControl>
+                        <Select
+                          value={field.value}
+                          onValueChange={field.onChange}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.values(GroupType).map((type) => (
+                              <SelectItem key={type} value={type}>
+                                {type.charAt(0) + type.slice(1).toLowerCase()}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+            </div>
+            {group?.name ? (
+              <p className="text-xs text-muted-foreground leading-sm">
+                You cannot change the group type after it’s created.{" "}
+              </p>
             ) : (
-              <div className="flex w-full flex-row gap-4 items-center">
-                <Button
-                  className="w-full"
-                  variant="secondary"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" className="w-full">
-                  Save
-                </Button>
-              </div>
+              <p className="text-xs text-muted-foreground leading-sm">
+                {isPublic
+                  ? "This is a public group—anyone can join without approval. Prayer requests shared here are visible to all members. Note: You won't be able to change the group type after creating it."
+                  : "This is a private group—new members must be approved to join. This helps protect the privacy of any prayer requests shared within the group. Note: You won't be able to change the group type after creating it."}
+              </p>
             )}
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      className="w-full min-h-64 md:min-h-32"
+                      placeholder="Description (optional)"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex flex-row gap-4 ">
+              <Button
+                variant="outline"
+                type="button"
+                onClick={handleCancel}
+                className="flex-1"
+                disabled={loading}
+              >
+                Cancel
+              </Button>
+              <Button type="submit" className="flex-1" disabled={loading}>
+                {loading ? <Loader className="spinner animate-spin" /> : "Save"}
+              </Button>
+            </div>
           </div>
         </form>
       </Form>

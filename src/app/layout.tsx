@@ -1,5 +1,4 @@
 import AppSidebar from "@/components/custom/app-sidebar";
-// import BackButton from "@/components/custom/functions/back-button";
 import Navbar from "@/components/custom/navbar";
 import ServiceWorker from "@/components/service-worker";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -45,11 +44,8 @@ export default function RootLayout({
             <AppSidebar />
             <main className="flex flex-col w-full h-screen">
               <Navbar />
-              <div className="px-0 py-3 min-h-[calc(100vh-142px)] md:min-h-[calc(100vh-52px)] flex flex-cols md:gap-1 md:pt-6 md:pr-6 md:pl-6 md:pl-1">
-                {/* <div>
-                  <BackButton />
-                </div> */}
-                <div className="flex-1 h-full">{children}</div>
+              <div className="min-h-[calc(100vh-142px)] md:min-h-[calc(100vh-52px)] flex flex-cols ">
+                <div className="flex-1 h-full p-4 md:px-8 md:py-6">{children}</div>
               </div>
               <MobileFooter />
             </main>

@@ -2,7 +2,7 @@
 
 import db from "@/lib/db";
 import { ResponseMessage } from "@/lib/utils";
-import { PrayerGroup, User } from "@prisma/client";
+import { GroupStatus, GroupType, PrayerGroup, User } from "@prisma/client";
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(
@@ -27,11 +27,23 @@ export async function addUserToPrayerGroup(
       };
     }
 
+    const prayerGroup = await db.prayerGroup.findUnique({
+      where: {
+        id: groupId,
+      },
+    });
+
+    const status =
+      prayerGroup?.groupType == GroupType.PUBLIC
+        ? GroupStatus.ACCEPTED
+        : GroupStatus.PENDING;
+
     // Add user to prayer group
     await db.userPrayerGroup.create({
       data: {
         userId,
         prayerGroupId: groupId,
+        groupStatus: status,
       },
     });
 
@@ -107,6 +119,7 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
     const usersInGroup = await db.userPrayerGroup.findMany({
       where: {
         prayerGroupId: groupId,
+        groupStatus: GroupStatus.ACCEPTED,
       },
       include: {
         user: true,
@@ -143,27 +156,25 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
   prayerGroups?: (PrayerGroup & {
     owner: User;
     memberCount: number;
-    users?: Pick<User, "name">[]; // Add the users with selected fields
+    users?: Pick<User, "name">[];
   })[];
 }> {
   try {
-    // Fetch the prayer groups where the user is not part of the group
     const prayerGroups = await db.prayerGroup.findMany({
       where: {
-        users: {
-          every: {
-            userId: {
-              not: userId, // Ensures the prayer group does not have the user
+        NOT: {
+          users: {
+            some: {
+              userId: userId,
             },
           },
         },
       },
       include: {
-        owner: true, // Include the related owner user object
+        owner: true,
         users: {
           select: {
             user: {
-              // Use `user` field from the `UserPrayerGroup` relation
               select: {
                 name: true,
               },
@@ -173,18 +184,15 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
       },
     });
 
-    // Add member count to each prayer group and include the selected user fields
     const prayerGroupsWithMemberCount = prayerGroups.map((prayerGroup) => {
       const memberCount = prayerGroup.users?.length || 0;
-      // Extracting only the user details from the `UserPrayerGroup` relation
       const users = prayerGroup.users?.map(
         (userPrayerGroup) => userPrayerGroup.user
       );
-
       return {
         ...prayerGroup,
-        memberCount, // Add member count to each prayer group
-        users, // Attach the selected user fields
+        memberCount,
+        users,
       };
     });
 
@@ -192,7 +200,7 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
       success: true,
       message:
         "Prayer groups you are not part of have been retrieved successfully.",
-      prayerGroups: prayerGroupsWithMemberCount, // Return the updated prayer groups with member counts and selected user fields
+      prayerGroups: prayerGroupsWithMemberCount,
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups:", error);
@@ -210,7 +218,7 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
 }> {
   try {
     const userPrayerGroups = await db.userPrayerGroup.findMany({
-      where: { prayerGroupId: groupId },
+      where: { prayerGroupId: groupId, groupStatus: GroupStatus.ACCEPTED },
       include: {
         user: {
           select: {
@@ -245,47 +253,75 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
   }
 }
 
-export async function getPrayerGroupsForUser(userId: string): Promise<{
+export async function getPendingUsersByPrayerGroup(groupId: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroups?: (PrayerGroup & { owner: User; memberCount: number })[]; // Include owner and memberCount in the return type
+  users?: User[];
 }> {
   try {
-    const prayerGroups = await db.prayerGroup.findMany({
-      where: {
-        users: {
-          some: {
-            userId: userId, // Ensures the user is part of the prayer group
-          },
-        },
-      },
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: { prayerGroupId: groupId, groupStatus: GroupStatus.PENDING },
       include: {
-        owner: true, // Include the related owner user object
-        users: true, // Include the users (members) of the prayer group to count them
+        user: true,
       },
     });
 
-    if (!prayerGroups || prayerGroups.length === 0) {
+    if (!userPrayerGroups.length) {
       return {
         success: false,
-        message: "You are not part of any prayer groups.",
+        message: "No pending users found in this prayer group.",
       };
     }
 
-    // Add member count to each prayer group
-    const prayerGroupsWithMemberCount = prayerGroups.map((prayerGroup) => {
-      const memberCount = prayerGroup.users?.length || 0; // Calculate the member count
-      return {
-        ...prayerGroup,
-        memberCount, // Add member count to the prayer group object
-      };
+    return {
+      success: true,
+      message: "Users retrieved successfully.",
+      users: userPrayerGroups.map((entry) => entry.user),
+    };
+  } catch (error) {
+    console.error("Error fetching pending users for prayer group:", error);
+    return {
+      success: false,
+      message: "An error occurred while retrieving pending users.",
+    };
+  }
+}
+
+export async function getPrayerGroupsForUser(userId: string): Promise<{
+  success: boolean;
+  message: string;
+  prayerGroups?: PrayerGroup[];
+}> {
+  try {
+    // Query the userPrayerGroup table where the user is part of the prayer group
+    // and their status is ACCEPTED
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: {
+        userId: userId, // Ensures the user is part of the prayer group
+        groupStatus: GroupStatus.ACCEPTED,
+      },
+      include: {
+        prayerGroup: {},
+      },
     });
+
+    if (!userPrayerGroups || userPrayerGroups.length === 0) {
+      return {
+        success: false,
+        message:
+          "You are not part of any prayer groups with an accepted status.",
+      };
+    }
+
+    const prayerGroups = userPrayerGroups.map(
+      (userPrayerGroup) => userPrayerGroup.prayerGroup
+    );
 
     return {
       success: true,
       message:
-        "Prayer groups you are part of have been retrieved successfully.",
-      prayerGroups: prayerGroupsWithMemberCount, // Return the updated prayer groups with member counts
+        "Prayer groups you are part of with accepted status have been retrieved successfully.",
+      prayerGroups: prayerGroups,
     };
   } catch (error: unknown) {
     console.error("Error fetching prayer groups for the user:", error);
@@ -293,6 +329,82 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
       success: false,
       message:
         "An error occurred while fetching the prayer groups you're part of.",
+    };
+  }
+}
+
+export async function updateUserPrayerGroupStatus(
+  userId: string,
+  groupId: string,
+  newStatus: GroupStatus
+): Promise<ResponseMessage> {
+  try {
+    await db.userPrayerGroup.update({
+      where: {
+        userId_prayerGroupId: {
+          userId,
+          prayerGroupId: groupId,
+        },
+      },
+      data: {
+        groupStatus: newStatus,
+      },
+    });
+
+    return {
+      success: true,
+      message: `User status updated to ${newStatus}.`,
+    };
+  } catch (error) {
+    console.error("Error updating user group status:", error);
+    return {
+      success: false,
+      message:
+        "There was an error updating the user's status in the prayer group. Please try again.",
+    };
+  }
+}
+
+export async function getPrayerGroupsPendingForUser(userId: string): Promise<{
+  success: boolean;
+  message: string;
+  prayerGroups?: PrayerGroup[];
+}> {
+  try {
+    // Fetch the userPrayerGroup entries with PENDING status for the given user
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: {
+        userId: userId,
+        groupStatus: GroupStatus.PENDING,
+      },
+      select: {
+        prayerGroup: true,
+      },
+    });
+
+    if (userPrayerGroups.length === 0) {
+      return {
+        success: false,
+        message: "You have no pending prayer group invitations.",
+      };
+    }
+
+    // Extract only the prayer group objects from the result
+    const prayerGroups = userPrayerGroups.map(
+      (userPrayerGroup) => userPrayerGroup.prayerGroup
+    );
+
+    return {
+      success: true,
+      message:
+        "Prayer groups you are pending for have been retrieved successfully.",
+      prayerGroups,
+    };
+  } catch (error: unknown) {
+    console.error("Error fetching pending prayer groups:", error);
+    return {
+      success: false,
+      message: "An error occurred while fetching your pending prayer groups.",
     };
   }
 }

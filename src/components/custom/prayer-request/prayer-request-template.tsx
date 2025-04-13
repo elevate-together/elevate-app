@@ -43,7 +43,7 @@ export default async function PrayerRequestTemplate({
       {isOwner ? (
         <div className="flex flex-col gap-5">
           <Tabs defaultValue="request" className="w-full">
-            <TabsList className="mx-3">
+            <TabsList>
               <TabsTrigger value="request">
                 <Hand size="15px" strokeWidth="1.7px" className="mr-1" />
                 Requests

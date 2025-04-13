@@ -8,7 +8,8 @@ import {
   PrayerRequestStatus,
   ShareType,
   User,
-  Visibility,
+  PrayerVisibility,
+  GroupStatus,
 } from "@prisma/client";
 
 // CREATE Prayer Request Share
@@ -103,7 +104,7 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
     const publicPrayerRequestsFromGroupUsers = await db.prayerRequest.findMany({
       where: {
         userId: { in: userIdsInGroups },
-        visibility: Visibility.PUBLIC,
+        visibility: PrayerVisibility.PUBLIC,
       },
       include: {
         user: true,
@@ -133,7 +134,7 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
     const sharedPrayerRequests = await db.prayerRequest.findMany({
       where: {
         id: { in: sharedRequestIds },
-        visibility: Visibility.SHARED,
+        visibility: PrayerVisibility.SHARED,
       },
       include: {
         user: true,
@@ -180,6 +181,7 @@ export async function getPublicPrayerRequestsForGroup(
     const groupUsers = await db.userPrayerGroup.findMany({
       where: {
         prayerGroupId: groupId,
+        groupStatus: GroupStatus.ACCEPTED,
       },
       include: {
         user: true,
@@ -193,7 +195,7 @@ export async function getPublicPrayerRequestsForGroup(
         userId: {
           in: userIds,
         },
-        visibility: Visibility.PUBLIC,
+        visibility: PrayerVisibility.PUBLIC,
         status: PrayerRequestStatus.IN_PROGRESS,
       },
       orderBy: {
@@ -231,7 +233,7 @@ export async function getPrayerRequestsForGroup(groupId: string): Promise<{
   try {
     const groupRequests = await db.prayerRequest.findMany({
       where: {
-        visibility: Visibility.SHARED,
+        visibility: PrayerVisibility.SHARED,
         status: PrayerRequestStatus.IN_PROGRESS,
         PrayerRequestShare: {
           some: {

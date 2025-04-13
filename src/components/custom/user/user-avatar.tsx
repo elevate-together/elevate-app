@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EllipsisVertical } from "lucide-react";
 
@@ -12,6 +13,7 @@ type AvatarProps = {
   includeEmail?: boolean;
   boldName?: boolean;
   secondLine?: React.ReactNode;
+  profileUrl?: string; 
 };
 
 export default function UserAvatar({
@@ -23,6 +25,7 @@ export default function UserAvatar({
   includeEmail = false,
   boldName = false,
   secondLine = "",
+  profileUrl,
 }: AvatarProps) {
   const sizeClasses = {
     small: "w-8 h-8 text-xs",
@@ -35,40 +38,48 @@ export default function UserAvatar({
     boldName || includeEmail ? "font-semibold" : "font-normal";
   const emailTextSize = size === "large" ? "text-sm" : "text-xs";
 
-  return (
-    <div className={"flex flex-row items-center justify-between"}>
-      <div className={"flex flex-row items-center justify-start gap-2"}>
-        <Avatar className={avatarSizeClass}>
-          <AvatarImage src={image ?? undefined} />
-          <AvatarFallback>
-            {name?.charAt(0).toUpperCase() || "?"}
-          </AvatarFallback>
-        </Avatar>
+  const AvatarContent = (
+    <div className="flex items-center gap-2">
+      <Avatar className={avatarSizeClass}>
+        <AvatarImage src={image ?? undefined} />
+        <AvatarFallback>{name?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+      </Avatar>
 
-        <div className="flex flex-col items-start gap-0 leading-tight">
-          <div
-            className={`p-0 m-0 ${nameFontWeight} ${
-              size === "large" ? "text-xl" : "text-sm"
-            }`}
+      <div className="flex flex-col leading-tight">
+        <span
+          className={`m-0 p-0 ${nameFontWeight} ${
+            size === "large" ? "text-xl" : "text-sm"
+          }`}
+        >
+          {name}
+        </span>
+
+        {includeEmail ? (
+          <p
+            className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
           >
-            {name}
-          </div>
-          {includeEmail && (
-            <p
-              className={`p-0 m-0 ${emailTextSize} font-normal text-muted-foreground`}
-            >
-              {email}
-            </p>
-          )}
-          {secondLine && !includeEmail && (
-            <p
-              className={`p-0 m-0 ${emailTextSize} font-normal text-muted-foreground`}
-            >
-              {secondLine}
-            </p>
-          )}
-        </div>
+            {email}
+          </p>
+        ) : secondLine ? (
+          <p
+            className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
+          >
+            {secondLine}
+          </p>
+        ) : null}
       </div>
+    </div>
+  );
+
+  return (
+    <div className="flex items-center justify-between">
+      {profileUrl ? (
+        <Link href={profileUrl} className="hover:underline">
+          {AvatarContent}
+        </Link>
+      ) : (
+        AvatarContent
+      )}
 
       {icon && <EllipsisVertical width={17} />}
     </div>
