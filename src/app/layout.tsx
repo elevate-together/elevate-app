@@ -8,7 +8,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MobileFooter from "@/components/custom/mobile-footer";
-import PullToRefresh from "pulltorefreshjs";
 import { PullToRefreshWrapper } from "@/components/custom/functions/pull-to-refresh-wrapper";
 
 const geistSans = Geist({

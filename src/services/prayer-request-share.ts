@@ -1,6 +1,5 @@
 "use server";
 
-import Group from "@/app/groups/[id]/page";
 import db from "@/lib/db";
 import { PrayeRequestWithUser, ResponseMessage } from "@/lib/utils";
 import {
