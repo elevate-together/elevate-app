@@ -1,5 +1,6 @@
 "use server";
 
+import Group from "@/app/groups/[id]/page";
 import db from "@/lib/db";
 import { PrayeRequestWithUser, ResponseMessage } from "@/lib/utils";
 import {
@@ -80,6 +81,7 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
     const userGroups = await db.userPrayerGroup.findMany({
       where: {
         userId,
+        groupStatus: GroupStatus.ACCEPTED,
       },
       select: {
         prayerGroupId: true,
