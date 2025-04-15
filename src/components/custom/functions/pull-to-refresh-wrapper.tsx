@@ -1,26 +1,33 @@
-// components/PullToRefreshWrapper.tsx
 "use client";
 
 import { useEffect } from "react";
 import PullToRefresh from "pulltorefreshjs";
+import { useRouter } from "next/navigation";
 
 export function PullToRefreshWrapper({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  useEffect(() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches;
+  const router = useRouter();
+  const isStandAlone =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
 
-    if (standalone) {
+  useEffect(() => {
+    if (isStandAlone) {
       PullToRefresh.init({
-        mainElement: "body", // or a specific container like "#scroll-container"
+        mainElement: "body",
         onRefresh() {
-          window.location.reload(); // or trigger your own data refetch
+          router.refresh();
         },
       });
     }
-  }, []);
+
+    return () => {
+      PullToRefresh.destroyAll(); // always good to clean up
+    };
+  }, [router, isStandAlone]);
 
   return <>{children}</>;
 }
