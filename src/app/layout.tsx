@@ -46,7 +46,7 @@ export default function RootLayout({
             <main className="flex flex-col w-full h-screen">
               <Navbar />
               <PullToRefreshWrapper>
-                <div className="max-h-[calc(100vh-142px)] md:max-h-[100vh] flex flex-col p-4 md:px-8 md:py-6 overflow-auto">
+                <div className="scrollable-container max-h-[calc(100vh-142px)] md:max-h-[100vh] flex flex-col p-4 md:px-8 md:py-6 overflow-auto">
                   <div className="flex-1">{children}</div>
                 </div>
               </PullToRefreshWrapper>

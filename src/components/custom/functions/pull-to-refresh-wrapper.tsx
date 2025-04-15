@@ -34,5 +34,5 @@ export function PullToRefreshWrapper({
     }
   }, [router, isStandAlone]);
 
-  return <div className="scrollable-container">{children}</div>;
+  return <div>{children}</div>;
 }
