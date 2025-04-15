@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import PullToRefresh from "pulltorefreshjs";
 import { useRouter } from "next/navigation";
 
@@ -10,21 +10,26 @@ export function PullToRefreshWrapper({
   children: React.ReactNode;
 }) {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+
   const isStandAlone =
     typeof window !== "undefined" &&
     window.matchMedia("(display-mode: standalone)").matches;
 
   useEffect(() => {
-    if (isStandAlone) {
-      PullToRefresh.init({
-        mainElement: ".scrollable-container",
-        onRefresh() {
-          // Check if the container is at the top (scrollTop === 0)
-          const container = document.querySelector(".scrollable-container");
+    const el = containerRef.current;
 
-          if (container && container.scrollTop === 0) {
-            router.refresh(); // Only refresh if at the top
-          }
+    if (isStandAlone && el) {
+      PullToRefresh.init({
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mainElement: el as any,
+        shouldPullToRefresh: () => {
+          return el.scrollTop === 0;
+        },
+        distThreshold: 60,
+        distMax: 80,
+        onRefresh: () => {
+          router.refresh();
         },
       });
 
@@ -34,5 +39,12 @@ export function PullToRefreshWrapper({
     }
   }, [router, isStandAlone]);
 
-  return <div>{children}</div>;
+  return (
+    <div
+      ref={containerRef}
+      className="max-h-[calc(100vh-142px)] md:max-h-[100vh] flex flex-col p-4 md:px-8 md:py-6 overflow-auto"
+    >
+      {children}
+    </div>
+  );
 }
