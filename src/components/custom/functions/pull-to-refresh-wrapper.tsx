@@ -17,17 +17,22 @@ export function PullToRefreshWrapper({
   useEffect(() => {
     if (isStandAlone) {
       PullToRefresh.init({
-        mainElement: "body",
+        mainElement: ".scrollable-container",
         onRefresh() {
-          router.refresh();
+          // Check if the container is at the top (scrollTop === 0)
+          const container = document.querySelector(".scrollable-container");
+
+          if (container && container.scrollTop === 0) {
+            router.refresh(); // Only refresh if at the top
+          }
         },
       });
-    }
 
-    return () => {
-      PullToRefresh.destroyAll(); // always good to clean up
-    };
+      return () => {
+        PullToRefresh.destroyAll();
+      };
+    }
   }, [router, isStandAlone]);
 
-  return <>{children}</>;
+  return <div className="scrollable-container">{children}</div>;
 }
