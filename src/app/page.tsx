@@ -40,7 +40,7 @@ export default async function Home() {
   } = await getPersonalPrayerRequestsForUser(id);
 
   return (
-    <div className="h-full w-full">
+    <div className="h-full w-full pb-3">
       <div className="space-y-5">
         <Tabs
           defaultValue={
