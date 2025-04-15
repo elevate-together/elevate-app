@@ -27,7 +27,7 @@ export function PullToRefreshWrapper({
           return el.scrollTop === 0;
         },
         distThreshold: 60,
-        distMax: 80,
+        distMax: 60,
         onRefresh: () => {
           router.refresh();
         },
