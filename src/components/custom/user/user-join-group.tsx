@@ -41,7 +41,7 @@ export default function UserJoinGroup({
   return (
     <Button className="p-2" onClick={joinGroup} {...props}>
       <Star />
-      {requestToJoin ? "Request to Join" : "Join"}
+      {requestToJoin ? "Request" : "Join"}
     </Button>
   );
 }

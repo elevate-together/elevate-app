@@ -219,8 +219,8 @@ export default function PrayerGroupMemberTable({
         </Table>
       </div>
 
-      <div className="flex items-center justify-between ">
-        <div className="text-xs text-center text-muted-foreground">{`Member Count: ${data.length}`}</div>
+      <div className="flex items-top justify-between ">
+        <div className="text-xs text-center text-muted-foreground pl-2">{`Member Count: ${data.length}`}</div>
         <div className="flex flex-row items-center gap-2">
           <Button
             variant="outline"

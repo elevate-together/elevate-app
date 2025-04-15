@@ -20,10 +20,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { PrayerGroupForPreview } from "@/lib/utils";
-import { User } from "@prisma/client";
+import { GroupType, User } from "@prisma/client";
 import UserAvatar from "../user/user-avatar";
 import JoinGroup from "../user/user-join-group";
 import PrayerGroupDialog from "./prayer-group-dialog";
+import { Badge } from "@/components/ui/badge";
 
 type JoinGroupProps = {
   data: PrayerGroupForPreview[];
@@ -36,7 +37,13 @@ export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
       enableHiding: false,
       header: "Group Name",
       cell: ({ row }) => (
-        <div className="capitalize font-bold">{row.getValue("name")}</div>
+        <div className="flex gap-2">
+          <div className="font-bold"> {row.getValue("name")}</div>
+          <Badge variant="secondary">
+            {row.original.groupType.charAt(0).toUpperCase() +
+              row.original.groupType.slice(1).toLowerCase()}
+          </Badge>
+        </div>
       ),
     },
     {
@@ -73,7 +80,11 @@ export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
         return (
           <div className="flex gap-3 justify-end">
             <PrayerGroupDialog group={row.original} userId={userId} />
-            <JoinGroup groupId={groupId} userId={userId} />
+            <JoinGroup
+              groupId={groupId}
+              userId={userId}
+              requestToJoin={row.original.groupType === GroupType.PRIVATE}
+            />
           </div>
         );
       },
@@ -147,8 +158,11 @@ export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
+      <div className="flex items-top justify-between py-4">
+        <div className="text-xs text-center text-muted-foreground pl-2">
+          Private groups require approval to join.
+        </div>
+        <div className="flex flex-row items-center gap-2">
           <Button
             variant="outline"
             size="sm"
