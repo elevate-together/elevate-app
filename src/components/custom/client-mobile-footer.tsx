@@ -7,14 +7,6 @@ import Link from "next/link";
 export default function ClientMobileFooter({ id }: { id: string }) {
   const pathname = usePathname();
 
-  const isStandAlone =
-    typeof window !== "undefined" &&
-    window.matchMedia("(display-mode: standalone)").matches;
-
-  if (!isStandAlone) {
-    return null;
-  }
-
   const linkClass = (path: string) =>
     `flex flex-col items-center ${
       pathname === path || pathname.startsWith(path + "/")
