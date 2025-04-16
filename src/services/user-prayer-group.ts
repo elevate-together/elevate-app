@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import { ResponseMessage } from "@/lib/utils";
+import { MinimalUser, ResponseMessage } from "@/lib/utils";
 import { GroupStatus, GroupType, PrayerGroup, User } from "@prisma/client";
 
 // ADD a User to a Prayer Group
@@ -214,7 +214,7 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
 export async function getUsersByPrayerGroup(groupId: string): Promise<{
   success: boolean;
   message: string;
-  users?: Pick<User, "id" | "name" | "email" | "image" | "createdAt">[];
+  users?: MinimalUser[];
 }> {
   try {
     const userPrayerGroups = await db.userPrayerGroup.findMany({

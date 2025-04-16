@@ -29,7 +29,8 @@ export default function ClientNavbarUser({ navbarUser }: Props) {
     pathname.startsWith("/requests/") && pathname.split("/").length === 3;
 
   return (
-    <div className="flex shadow-none md:flex bg-card flex-row justify-between items-center w-full py-1 px-3">
+    <div className="relative flex items-center justify-between bg-card w-full py-1 px-3 shadow-none md:flex">
+      {/* Left side */}
       {isOnHome ? (
         <Link href={`/requests/${navbarUser.id}`}>
           <Avatar className="h-7 w-7 ml-1">
@@ -42,7 +43,9 @@ export default function ClientNavbarUser({ navbarUser }: Props) {
       ) : (
         <BackButton className="px-2 py-1 h-8" />
       )}
-      <div className="font-bold">
+
+      {/* Center text absolutely positioned */}
+      <div className="absolute left-1/2 transform -translate-x-1/2 text-center font-bold">
         {isOnProfile
           ? "Settings"
           : isOnHome
@@ -55,7 +58,9 @@ export default function ClientNavbarUser({ navbarUser }: Props) {
           ? "Your Requests"
           : "Hello"}
       </div>
-      <div className="mr-1">
+
+      {/* Right side */}
+      <div className="flex gap-1 items-center mr-1">
         <PrayerRequestAdd
           id={navbarUser.id}
           variant="ghost"
@@ -65,9 +70,7 @@ export default function ClientNavbarUser({ navbarUser }: Props) {
           size="icon"
           variant="ghost"
           className="h-8 w-8"
-          onClick={() => {
-            router.push(`/user/${navbarUser.id}`);
-          }}
+          onClick={() => router.push(`/user/${navbarUser.id}`)}
         >
           <Settings />
         </Button>

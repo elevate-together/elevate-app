@@ -30,6 +30,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isStandAlone =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -45,7 +48,15 @@ export default function RootLayout({
             <AppSidebar />
             <main className="flex flex-col w-full h-screen">
               <Navbar />
-              <PullToRefreshWrapper>{children}</PullToRefreshWrapper>
+              <div
+                className={
+                  isStandAlone
+                    ? "m-0 p-0 max-h-[calc(100vh_-_40px_-_82px)] md:max-h-[100vh] flex-1 overflow-auto"
+                    : "m-0 p-0 max-h-[calc(100vh_-_40px)] md:max-h-[100vh] flex-1 overflow-auto"
+                }
+              >
+                <PullToRefreshWrapper>{children}</PullToRefreshWrapper>
+              </div>
               <MobileFooter />
             </main>
 

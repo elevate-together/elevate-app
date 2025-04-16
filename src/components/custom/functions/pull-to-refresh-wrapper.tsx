@@ -2,29 +2,41 @@
 
 import { useEffect, useRef } from "react";
 import PullToRefresh from "pulltorefreshjs";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function PullToRefreshWrapper({
   children,
+  className,
+  include = false,
 }: {
   children: React.ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
+  include?: boolean;
 }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
-  const isStandAlone =
+  let isStandAlone =
     typeof window !== "undefined" &&
     window.matchMedia("(display-mode: standalone)").matches;
+
+  isStandAlone = true;
+
+  const toInclude = include
+    ? true
+    : pathname !== "/" && !pathname.startsWith("/requests/");
 
   useEffect(() => {
     const el = containerRef.current;
 
-    if (isStandAlone && el) {
+    if (isStandAlone && toInclude && el) {
       PullToRefresh.init({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mainElement: el as any,
         shouldPullToRefresh: () => {
-          return el.scrollTop === 0;
+          return el ? el.scrollTop === 0 : false;
         },
         onRefresh: () => {
           router.refresh();
@@ -35,17 +47,10 @@ export function PullToRefreshWrapper({
         PullToRefresh.destroyAll();
       };
     }
-  }, [router, isStandAlone]);
+  }, [router, isStandAlone, pathname, toInclude]);
 
   return (
-    <div
-      ref={containerRef}
-      className={
-        isStandAlone
-          ? "max-h-[calc(100vh_-_40px_-_82px)] md:max-h-[100vh] flex-1 overflow-auto"
-          : "max-h-[calc(100vh_-_40px)] md:max-h-[100vh] flex-1 overflow-auto"
-      }
-    >
+    <div ref={containerRef} className={className}>
       {children}
     </div>
   );

@@ -1,6 +1,11 @@
-import { PrayerGroup, PrayerRequest, User as UserDef } from "@prisma/client";
+import {
+  PrayerGroup,
+  PrayerRequest,
+  User,
+  User as UserDef,
+} from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
-import { HelpingHandIcon, Home, User, Users } from "lucide-react";
+import { HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -11,6 +16,16 @@ export type PrayerGroupForPreview = PrayerGroup & {
   owner: UserDef;
   memberCount: number;
 };
+
+export type PrayerRequestWithUser = {
+  prayerRequest: PrayerRequest;
+  user: User;
+};
+
+export type MinimalUser = Pick<
+  User,
+  "id" | "name" | "email" | "image" | "createdAt"
+>;
 
 export type PrayeRequestWithUser = PrayerRequest & { user: UserDef };
 
@@ -29,7 +44,7 @@ export const menu_items = [
   {
     title: "Profile",
     url: "/user/{id}",
-    icon: User,
+    icon: UserIco,
     auth: true,
   },
 

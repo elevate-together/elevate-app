@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
-import PrayerRequestTemplate from "@/components/custom/prayer-request/prayer-request-template";
+import PrayerRequestTemplate from "@/components/custom/templates/prayer-request-template";
+import { getPrayerRequestsByUserId } from "@/services/prayer-request";
 import { getUserById } from "@/services/users";
 
 export default async function UserRequests({
@@ -7,27 +8,33 @@ export default async function UserRequests({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: pageId } = await params;
-
   const session = await auth();
+  const { id: pageUserId } = await params;
 
-  if (!session || !session.user || !session.user?.id) {
+  if (!session?.user?.id) {
     return <div className="p-2">Unable to Find User</div>;
   }
 
-  const currId = session.user.id;
+  const currUserId = session.user.id;
 
-  const { user: currUser } = await getUserById(currId);
-
-  const { user: pageUser } = await getUserById(pageId);
+  const { user: currUser } = await getUserById(currUserId);
+  const { user: pageUser } = await getUserById(pageUserId);
+  const { prayerRequests } = await getPrayerRequestsByUserId(pageUserId);
 
   if (!currUser || !pageUser) {
     return <div className="p-2">Unable to Find User</div>;
   }
 
+  const isOwner = currUser.id === pageUser.id;
+
   return (
     <div className="flex flex-col gap-6">
-      <PrayerRequestTemplate currUser={currUser} pageUser={pageUser} />
+      <PrayerRequestTemplate
+        currUser={currUser}
+        pageUser={pageUser}
+        prayerRequests={prayerRequests ?? []}
+        isOwner={isOwner}
+      />
     </div>
   );
 }

@@ -2,9 +2,9 @@
 
 import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
-import SignIn from "../../user/user-sign-in";
 import { useIsMobile } from "@/components/hooks/use-mobile";
 import { UserRoundPlus } from "lucide-react";
+import SignIn from "../user/user-sign-in";
 
 export default function WelcomePage() {
   const isMobile = useIsMobile();
