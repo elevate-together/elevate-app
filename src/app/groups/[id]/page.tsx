@@ -8,6 +8,7 @@ import {
 import {
   getPrayerRequestsForGroup,
   getPublicPrayerRequestsForGroup,
+} from "@/services/prayer-request-share";
 import PrayerGroupTemplate from "@/components/custom/templates/prayer-group-templates";
 
 export default async function GroupPage({
@@ -15,8 +16,6 @@ export default async function GroupPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
-  if (!prayerGroup) return null;
   const { id: groupId } = await params;
 
   const session = await auth();
