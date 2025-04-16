@@ -6,6 +6,7 @@ import {
   getPrayerGroupsPendingForUser,
 } from "@/services/user-prayer-group";
 import PrayerGroupAllTemplate from "@/components/custom/templates/prayer-group-all-template";
+import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
 
 export default async function AllGroupsPage() {
   const session = await auth();
@@ -27,11 +28,13 @@ export default async function AllGroupsPage() {
   ]);
 
   return (
-    <PrayerGroupAllTemplate
-      user={user}
-      yourGroups={yourGroups?.prayerGroups ?? []}
-      pendingGroups={pendingGroups?.prayerGroups ?? []}
-      remainingGroups={remainingGroups?.prayerGroups ?? []}
-    />
+    <PagePaddingWrapper>
+      <PrayerGroupAllTemplate
+        user={user}
+        yourGroups={yourGroups?.prayerGroups ?? []}
+        pendingGroups={pendingGroups?.prayerGroups ?? []}
+        remainingGroups={remainingGroups?.prayerGroups ?? []}
+      />
+    </PagePaddingWrapper>
   );
 }

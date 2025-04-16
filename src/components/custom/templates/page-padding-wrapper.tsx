@@ -9,5 +9,5 @@ type PagePaddingWrapperProps = {
 export default function PagePaddingWrapper({
   children,
 }: PagePaddingWrapperProps) {
-  return <div className="p-2 md:p-4">{children}</div>;
+  return <div className="p-3 md:p-3">{children}</div>;
 }
