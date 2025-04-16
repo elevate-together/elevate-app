@@ -18,11 +18,9 @@ export function PullToRefreshWrapper({
   const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  let isStandAlone =
+  const isStandAlone =
     typeof window !== "undefined" &&
     window.matchMedia("(display-mode: standalone)").matches;
-
-  isStandAlone = true;
 
   const toInclude = include
     ? true

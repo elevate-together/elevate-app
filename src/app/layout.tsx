@@ -30,9 +30,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   const isStandAlone =
     typeof window !== "undefined" &&
     window.matchMedia("(display-mode: standalone)").matches;
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -59,6 +61,7 @@ export default function RootLayout({
               </div>
               <MobileFooter />
             </main>
+
 
             <Toaster
               toastOptions={{
