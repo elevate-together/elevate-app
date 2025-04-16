@@ -29,7 +29,7 @@ export default function ClientNavbarUser({ navbarUser }: Props) {
     pathname.startsWith("/requests/") && pathname.split("/").length === 3;
 
   return (
-    <div className="flex shadow-sm md:flex bg-card flex-row justify-between items-center w-full py-1 px-3">
+    <div className="flex shadow-none md:flex bg-card flex-row justify-between items-center w-full py-1 px-3">
       {isOnHome ? (
         <Link href={`/requests/${navbarUser.id}`}>
           <Avatar className="h-7 w-7 ml-1">

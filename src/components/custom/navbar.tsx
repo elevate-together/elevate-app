@@ -10,7 +10,7 @@ export default async function Navbar() {
   if (!session?.user?.id) return null;
 
   return (
-    <div className="block shadow-md z-10 md:hidden">
+    <div className="block shadow-sm z-10 md:hidden">
       <ClientNavbarUser
         navbarUser={{
           id: session.user.id,

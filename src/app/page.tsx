@@ -48,15 +48,15 @@ export default async function Home() {
               ? "community"
               : "personal"
           }
-          className="w-full mt-1"
+          className="w-full"
         >
-          <TabsList className="w-full flex bg-transparent justify-between m-0 p-0">
+          <TabsList className="w-full flex bg-white justify-between m-0 p-0">
             {InProgressSuccess &&
               InProgressPrayerRequests &&
               InProgressPrayerRequests.length > 0 && (
                 <TabsTrigger
                   value="all"
-                  className="flex-1 rounded-none text-muted-foreground data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                  className="flex-1 rounded-none bg-white text-muted-foreground data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary"
                 >
                   All
                 </TabsTrigger>
