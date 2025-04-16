@@ -22,6 +22,11 @@ export const HomPagetemplate = ({
   friendSuccess,
   inProgressSuccess,
 }: HomeClientTemplateProps) => {
+  
+  const isStandAlone =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
+
   return (
     <div className="h-full w-full space-y-5">
       <Tabs
@@ -50,7 +55,11 @@ export const HomPagetemplate = ({
         </TabsList>
 
         <PullToRefreshWrapper
-          className="overflow-y-auto max-h-[calc(100vh_-_36px)]"
+          className={
+            isStandAlone
+              ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)]"
+              : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)]"
+          }
           include
         >
           <TabsContent value="all">

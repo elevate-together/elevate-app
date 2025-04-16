@@ -42,6 +42,10 @@ export default function PrayerRequestTemplate({
     [prayerRequests]
   );
 
+  const isStandAlone =
+    typeof window !== "undefined" &&
+    window.matchMedia("(display-mode: standalone)").matches;
+
   if (isOwner) {
     return (
       <div className="flex flex-col gap-5">
@@ -57,7 +61,14 @@ export default function PrayerRequestTemplate({
               <Package size="15px" className="mr-1" /> Past
             </TabsTrigger>
           </TabsList>
-          <PullToRefreshWrapper include>
+          <PullToRefreshWrapper
+            className={
+              isStandAlone
+                ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)]"
+                : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)]"
+            }
+            include
+          >
             <TabsContent value="request">
               {inProgressRequests.length ? (
                 inProgressRequests.map((prayer) => (
