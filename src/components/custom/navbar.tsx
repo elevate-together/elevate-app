@@ -1,34 +1,23 @@
 import { auth } from "@/auth";
-import SignIn from "@/components/custom/user/user-sign-in";
-import SignOut from "@/components/custom/user/user-sign-out";
-import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "../ui/separator";
+import ClientNavbarUser from "./client-navbar-user";
 
 export default async function Navbar() {
   const session = await auth();
 
-  if (session == null) {
-    return null;
-  }
+  if (!session?.user) return null;
+
+  if (!session?.user?.id) return null;
 
   return (
-    <div className="block md:hidden">
-      <div className="flex md:flex bg-card flex-row justify-between w-full p-2">
-        <div className="flex flex-row justify-start">
-          <SidebarTrigger />
-          {/* <ThemeSwitch /> */}
-        </div>
-
-        {session && session.user?.id ? (
-          <div className="flex flex-row gap-4">
-            <SignOut hideOnMobile variant="secondary" />
-          </div>
-        ) : (
-          <div>
-            <SignIn className="max-w-25" />
-          </div>
-        )}
-      </div>
+    <div className="block shadow-md z-10 md:hidden">
+      <ClientNavbarUser
+        navbarUser={{
+          id: session.user.id,
+          image: session.user.image,
+          name: session.user.name,
+        }}
+      />
       <Separator />
     </div>
   );

@@ -40,7 +40,11 @@ export function PullToRefreshWrapper({
   return (
     <div
       ref={containerRef}
-      className="max-h-[calc(100vh-142px)] md:max-h-[100vh] flex-1 overflow-auto" //max-h-[calc(100vh-142px)] md:max-h-[100vh]
+      className={
+        isStandAlone
+          ? "max-h-[calc(100vh_-_40px_-_82px)] md:max-h-[100vh] flex-1 overflow-auto"
+          : "max-h-[calc(100vh_-_40px)] md:max-h-[100vh] flex-1 overflow-auto"
+      }
     >
       {children}
     </div>

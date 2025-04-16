@@ -22,21 +22,21 @@ import {
 } from "@/components/ui/drawer";
 import { Plus } from "lucide-react";
 import { useState } from "react";
+import { ButtonProps } from "@/components/ui/button"; // adjust path as needed
 
 type PrayerGroupCreateProps = {
   id: string;
   isMenu?: boolean;
   hideOnMobile?: boolean;
   includeText?: boolean;
-  className?: string;
-};
+} & ButtonProps;
 
 export default function PrayerRequestAdd({
   id,
   isMenu = false,
   hideOnMobile = false,
   includeText = false,
-  className = "",
+  ...props
 }: PrayerGroupCreateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -54,7 +54,7 @@ export default function PrayerRequestAdd({
           <Button
             size={includeText ? "default" : "icon"}
             variant={isMenu ? "ghost" : "secondary"}
-            className={className}
+            {...props}
           >
             <Plus />
             {includeText && "Add"}
@@ -71,7 +71,7 @@ export default function PrayerRequestAdd({
         )}
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 md:p-0">
+        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-10 md:p-0">
           <DrawerHeader className="text-left p-0">
             <DrawerTitle>New Prayer Request</DrawerTitle>
             <DrawerDescription>
@@ -94,7 +94,7 @@ export default function PrayerRequestAdd({
           <Button
             size={includeText ? "default" : "icon"}
             variant={isMenu ? "ghost" : "secondary"}
-            className={className}
+            {...props}
           >
             <Plus />
             {includeText && "Add"}

@@ -45,7 +45,7 @@ export default async function AllGroups() {
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
         <div className="text-xl font-semibold h-full">Your Groups</div>
-        <PrayerGroupCreate id={user.id} hideOnMobile />
+        <PrayerGroupCreate id={user.id} />
       </div>
 
       <div className="flex flex-col gap-3">

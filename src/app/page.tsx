@@ -48,20 +48,71 @@ export default async function Home() {
               ? "community"
               : "personal"
           }
-          className="w-full "
+          className="w-full mt-1"
         >
-          <TabsList>
+          <TabsList className="w-full flex bg-transparent justify-between m-0 p-0">
+            {InProgressSuccess &&
+              InProgressPrayerRequests &&
+              InProgressPrayerRequests.length > 0 && (
+                <TabsTrigger
+                  value="all"
+                  className="flex-1 rounded-none text-muted-foreground data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                >
+                  All
+                </TabsTrigger>
+              )}
             {FriendSuccess &&
               FriendPrayerRequests &&
               FriendPrayerRequests?.length > 0 && (
-                <TabsTrigger value="community">Community</TabsTrigger>
+                <TabsTrigger
+                  value="community"
+                  className="flex-1 rounded-none text-muted-foreground data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                >
+                  Community
+                </TabsTrigger>
               )}
             {InProgressSuccess &&
               InProgressPrayerRequests &&
               InProgressPrayerRequests.length > 0 && (
-                <TabsTrigger value="personal">Personal</TabsTrigger>
+                <TabsTrigger
+                  value="personal"
+                  className="flex-1 rounded-none text-muted-foreground data-[state=active]:text-primary data-[state=active]:border-b-2 data-[state=active]:border-primary"
+                >
+                  Personal
+                </TabsTrigger>
               )}
           </TabsList>
+          <TabsContent value="all">
+            {FriendSuccess &&
+              FriendPrayerRequests &&
+              FriendPrayerRequests?.length > 0 && (
+                <div>
+                  {FriendPrayerRequests.map((prayer) => (
+                    <PrayerRequestCard
+                      key={prayer.id}
+                      user={prayer.user}
+                      prayer={prayer}
+                      isOwner={false}
+                      currUserName={user.name}
+                    />
+                  ))}
+                </div>
+              )}
+            {InProgressSuccess &&
+              InProgressPrayerRequests &&
+              InProgressPrayerRequests.length > 0 && (
+                <div>
+                  {InProgressPrayerRequests.map((prayer) => (
+                    <PrayerRequestCard
+                      key={prayer.id}
+                      user={user}
+                      prayer={prayer}
+                      isOwner={true}
+                    />
+                  ))}
+                </div>
+              )}
+          </TabsContent>
           <TabsContent value="community">
             {FriendSuccess &&
               FriendPrayerRequests &&

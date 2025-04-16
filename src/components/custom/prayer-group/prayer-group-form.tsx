@@ -32,7 +32,6 @@ const formSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be left blank" }),
   description: z
     .string()
-    .min(1, { message: "Description must be at least 1 character" })
     .max(250, { message: "Description must be less than 250 characters" })
     .optional(),
   groupType: z.enum([GroupType.PUBLIC, GroupType.PRIVATE]),

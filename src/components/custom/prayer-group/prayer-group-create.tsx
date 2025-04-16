@@ -56,11 +56,12 @@ export default function PrayerGroupCreate({
           }`}
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Plus /> Create New Group
+          <Plus />
+          {isMobile ? "New Group" : "Create New Group"}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-6">
+        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-10">
           <DrawerHeader className="text-left px-0 py-3">
             <DrawerTitle>Create New Prayer Group</DrawerTitle>
           </DrawerHeader>
@@ -83,7 +84,7 @@ export default function PrayerGroupCreate({
           }`}
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Plus /> Create New Group
+          <Plus /> {isMobile ? "New Group" : "Create New Group"}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
