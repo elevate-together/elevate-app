@@ -17,7 +17,7 @@ export default function ClientMobileFooter({ id }: { id: string }) {
   const iconClass = "h-6 w-6";
 
   return (
-    <footer className="fixed bottom-0 left-0 right-0 bg-card text-muted-foreground p-3 flex justify-around items-center border block md:hidden pb-8">
+    <footer className="h-[82px] w-full pb-4 bg-card text-muted-foreground flex justify-around items-center border-t block md:hidden">
       <Link href="/" className={linkClass("/")}>
         <HelpingHandIcon className={iconClass} />
         <span className="text-xs">Home</span>
@@ -30,7 +30,6 @@ export default function ClientMobileFooter({ id }: { id: string }) {
         <Hand className={iconClass} />
         <span className="text-xs">Requests</span>
       </Link>
-
       <Link href={`/user/${id}`} className={linkClass("/user")}>
         <User className={iconClass} />
         <span className="text-xs">Profile</span>

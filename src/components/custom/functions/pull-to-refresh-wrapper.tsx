@@ -13,6 +13,7 @@ export function PullToRefreshWrapper({
   className?: string;
   style?: React.CSSProperties;
   include?: boolean;
+  isInTab?: boolean;
 }) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -29,7 +30,7 @@ export function PullToRefreshWrapper({
   useEffect(() => {
     const el = containerRef.current;
 
-    if (isStandAlone && toInclude && el) {
+    if (!isStandAlone && toInclude && el) {
       PullToRefresh.init({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mainElement: el as any,
@@ -48,7 +49,7 @@ export function PullToRefreshWrapper({
   }, [router, isStandAlone, pathname, toInclude]);
 
   return (
-    <div ref={containerRef} className={className}>
+    <div ref={containerRef} className={`overscroll-contain ${className}`}>
       {children}
     </div>
   );

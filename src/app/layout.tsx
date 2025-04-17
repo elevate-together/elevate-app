@@ -8,6 +8,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MobileFooter from "@/components/custom/mobile-footer";
+import { PullToRefreshWrapper } from "@/components/custom/functions/pull-to-refresh-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +30,6 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const isStandAlone =
-    typeof window !== "undefined" &&
-    window.matchMedia("(display-mode: standalone)").matches;
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -46,16 +43,10 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex flex-col w-full h-screen">
+            <main className="flex flex-col h-screen w-full overscroll-contain">
               <Navbar />
-              <div
-                className={
-                  isStandAlone
-                    ? "m-0 p-0 h-[calc(100vh_-_40px_-_82px)] md:max-h-[100vh] flex-1 overflow-auto"
-                    : "m-0 p-0 h-[calc(100vh_-_46px)] md:max-h-[100vh] flex-1 overflow-hidden"
-                }
-              >
-                {children}
+              <div className="flex-1 overflow-y-auto">
+                <PullToRefreshWrapper>{children}</PullToRefreshWrapper>
               </div>
               <MobileFooter />
             </main>

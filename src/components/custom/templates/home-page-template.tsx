@@ -22,10 +22,6 @@ export const HomPagetemplate = ({
   friendSuccess,
   inProgressSuccess,
 }: HomeClientTemplateProps) => {
-  const isStandAlone =
-    typeof window !== "undefined" &&
-    window.matchMedia("(display-mode: standalone)").matches;
-
   return (
     <Tabs
       defaultValue={
@@ -52,74 +48,66 @@ export const HomPagetemplate = ({
         )}
       </TabsList>
 
-      <div
-        className={
-          isStandAlone
-            ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)] pb-6"
-            : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)] pb-6"
-        }
-      >
-        <PullToRefreshWrapper include>
-          <TabsContent value="all">
-            {friendSuccess && friendPrayerRequests.length > 0 && (
-              <div>
-                {friendPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={false}
-                    currUserName={user.name}
-                  />
-                ))}
-              </div>
-            )}
-            {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
-              <div>
-                {inProgressPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={user}
-                    prayer={prayer}
-                    isOwner={true}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+      <PullToRefreshWrapper include>
+        <TabsContent value="all">
+          {friendSuccess && friendPrayerRequests.length > 0 && (
+            <div>
+              {friendPrayerRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={prayer.user}
+                  prayer={prayer}
+                  isOwner={false}
+                  currUserName={user.name}
+                />
+              ))}
+            </div>
+          )}
+          {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
+            <div>
+              {inProgressPrayerRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={user}
+                  prayer={prayer}
+                  isOwner={true}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
-          <TabsContent value="community">
-            {friendSuccess && friendPrayerRequests.length > 0 && (
-              <div>
-                {friendPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={false}
-                    currUserName={user.name}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+        <TabsContent value="community">
+          {friendSuccess && friendPrayerRequests.length > 0 && (
+            <div>
+              {friendPrayerRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={prayer.user}
+                  prayer={prayer}
+                  isOwner={false}
+                  currUserName={user.name}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
 
-          <TabsContent value="personal">
-            {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
-              <div>
-                {inProgressPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={user}
-                    prayer={prayer}
-                    isOwner={true}
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </PullToRefreshWrapper>
-      </div>
+        <TabsContent value="personal">
+          {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
+            <div>
+              {inProgressPrayerRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={user}
+                  prayer={prayer}
+                  isOwner={true}
+                />
+              ))}
+            </div>
+          )}
+        </TabsContent>
+      </PullToRefreshWrapper>
     </Tabs>
   );
 };

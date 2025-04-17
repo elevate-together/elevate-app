@@ -41,11 +41,6 @@ export default function PrayerRequestTemplate({
       prayerRequests.filter((r) => r.status === PrayerRequestStatus.ARCHIVED),
     [prayerRequests]
   );
-
-  const isStandAlone =
-    typeof window !== "undefined" &&
-    window.matchMedia("(display-mode: standalone)").matches;
-
   if (isOwner) {
     return (
       <Tabs defaultValue="request" className="w-full">
@@ -60,60 +55,50 @@ export default function PrayerRequestTemplate({
             <Package size="15px" className="mr-1" /> Past
           </TabsTrigger>
         </TabsList>
-        <div
-          className={
-            isStandAlone
-              ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)] pb-6"
-              : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)] pb-6"
-          }
-        >
-          <PullToRefreshWrapper include>
-            <TabsContent value="request">
-              {inProgressRequests.length ? (
-                inProgressRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={currUser}
-                    prayer={prayer}
-                    isOwner
-                  />
-                ))
-              ) : (
-                <div className="px-3">You have no active prayer requests.</div>
-              )}
-            </TabsContent>
-            <TabsContent value="answered">
-              {answeredRequests.length ? (
-                answeredRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={currUser}
-                    prayer={prayer}
-                    isOwner
-                  />
-                ))
-              ) : (
-                <div className="px-3">
-                  You have no answered prayer requests.
-                </div>
-              )}
-            </TabsContent>
-            <TabsContent value="past">
-              {archivedRequests.length ? (
-                archivedRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={currUser}
-                    prayer={prayer}
-                    isOwner
-                  />
-                ))
-              ) : (
-                <div className="px-3">You have no past prayer requests.</div>
-              )}
-            </TabsContent>
-          </PullToRefreshWrapper>
-        </div>
+        <PullToRefreshWrapper include>
+          <TabsContent value="request">
+            {inProgressRequests.length ? (
+              inProgressRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={currUser}
+                  prayer={prayer}
+                  isOwner
+                />
+              ))
+            ) : (
+              <div className="px-3">You have no active prayer requests.</div>
+            )}
+          </TabsContent>
+          <TabsContent value="answered">
+            {answeredRequests.length ? (
+              answeredRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={currUser}
+                  prayer={prayer}
+                  isOwner
+                />
+              ))
+            ) : (
+              <div className="px-3">You have no answered prayer requests.</div>
+            )}
+          </TabsContent>
+          <TabsContent value="past">
+            {archivedRequests.length ? (
+              archivedRequests.map((prayer) => (
+                <PrayerRequestCard
+                  key={prayer.id}
+                  user={currUser}
+                  prayer={prayer}
+                  isOwner
+                />
+              ))
+            ) : (
+              <div className="px-3">You have no past prayer requests.</div>
+            )}
+          </TabsContent>
+        </PullToRefreshWrapper>
       </Tabs>
     );
   }
