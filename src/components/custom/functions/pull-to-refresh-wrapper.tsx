@@ -1,32 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import PullToRefresh from "pulltorefreshjs";
 import { usePathname, useRouter } from "next/navigation";
 
 export function PullToRefreshWrapper({
   children,
-  className = "",
-  scrollClass,
+  className,
 }: {
   children: React.ReactNode;
   className?: string;
-  scrollClass: string;
 }) {
   const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  const isStandAlone =
-    typeof window !== "undefined" &&
-    window.matchMedia("(display-mode: standalone)").matches;
-
   useEffect(() => {
-    if (isStandAlone) {
+    const el = containerRef.current;
+
+    if (el) {
       PullToRefresh.init({
-        mainElement: `.${scrollClass}`,
-        triggerElement: `.${scrollClass}`,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        mainElement: el as any,
         shouldPullToRefresh: () => {
-          const el = document.querySelector(`.${scrollClass}`);
           return el ? el.scrollTop === 0 : false;
         },
         onRefresh: () => {
@@ -38,10 +34,10 @@ export function PullToRefreshWrapper({
         PullToRefresh.destroyAll();
       };
     }
-  }, [router, isStandAlone, pathname, scrollClass]);
+  }, [router, pathname]);
 
   return (
-    <div className={`${scrollClass} overscroll-contain ${className}`}>
+    <div ref={containerRef} className={className}>
       {children}
     </div>
   );

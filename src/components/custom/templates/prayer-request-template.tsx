@@ -55,50 +55,55 @@ export default function PrayerRequestTemplate({
             <Package size="15px" className="mr-1" /> Past
           </TabsTrigger>
         </TabsList>
-        <PullToRefreshWrapper scrollClass="requests-sroll-prayers">
-          <TabsContent value="request">
-            {inProgressRequests.length ? (
-              inProgressRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={currUser}
-                  prayer={prayer}
-                  isOwner
-                />
-              ))
-            ) : (
-              <div className="px-3">You have no active prayer requests.</div>
-            )}
-          </TabsContent>
-          <TabsContent value="answered">
-            {answeredRequests.length ? (
-              answeredRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={currUser}
-                  prayer={prayer}
-                  isOwner
-                />
-              ))
-            ) : (
-              <div className="px-3">You have no answered prayer requests.</div>
-            )}
-          </TabsContent>
-          <TabsContent value="past">
-            {archivedRequests.length ? (
-              archivedRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={currUser}
-                  prayer={prayer}
-                  isOwner
-                />
-              ))
-            ) : (
-              <div className="px-3">You have no past prayer requests.</div>
-            )}
-          </TabsContent>
-        </PullToRefreshWrapper>
+
+        <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)]">
+          <PullToRefreshWrapper>
+            <TabsContent value="request">
+              {inProgressRequests.length ? (
+                inProgressRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={currUser}
+                    prayer={prayer}
+                    isOwner
+                  />
+                ))
+              ) : (
+                <div className="px-3">You have no active prayer requests.</div>
+              )}
+            </TabsContent>
+            <TabsContent value="answered">
+              {answeredRequests.length ? (
+                answeredRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={currUser}
+                    prayer={prayer}
+                    isOwner
+                  />
+                ))
+              ) : (
+                <div className="px-3">
+                  You have no answered prayer requests.
+                </div>
+              )}
+            </TabsContent>
+            <TabsContent value="past">
+              {archivedRequests.length ? (
+                archivedRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={currUser}
+                    prayer={prayer}
+                    isOwner
+                  />
+                ))
+              ) : (
+                <div className="px-3">You have no past prayer requests.</div>
+              )}
+            </TabsContent>
+          </PullToRefreshWrapper>
+        </div>
       </Tabs>
     );
   }

@@ -32,7 +32,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased overscroll-contain`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
         <ThemeProvider
           attribute="class"
@@ -42,11 +42,9 @@ export default function RootLayout({
         >
           <SidebarProvider>
             <AppSidebar />
-            <main className="flex flex-col h-screen w-full overscroll-contain">
+            <main className="flex flex-col h-screen w-full ">
               <Navbar />
-              <div className="flex-1 overflow-y-auto overscroll-contain">
-                {children}
-              </div>
+              <div className="flex-1 overflow-hidden">{children}</div>
               <MobileFooter />
             </main>
 

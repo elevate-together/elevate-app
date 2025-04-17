@@ -48,66 +48,68 @@ export const HomPagetemplate = ({
         )}
       </TabsList>
 
-      <PullToRefreshWrapper scrollClass="home-sroll-prayers">
-        <TabsContent value="all">
-          {friendSuccess && friendPrayerRequests.length > 0 && (
-            <div>
-              {friendPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={prayer.user}
-                  prayer={prayer}
-                  isOwner={false}
-                  currUserName={user.name}
-                />
-              ))}
-            </div>
-          )}
-          {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
-            <div>
-              {inProgressPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={user}
-                  prayer={prayer}
-                  isOwner={true}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+      <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)]">
+        <PullToRefreshWrapper>
+          <TabsContent value="all">
+            {friendSuccess && friendPrayerRequests.length > 0 && (
+              <div>
+                {friendPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={prayer.user}
+                    prayer={prayer}
+                    isOwner={false}
+                    currUserName={user.name}
+                  />
+                ))}
+              </div>
+            )}
+            {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
+              <div>
+                {inProgressPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={user}
+                    prayer={prayer}
+                    isOwner={true}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        <TabsContent value="community">
-          {friendSuccess && friendPrayerRequests.length > 0 && (
-            <div>
-              {friendPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={prayer.user}
-                  prayer={prayer}
-                  isOwner={false}
-                  currUserName={user.name}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+          <TabsContent value="community">
+            {friendSuccess && friendPrayerRequests.length > 0 && (
+              <div>
+                {friendPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={prayer.user}
+                    prayer={prayer}
+                    isOwner={false}
+                    currUserName={user.name}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        <TabsContent value="personal">
-          {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
-            <div>
-              {inProgressPrayerRequests.map((prayer) => (
-                <PrayerRequestCard
-                  key={prayer.id}
-                  user={user}
-                  prayer={prayer}
-                  isOwner={true}
-                />
-              ))}
-            </div>
-          )}
-        </TabsContent>
-      </PullToRefreshWrapper>
+          <TabsContent value="personal">
+            {inProgressSuccess && inProgressPrayerRequests.length > 0 && (
+              <div>
+                {inProgressPrayerRequests.map((prayer) => (
+                  <PrayerRequestCard
+                    key={prayer.id}
+                    user={user}
+                    prayer={prayer}
+                    isOwner={true}
+                  />
+                ))}
+              </div>
+            )}
+          </TabsContent>
+        </PullToRefreshWrapper>
+      </div>
     </Tabs>
   );
 };
