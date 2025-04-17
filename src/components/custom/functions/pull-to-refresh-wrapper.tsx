@@ -30,7 +30,7 @@ export function PullToRefreshWrapper({
   useEffect(() => {
     const el = containerRef.current;
 
-    if (!isStandAlone && toInclude && el) {
+    if (isStandAlone && toInclude && el) {
       PullToRefresh.init({
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         mainElement: el as any,
