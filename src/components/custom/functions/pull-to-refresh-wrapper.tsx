@@ -21,7 +21,7 @@ export function PullToRefreshWrapper({
     window.matchMedia("(display-mode: standalone)").matches;
 
   useEffect(() => {
-    if (!isStandAlone) {
+    if (isStandAlone) {
       PullToRefresh.init({
         mainElement: `.${scrollClass}`,
         triggerElement: `.${scrollClass}`,
