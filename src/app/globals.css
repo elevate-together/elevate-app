@@ -4,6 +4,10 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  overscroll-behavior: none;
+  touch-action: pan-x pinch-zoom;
+  height: 100%;
+  overflow: hidden;
 }
 
 @layer base {
