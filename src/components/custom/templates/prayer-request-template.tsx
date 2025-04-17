@@ -48,27 +48,26 @@ export default function PrayerRequestTemplate({
 
   if (isOwner) {
     return (
-      <div className="flex flex-col gap-5">
-        <Tabs defaultValue="request" className="w-full">
-          <TabsList variant="fullWidth">
-            <TabsTrigger value="request" variant="underline">
-              <Hand size="15px" className="mr-1" /> Requests
-            </TabsTrigger>
-            <TabsTrigger value="answered" variant="underline">
-              <Star size="15px" className="mr-1" /> Answered
-            </TabsTrigger>
-            <TabsTrigger value="past" variant="underline">
-              <Package size="15px" className="mr-1" /> Past
-            </TabsTrigger>
-          </TabsList>
-          <PullToRefreshWrapper
-            className={
-              isStandAlone
-                ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)]"
-                : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)]"
-            }
-            include
-          >
+      <Tabs defaultValue="request" className="w-full">
+        <TabsList variant="fullWidth">
+          <TabsTrigger value="request" variant="underline">
+            <Hand size="15px" className="mr-1" /> Requests
+          </TabsTrigger>
+          <TabsTrigger value="answered" variant="underline">
+            <Star size="15px" className="mr-1" /> Answered
+          </TabsTrigger>
+          <TabsTrigger value="past" variant="underline">
+            <Package size="15px" className="mr-1" /> Past
+          </TabsTrigger>
+        </TabsList>
+        <div
+          className={
+            isStandAlone
+              ? "overflow-y-auto max-h-[calc(100vh_-_36px_-40px_-_82px)] pb-6"
+              : "overflow-y-auto max-h-[calc(100vh_-_36px_-40px)] pb-6"
+          }
+        >
+          <PullToRefreshWrapper include>
             <TabsContent value="request">
               {inProgressRequests.length ? (
                 inProgressRequests.map((prayer) => (
@@ -114,8 +113,8 @@ export default function PrayerRequestTemplate({
               )}
             </TabsContent>
           </PullToRefreshWrapper>
-        </Tabs>
-      </div>
+        </div>
+      </Tabs>
     );
   }
 
