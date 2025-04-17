@@ -25,6 +25,10 @@ export function PullToRefreshWrapper({
       PullToRefresh.init({
         mainElement: `.${scrollClass}`,
         triggerElement: `.${scrollClass}`,
+        shouldPullToRefresh: () => {
+          const el = document.querySelector(`.${scrollClass}`);
+          return el ? el.scrollTop === 0 : false;
+        },
         onRefresh: () => {
           router.refresh();
         },
@@ -36,5 +40,9 @@ export function PullToRefreshWrapper({
     }
   }, [router, isStandAlone, pathname, scrollClass]);
 
-  return <div className={`${scrollClass} ${className}`}>{children}</div>;
+  return (
+    <div className={`${scrollClass} overscroll-contain ${className}`}>
+      {children}
+    </div>
+  );
 }
