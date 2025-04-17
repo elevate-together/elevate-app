@@ -48,7 +48,7 @@ export const HomPagetemplate = ({
         )}
       </TabsList>
 
-      <PullToRefreshWrapper include>
+      <PullToRefreshWrapper scrollClass="home-sroll-prayers">
         <TabsContent value="all">
           {friendSuccess && friendPrayerRequests.length > 0 && (
             <div>

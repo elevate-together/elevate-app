@@ -8,7 +8,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import MobileFooter from "@/components/custom/mobile-footer";
-import { PullToRefreshWrapper } from "@/components/custom/functions/pull-to-refresh-wrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,9 +44,7 @@ export default function RootLayout({
             <AppSidebar />
             <main className="flex flex-col h-screen w-full overscroll-contain">
               <Navbar />
-              <div className="flex-1 overflow-y-auto">
-                <PullToRefreshWrapper>{children}</PullToRefreshWrapper>
-              </div>
+              <div className="flex-1 overflow-y-auto">{children}</div>
               <MobileFooter />
             </main>
 

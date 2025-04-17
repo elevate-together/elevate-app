@@ -55,7 +55,7 @@ export default function PrayerRequestTemplate({
             <Package size="15px" className="mr-1" /> Past
           </TabsTrigger>
         </TabsList>
-        <PullToRefreshWrapper include>
+        <PullToRefreshWrapper scrollClass="requests-sroll-prayers">
           <TabsContent value="request">
             {inProgressRequests.length ? (
               inProgressRequests.map((prayer) => (
