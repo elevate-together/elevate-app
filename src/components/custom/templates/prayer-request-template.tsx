@@ -56,7 +56,7 @@ export default function PrayerRequestTemplate({
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)]">
+        <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_40px)]">
           <PullToRefreshWrapper>
             <TabsContent value="request">
               {inProgressRequests.length ? (
