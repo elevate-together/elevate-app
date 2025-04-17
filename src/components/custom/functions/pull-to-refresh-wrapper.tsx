@@ -49,7 +49,11 @@ export function PullToRefreshWrapper({
   }, [router, isStandAlone, pathname, toInclude]);
 
   return (
-    <div ref={containerRef} className={`overscroll-contain ${className}`}>
+    <div
+      ref={containerRef}
+      className={`overscroll-contain ${className}`}
+      style={{ WebkitOverflowScrolling: "touch" }}
+    >
       {children}
     </div>
   );
