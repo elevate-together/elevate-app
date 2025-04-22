@@ -15,13 +15,13 @@ import { EllipsisVerticalIcon } from "lucide-react";
 import PrayerGroupCreate from "../prayer-group/prayer-group-create";
 import PrayerGroupView from "../prayer-group/prayer-group-view";
 import PrayerGroupJoin from "../prayer-group/prayer-group-join";
-import { PrayerGroupForPreview } from "@/lib/utils";
+import { PrayerGroupWithOwnerAndUsers } from "@/lib/utils";
 
 type Props = {
   user: User;
   yourGroups: PrayerGroup[];
   pendingGroups: PrayerGroup[];
-  remainingGroups: PrayerGroupForPreview[];
+  remainingGroups: PrayerGroupWithOwnerAndUsers[];
 };
 
 export default function PrayerGroupAllTemplate({
@@ -52,7 +52,7 @@ export default function PrayerGroupAllTemplate({
                       <EllipsisVerticalIcon />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
+                  <DropdownMenuContent className="flex flex-col" align="end">
                     <DropdownMenuItem disabled>Actions</DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <PrayerGroupView id={group.id} />

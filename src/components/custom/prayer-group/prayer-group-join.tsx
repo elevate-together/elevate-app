@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { PrayerGroupForPreview } from "@/lib/utils";
+import { PrayerGroupWithOwnerAndUsers } from "@/lib/utils";
 import { GroupType, User } from "@prisma/client";
 import UserAvatar from "../user/user-avatar";
 import JoinGroup from "../user/user-join-group";
@@ -27,11 +27,11 @@ import PrayerGroupDialog from "./prayer-group-dialog";
 import { Badge } from "@/components/ui/badge";
 
 type JoinGroupProps = {
-  data: PrayerGroupForPreview[];
+  data: PrayerGroupWithOwnerAndUsers[];
   userId: string;
 };
 export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
-  const columns: ColumnDef<PrayerGroupForPreview>[] = [
+  const columns: ColumnDef<PrayerGroupWithOwnerAndUsers>[] = [
     {
       accessorKey: "name",
       enableHiding: false,
@@ -39,7 +39,7 @@ export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
       cell: ({ row }) => (
         <div className="flex gap-2">
           <div className="font-bold"> {row.getValue("name")}</div>
-          <Badge variant="secondary">
+          <Badge variant="outline">
             {row.original.groupType.charAt(0).toUpperCase() +
               row.original.groupType.slice(1).toLowerCase()}
           </Badge>

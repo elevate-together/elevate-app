@@ -2,7 +2,15 @@
 
 import db from "@/lib/db";
 import { MinimalUser, ResponseMessage } from "@/lib/utils";
-import { GroupStatus, GroupType, PrayerGroup, User } from "@prisma/client";
+import {
+  GroupStatus,
+  GroupType,
+  PrayerGroup,
+  PrayerRequestStatus,
+  PrayerVisibility,
+  ShareType,
+  User,
+} from "@prisma/client";
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(
@@ -64,10 +72,20 @@ export async function addUserToPrayerGroup(
 // REMOVE a User from a Prayer Group
 export async function removeUserFromPrayerGroup(
   userId: string,
-  groupId: string
+  groupId: string,
+  ownerId: string
 ): Promise<ResponseMessage> {
   try {
-    // Check if the user is in the prayer group
+    // Prevent the owner from being removed from the prayer group
+    if (userId === ownerId) {
+      return {
+        success: false,
+        message:
+          "The owner cannot be removed from the prayer group. Switch ownership before leaving the group.",
+      };
+    }
+
+    // Check if the user is part of the prayer group
     const userPrayerGroup = await db.userPrayerGroup.findUnique({
       where: {
         userId_prayerGroupId: {
@@ -84,7 +102,38 @@ export async function removeUserFromPrayerGroup(
       };
     }
 
-    // Remove user from prayer group
+    const prayerRequestsToArchive = await db.prayerRequestShare.findMany({
+      where: {
+        sharedWithId: groupId,
+        sharedWithType: ShareType.GROUP,
+        ownerId: userId,
+      },
+    });
+
+    const prayerRequestIds = prayerRequestsToArchive.map(
+      (prayerRequestShare) => prayerRequestShare.prayerRequestId
+    );
+
+    await db.prayerRequest.updateMany({
+      where: {
+        id: {
+          in: prayerRequestIds,
+        },
+      },
+      data: {
+        status: PrayerRequestStatus.ARCHIVED,
+        visibility: PrayerVisibility.PRIVATE,
+      },
+    });
+
+    await db.prayerRequestShare.deleteMany({
+      where: {
+        sharedWithId: groupId,
+        sharedWithType: ShareType.GROUP,
+        ownerId: userId,
+      },
+    });
+
     await db.userPrayerGroup.delete({
       where: {
         userId_prayerGroupId: {
@@ -155,20 +204,21 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
   message: string;
   prayerGroups?: (PrayerGroup & {
     owner: User;
-    memberCount: number;
-    users?: Pick<User, "name">[];
+    users: Pick<User, "name">[];
   })[];
 }> {
   try {
+    const userPrayerGroups = await db.userPrayerGroup.findMany({
+      where: { userId },
+      select: { prayerGroupId: true },
+    });
+
+    const joinedGroupIds = userPrayerGroups.map((upg) => upg.prayerGroupId);
+
+    // Get all prayer groups NOT in that list
     const prayerGroups = await db.prayerGroup.findMany({
       where: {
-        NOT: {
-          users: {
-            some: {
-              userId: userId,
-            },
-          },
-        },
+        id: { notIn: joinedGroupIds },
       },
       include: {
         owner: true,
@@ -293,11 +343,9 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
   prayerGroups?: PrayerGroup[];
 }> {
   try {
-    // Query the userPrayerGroup table where the user is part of the prayer group
-    // and their status is ACCEPTED
     const userPrayerGroups = await db.userPrayerGroup.findMany({
       where: {
-        userId: userId, // Ensures the user is part of the prayer group
+        userId: userId,
         groupStatus: GroupStatus.ACCEPTED,
       },
       include: {
@@ -371,7 +419,6 @@ export async function getPrayerGroupsPendingForUser(userId: string): Promise<{
   prayerGroups?: PrayerGroup[];
 }> {
   try {
-    // Fetch the userPrayerGroup entries with PENDING status for the given user
     const userPrayerGroups = await db.userPrayerGroup.findMany({
       where: {
         userId: userId,
@@ -389,7 +436,6 @@ export async function getPrayerGroupsPendingForUser(userId: string): Promise<{
       };
     }
 
-    // Extract only the prayer group objects from the result
     const prayerGroups = userPrayerGroups.map(
       (userPrayerGroup) => userPrayerGroup.prayerGroup
     );

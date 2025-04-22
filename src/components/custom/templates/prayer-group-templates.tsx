@@ -1,5 +1,3 @@
-// components/custom/prayer-group/prayer-group-template.tsx
-
 "use client";
 
 import { GroupType, User } from "@prisma/client";
@@ -11,13 +9,14 @@ import PrayerGroupEdit from "../prayer-group/prayer-group-edit";
 import PrayerGroupMemberTable from "../prayer-group/prayer-group-member-table";
 import {
   MinimalUser,
-  PrayerGroupForPreview,
+  PrayerGroupWithOwner,
   PrayerRequestWithUser,
 } from "@/lib/utils";
 import PrayerGroupPendingTable from "../prayer-group/prayer-group-pending-table";
+import PrayerGroupOwnerSwitch from "../prayer-group/prayer-group-switch-user";
 
 type Props = {
-  prayerGroup: PrayerGroupForPreview;
+  prayerGroup: PrayerGroupWithOwner;
   currentUser: User;
   members: MinimalUser[];
   pendingUsers: User[];
@@ -44,7 +43,17 @@ export default function PrayerGroupTemplate({
             {prayerGroup.groupType === GroupType.PRIVATE ? "Private" : "Public"}
           </Badge>
         </div>
-        {isOwner && <PrayerGroupEdit id={currentUser.id} group={prayerGroup} />}
+        <div className="space-x-2">
+          {isOwner && (
+            <PrayerGroupEdit id={currentUser.id} group={prayerGroup} />
+          )}
+          {isOwner && (
+            <PrayerGroupOwnerSwitch
+              prayerGroup={prayerGroup}
+              members={members}
+            />
+          )}
+        </div>
       </div>
 
       <p className="text-md text-muted-foreground">{prayerGroup.description}</p>
@@ -54,17 +63,17 @@ export default function PrayerGroupTemplate({
           <TabsTrigger value="requests">Prayer Requests</TabsTrigger>
           <TabsTrigger value="members">Members</TabsTrigger>
           {isOwner && prayerGroup.groupType === GroupType.PRIVATE && (
-            <TabsTrigger value="pending">Pending Requests</TabsTrigger>
+            <TabsTrigger value="pending">Pending Members</TabsTrigger>
           )}
         </TabsList>
 
         <TabsContent value="requests">
-          <div className="flex flex-col gap-4 py-1 px-2">
+          <div className="flex flex-col gap-4 py-1 px-2 mt-3">
             <div className="text-base font-bold">
               Prayer Requests Shared With This Group:
             </div>
             {sharedRequests.length > 0 ? (
-              <div className="flex flex-col gap-3">
+              <div>
                 {sharedRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}
@@ -101,10 +110,11 @@ export default function PrayerGroupTemplate({
         </TabsContent>
 
         <TabsContent value="members">
-          <div className="px-2">
+          <div className="px-2 mt-3">
             <PrayerGroupMemberTable
               data={members}
               groupId={prayerGroup.id}
+              ownerId={prayerGroup.ownerId}
               isOwner={isOwner}
             />
           </div>
@@ -112,18 +122,18 @@ export default function PrayerGroupTemplate({
 
         {prayerGroup.groupType === GroupType.PRIVATE && (
           <TabsContent value="pending">
-            {pendingUsers.length > 0 ? (
-              <div className="px-2">
+            <div className="px-2 mt-3">
+              {pendingUsers.length > 0 ? (
                 <PrayerGroupPendingTable
                   data={pendingUsers}
-                  groupId={prayerGroup.id}
+                  prayerGroup={prayerGroup}
                 />
-              </div>
-            ) : (
-              <div className="px-2 text-muted-foreground text-sm">
-                No pending member requests at this time.
-              </div>
-            )}
+              ) : (
+                <div className="text-muted-foreground text-sm">
+                  {prayerGroup.name} has no member requests at this time.
+                </div>
+              )}
+            </div>
           </TabsContent>
         )}
       </Tabs>

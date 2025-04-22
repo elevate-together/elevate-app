@@ -33,7 +33,7 @@ export const HomPagetemplate = ({
         </TabsTrigger>
       </TabsList>
 
-      <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_40px)]">
+      <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_44px)]">
         <PullToRefreshWrapper>
           <TabsContent value="all">
             {allPrayerRequests.length > 0 && (

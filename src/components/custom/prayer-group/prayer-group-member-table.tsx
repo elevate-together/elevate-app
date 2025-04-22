@@ -11,7 +11,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@prisma/client";
 import {
   ColumnDef,
   flexRender,
@@ -38,25 +37,27 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 import { removeUserFromPrayerGroup } from "@/services/user-prayer-group";
+import { MinimalUser } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
-type UserInfo = Pick<User, "id" | "name" | "email" | "image" | "createdAt">;
-
-type JoinGroupProps = {
-  data: UserInfo[];
+type PrayerGroupMemberTableProps = {
+  data: MinimalUser[];
   groupId: string;
+  ownerId: string;
   isOwner?: boolean;
 };
 export default function PrayerGroupMemberTable({
   data,
   isOwner = false,
+  ownerId,
   groupId,
-}: JoinGroupProps) {
+}: PrayerGroupMemberTableProps) {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleRemoveUser = async (userId: string) => {
     setLoading(true);
-    const result = await removeUserFromPrayerGroup(userId, groupId);
+    const result = await removeUserFromPrayerGroup(userId, groupId, ownerId);
     if (result.success) {
       toast.success(result.message);
       router.refresh();
@@ -88,7 +89,7 @@ export default function PrayerGroupMemberTable({
               <UserIco className="h-4 w-4" />
               Profile
             </DropdownMenuItem>
-            {isOwner && (
+            {isOwner && userId !== ownerId && (
               <DropdownMenuItem
                 disabled={loading}
                 onClick={() => handleRemoveUser(userId)}
@@ -104,20 +105,25 @@ export default function PrayerGroupMemberTable({
     );
   }
 
-  const columns: ColumnDef<UserInfo>[] = [
+  const columns: ColumnDef<MinimalUser>[] = [
     {
       accessorKey: "name",
       enableHiding: false,
       header: "User",
       cell: ({ row }) => {
         return (
-          <UserAvatar
-            name={row.original.name}
-            email={row.original.email}
-            image={row.original.image ?? undefined}
-            size="small"
-            profileUrl={`/user/${row.original.id}`}
-          />
+          <div className="flex gap-2 items-center">
+            <UserAvatar
+              name={row.original.name}
+              email={row.original.email}
+              image={row.original.image ?? undefined}
+              size="small"
+              profileUrl={`/user/${row.original.id}`}
+            />
+            {row.original.id === ownerId && (
+              <Badge variant="outline">Owner</Badge>
+            )}
+          </div>
         );
       },
     },

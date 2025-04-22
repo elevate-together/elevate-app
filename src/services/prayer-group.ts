@@ -1,6 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
+import { PrayerGroupWithOwner } from "@/lib/utils";
 import { GroupStatus, GroupType, PrayerGroup } from "@prisma/client";
 import type { User } from "@prisma/client";
 
@@ -8,14 +9,13 @@ import type { User } from "@prisma/client";
 export async function getPrayerGroupById(id: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User; memberCount: number }; // Use the `User` type here as well
+  prayerGroup?: PrayerGroupWithOwner; // Use the `User` type here as well
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
       include: {
-        owner: true, // Include the owner with all fields from the `User` model
-        users: true,
+        owner: true,
       },
     });
 
@@ -26,15 +26,10 @@ export async function getPrayerGroupById(id: string): Promise<{
       };
     }
 
-    const memberCount = prayerGroup.users?.length || 0;
-
     return {
       success: true,
       message: "Prayer group found",
-      prayerGroup: {
-        ...prayerGroup, // Include the existing prayer group data
-        memberCount, // Add the member count
-      },
+      prayerGroup: prayerGroup,
     };
   } catch (error) {
     console.error(`Error fetching prayer group with ID ${id}:`, error);
@@ -144,9 +139,6 @@ export async function deletePrayerGroup(
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
-      include: {
-        owner: true, // Optionally, you can include owner info when deleting
-      },
     });
 
     if (!prayerGroup) {
@@ -169,6 +161,58 @@ export async function deletePrayerGroup(
     return {
       success: false,
       message: "Error deleting prayer group",
+    };
+  }
+}
+
+export async function updatePrayerGroupOwner(
+  prayerGroupId: string,
+  newOwnerId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  prayerGroup?: PrayerGroup & { owner: User };
+}> {
+  try {
+    const updatedPrayerGroup = await db.prayerGroup.update({
+      where: { id: prayerGroupId },
+      data: {
+        owner: {
+          connect: { id: newOwnerId },
+        },
+      },
+      include: {
+        owner: true,
+      },
+    });
+
+    const existingMembership = await db.userPrayerGroup.findFirst({
+      where: {
+        userId: newOwnerId,
+        prayerGroupId: prayerGroupId,
+      },
+    });
+
+    if (!existingMembership) {
+      await db.userPrayerGroup.create({
+        data: {
+          userId: newOwnerId,
+          prayerGroupId: prayerGroupId,
+          groupStatus: GroupStatus.ACCEPTED,
+        },
+      });
+    }
+
+    return {
+      success: true,
+      message: "Prayer group owner updated successfully.",
+      prayerGroup: updatedPrayerGroup,
+    };
+  } catch (error) {
+    console.error("Error updating prayer group owner:", error);
+    return {
+      success: false,
+      message: "Failed to update prayer group owner.",
     };
   }
 }

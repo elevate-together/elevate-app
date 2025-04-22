@@ -12,11 +12,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export type PrayerGroupForPreview = PrayerGroup & {
+export type PrayerGroupWithOwner = PrayerGroup & {
   owner: UserDef;
-  memberCount: number;
 };
 
+export type PrayerGroupWithOwnerAndUsers = PrayerGroup & {
+  owner: UserDef;
+  users: Pick<UserDef, "name">[];
+};
 
 export type MinimalUser = Pick<
   User,

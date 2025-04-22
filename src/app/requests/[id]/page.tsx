@@ -28,13 +28,11 @@ export default async function UserRequests({
   const isOwner = currUser.id === pageUser.id;
 
   return (
-    <div className="flex flex-col gap-6">
-      <PrayerRequestTemplate
-        currUser={currUser}
-        pageUser={pageUser}
-        prayerRequests={prayerRequests ?? []}
-        isOwner={isOwner}
-      />
-    </div>
+    <PrayerRequestTemplate
+      currUser={currUser}
+      pageUser={pageUser}
+      prayerRequests={prayerRequests ?? []}
+      isOwner={isOwner}
+    />
   );
 }

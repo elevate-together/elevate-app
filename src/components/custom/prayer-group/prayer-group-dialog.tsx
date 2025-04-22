@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { PrayerGroupForPreview } from "@/lib/utils";
 import { Eye } from "lucide-react";
 import { useState } from "react";
 import UserAvatar from "../user/user-avatar";
@@ -26,9 +25,10 @@ import {
   DrawerFooter,
 } from "@/components/ui/drawer";
 import { GroupType } from "@prisma/client";
+import { PrayerGroupWithOwnerAndUsers } from "@/lib/utils";
 
 type PrayerGroupDialogProps = {
-  group: PrayerGroupForPreview;
+  group: PrayerGroupWithOwnerAndUsers;
   userId: string;
 };
 
@@ -101,7 +101,7 @@ export default function PrayerGroupDialog({
                 <div className="flex-1 flex flex-col gap-1">
                   <p className="text-sm font-semibold"> Group:</p>
                   <p className="text-sm color-muted mt-3">
-                    {group.memberCount} members
+                    {group.users.length} members
                   </p>
                 </div>
               </div>
@@ -175,7 +175,7 @@ export default function PrayerGroupDialog({
                 <div className="flex-1 flex flex-col gap-1">
                   <p className="text-sm font-semibold"> Group:</p>
                   <p className="text-sm color-muted mt-2">
-                    {group.memberCount} members
+                    {group.users.length} members
                   </p>
                 </div>
               </div>

@@ -32,7 +32,11 @@ export default function UserLeaveGroup({
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const response = await removeUserFromPrayerGroup(id, group.id);
+    const response = await removeUserFromPrayerGroup(
+      id,
+      group.id,
+      group.ownerId
+    );
 
     if (response.success) {
       toast.success(response.message);
@@ -68,9 +72,10 @@ export default function UserLeaveGroup({
               </DialogTitle>
             </DialogHeader>
             <DialogDescription>
-              This will remove you from <b>{group.name}</b>, and you won’t be
-              able to view its information. You can rejoin later if you change
-              your mind. Confirm if you wish to proceed.
+              Leaving {group.name} will remove your access to its information.
+              Any prayer requests you’ve shared with this group will be marked
+              as archived and made private to you. You can rejoin the group
+              later if you change your mind. Are you sure you want to proceed?
             </DialogDescription>
             <DialogFooter>
               <div className="flex gap-3">

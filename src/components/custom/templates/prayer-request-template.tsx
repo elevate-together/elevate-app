@@ -46,7 +46,7 @@ export default function PrayerRequestTemplate({
       <Tabs defaultValue="request" className="w-full">
         <TabsList variant="fullWidth">
           <TabsTrigger value="request" variant="underline">
-            <Hand size="15px" className="mr-1" /> Requests
+            <Hand size="15px" className="mr-1" /> Requested
           </TabsTrigger>
           <TabsTrigger value="answered" variant="underline">
             <Star size="15px" className="mr-1" /> Answered
@@ -56,7 +56,7 @@ export default function PrayerRequestTemplate({
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_40px)]">
+        <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_44px)]">
           <PullToRefreshWrapper>
             <TabsContent value="request">
               {inProgressRequests.length ? (

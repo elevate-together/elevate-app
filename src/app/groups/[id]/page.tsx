@@ -10,6 +10,7 @@ import {
   getPublicPrayerRequestsForGroup,
 } from "@/services/prayer-request-share";
 import PrayerGroupTemplate from "@/components/custom/templates/prayer-group-templates";
+import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
 
 export default async function GroupPage({
   params,
@@ -30,32 +31,31 @@ export default async function GroupPage({
   if (!prayerGroup) return <div>Prayer group not found</div>;
 
   const { users } = await getUsersByPrayerGroup(groupId);
+  
   const { users: pendingUsers } =
     prayerGroup.groupType === "PRIVATE"
       ? await getPendingUsersByPrayerGroup(groupId)
       : { users: [] };
 
-  const { success: sharedSuccess, prayerRequests: sharedRequests } = await getPrayerRequestsForGroup(
+  const { prayerRequests: sharedRequests } = await getPrayerRequestsForGroup(
     groupId
   );
-  const { success: publicSuccess, prayerRequests: publicRequests } =
+  const { prayerRequests: publicRequests } =
     await getPublicPrayerRequestsForGroup(groupId);
-
-  if (!sharedSuccess || !publicSuccess) {
-    return <div>Error loading prayer requests. Please try again later.</div>;
-  }
 
   const isOwner = prayerGroup.owner.id === userId;
 
   return (
-    <PrayerGroupTemplate
-      prayerGroup={prayerGroup}
-      currentUser={user}
-      members={users ?? []}
-      pendingUsers={pendingUsers ?? []}
-      sharedRequests={sharedRequests ?? []}
-      publicRequests={publicRequests ?? []}
-      isOwner={isOwner}
-    />
+    <PagePaddingWrapper>
+      <PrayerGroupTemplate
+        prayerGroup={prayerGroup}
+        currentUser={user}
+        members={users ?? []}
+        pendingUsers={pendingUsers ?? []}
+        sharedRequests={sharedRequests ?? []}
+        publicRequests={publicRequests ?? []}
+        isOwner={isOwner}
+      />
+    </PagePaddingWrapper>
   );
 }

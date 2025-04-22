@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { User } from "@prisma/client";
+import { PrayerGroup, User } from "@prisma/client";
 import {
   ColumnDef,
   flexRender,
@@ -25,14 +25,14 @@ import UserAvatar from "../user/user-avatar";
 import PrayerGroupUpdateStatus from "./prayer-group-accept";
 import PrayerGroupDecline from "./prayer-group-decline";
 
-type JoinGroupProps = {
+type PrayerGroupPendingTableProps = {
   data: User[];
-  groupId: string;
+  prayerGroup: PrayerGroup;
 };
 export default function PrayerGroupPendingTable({
   data,
-  groupId,
-}: JoinGroupProps) {
+  prayerGroup,
+}: PrayerGroupPendingTableProps) {
   const columns: ColumnDef<User>[] = [
     {
       accessorKey: "name",
@@ -86,10 +86,13 @@ export default function PrayerGroupPendingTable({
       cell: ({ row }) => {
         return (
           <div className="flex justify-end">
-            <PrayerGroupDecline userId={row.original.id} groupId={groupId} />
+            <PrayerGroupDecline
+              userId={row.original.id}
+              prayerGroup={prayerGroup}
+            />
             <PrayerGroupUpdateStatus
               userId={row.original.id}
-              groupId={groupId}
+              groupId={prayerGroup.id}
             />
           </div>
         );
