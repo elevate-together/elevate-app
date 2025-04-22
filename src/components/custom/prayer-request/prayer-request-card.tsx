@@ -41,6 +41,7 @@ type PrayerRequestCardProps = {
   user: User;
   isOwner?: boolean;
   currUserName?: string;
+  hideActions?: boolean;
 };
 
 export default function PrayerRequestCard({
@@ -48,6 +49,7 @@ export default function PrayerRequestCard({
   user,
   isOwner = false,
   currUserName = "",
+  hideActions = false,
 }: PrayerRequestCardProps) {
   const router = useRouter();
   const [isOpen, setIsPopoverOpen] = useState(false);
@@ -121,9 +123,14 @@ export default function PrayerRequestCard({
                 </Button>
               ) : (
                 <div>
-                  {prayer.status === PrayerRequestStatus.IN_PROGRESS && (
-                    <PrayerRequestEdit prayer={prayer} userId={user.id} />
-                  )}
+                  {!hideActions &&
+                    prayer.status === PrayerRequestStatus.IN_PROGRESS && (
+                      <PrayerRequestEdit prayer={prayer} userId={user.id} />
+                    )}
+                  {!hideActions &&
+                    prayer.status !== PrayerRequestStatus.ANSWERED && (
+                      <PrayerRequestDelete id={prayer.id} />
+                    )}
                   <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="ghost">
@@ -136,31 +143,21 @@ export default function PrayerRequestCard({
                       side="bottom"
                       align="end"
                     >
-                      <DropdownMenuLabel>Prayer Actions</DropdownMenuLabel>
+                      <DropdownMenuLabel>Mark As</DropdownMenuLabel>
                       <Separator />
 
                       {prayer.status !== PrayerRequestStatus.ANSWERED && (
-                        <DropdownMenuItem asChild>
-                          <PrayerRequestDelete
-                            id={prayer.id}
-                            includeText
-                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent"
-                          />
-                        </DropdownMenuItem>
-                      )}
-
-                      {prayer.status !== PrayerRequestStatus.ARCHIVED && (
                         <DropdownMenuItem asChild>
                           <Button
                             size="default"
                             variant="ghost"
                             className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
                             onClick={() =>
-                              handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
+                              handleUpdateStatus(PrayerRequestStatus.ANSWERED)
                             }
                           >
-                            <Package className="h-4 w-4" />
-                            Archive
+                            <Star className="h-4 w-4" />
+                            Answered
                           </Button>
                         </DropdownMenuItem>
                       )}
@@ -178,23 +175,23 @@ export default function PrayerRequestCard({
                             }
                           >
                             <Hand className="h-4 w-4" />
-                            Request
+                            Requested
                           </Button>
                         </DropdownMenuItem>
                       )}
 
-                      {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                      {prayer.status !== PrayerRequestStatus.ARCHIVED && (
                         <DropdownMenuItem asChild>
                           <Button
                             size="default"
                             variant="ghost"
                             className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
                             onClick={() =>
-                              handleUpdateStatus(PrayerRequestStatus.ANSWERED)
+                              handleUpdateStatus(PrayerRequestStatus.ARCHIVED)
                             }
                           >
-                            <Star className="h-4 w-4" />
-                            Answered
+                            <Package className="h-4 w-4" />
+                            Archived
                           </Button>
                         </DropdownMenuItem>
                       )}

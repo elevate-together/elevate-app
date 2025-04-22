@@ -67,9 +67,9 @@ export default function PrayerGroupTemplate({
               <div className="flex flex-col gap-3">
                 {sharedRequests.map((prayer) => (
                   <PrayerRequestCard
-                    key={prayer.prayerRequest.id}
+                    key={prayer.id}
                     user={prayer.user}
-                    prayer={prayer.prayerRequest}
+                    prayer={prayer}
                     isOwner={false}
                     currUserName={currentUser.name}
                   />
@@ -86,9 +86,9 @@ export default function PrayerGroupTemplate({
               <div className="flex flex-col gap-3">
                 {publicRequests.map((prayer) => (
                   <PrayerRequestCard
-                    key={prayer.prayerRequest.id}
+                    key={prayer.id}
                     user={prayer.user}
-                    prayer={prayer.prayerRequest}
+                    prayer={prayer}
                     isOwner={false}
                     currUserName={currentUser.name}
                   />

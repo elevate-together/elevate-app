@@ -17,17 +17,13 @@ export type PrayerGroupForPreview = PrayerGroup & {
   memberCount: number;
 };
 
-export type PrayerRequestWithUser = {
-  prayerRequest: PrayerRequest;
-  user: User;
-};
 
 export type MinimalUser = Pick<
   User,
   "id" | "name" | "email" | "image" | "createdAt"
 >;
 
-export type PrayeRequestWithUser = PrayerRequest & { user: UserDef };
+export type PrayerRequestWithUser = PrayerRequest & { user: UserDef };
 
 export type ResponseMessage = {
   success: boolean;

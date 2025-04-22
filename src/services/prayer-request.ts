@@ -13,7 +13,7 @@ import {
   createPrayerRequestShare,
   deletePrayerRequestShare,
 } from "./prayer-request-share";
-import { ResponseMessage } from "@/lib/utils";
+import { PrayerRequestWithUser, ResponseMessage } from "@/lib/utils";
 
 // GET Prayer Request by ID
 export async function getPrayerRequestById(id: string): Promise<{
@@ -332,20 +332,24 @@ export async function getPrayerRequestsByUserId(userId: string): Promise<{
   }
 }
 
-// GET Inprogress Prayer Requests for a User
-export async function getPersonalPrayerRequestsForUser(
+export async function getInProgressPrayerRequestsForUser(
   userId: string
 ): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequest[];
+  prayerRequests?: PrayerRequestWithUser[]; // PrayerRequest with associated User
 }> {
   try {
     const prayerRequests = await db.prayerRequest.findMany({
       where: {
         userId: userId,
         status: PrayerRequestStatus.IN_PROGRESS,
-        visibility: PrayerVisibility.PRIVATE,
+      },
+      include: {
+        user: true, // Include user data with each prayer request
+      },
+      orderBy: {
+        updatedAt: "desc",
       },
     });
 
@@ -355,11 +359,10 @@ export async function getPersonalPrayerRequestsForUser(
         message: "No prayer requests found for this user",
       };
     }
-
     return {
       success: true,
       message: "Successfully fetched prayer requests for this user",
-      prayerRequests,
+      prayerRequests: prayerRequests,
     };
   } catch (error) {
     console.error(

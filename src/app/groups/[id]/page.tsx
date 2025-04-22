@@ -35,10 +35,15 @@ export default async function GroupPage({
       ? await getPendingUsersByPrayerGroup(groupId)
       : { users: [] };
 
-  const { data: sharedRequests } = await getPrayerRequestsForGroup(groupId);
-  const { data: publicRequests } = await getPublicPrayerRequestsForGroup(
+  const { success: sharedSuccess, prayerRequests: sharedRequests } = await getPrayerRequestsForGroup(
     groupId
   );
+  const { success: publicSuccess, prayerRequests: publicRequests } =
+    await getPublicPrayerRequestsForGroup(groupId);
+
+  if (!sharedSuccess || !publicSuccess) {
+    return <div>Error loading prayer requests. Please try again later.</div>;
+  }
 
   const isOwner = prayerGroup.owner.id === userId;
 

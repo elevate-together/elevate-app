@@ -1,13 +1,11 @@
 "use server";
 
 import db from "@/lib/db";
-import { PrayeRequestWithUser, ResponseMessage } from "@/lib/utils";
+import { PrayerRequestWithUser, ResponseMessage } from "@/lib/utils";
 import {
-  PrayerRequest,
   PrayerRequestShare,
   PrayerRequestStatus,
   ShareType,
-  User,
   PrayerVisibility,
   GroupStatus,
 } from "@prisma/client";
@@ -70,41 +68,27 @@ export async function deletePrayerRequestShare(
 }
 
 // GET Prayer Requests Shared with User or a Group that User is Part Of
-export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
+export async function getPrayerRequestsSharedWithUser(
+  userId: string,
+  includeUserRequests: boolean = true
+): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayeRequestWithUser[];
+  prayerRequests?: PrayerRequestWithUser[];
 }> {
   try {
-    // Get all group IDs the user is part of
-    const userGroups = await db.userPrayerGroup.findMany({
-      where: {
-        userId,
-        groupStatus: GroupStatus.ACCEPTED,
-      },
-      select: {
-        prayerGroupId: true,
-      },
-    });
+    const groupIds = await getAcceptedGroupIdsForUser(userId);
+    const userIdsInGroups = await getUserIdsInGroups(groupIds);
 
-    const groupIds = userGroups.map((group) => group.prayerGroupId);
+    // Exclude user if needed
+    const filteredUserIds = includeUserRequests
+      ? userIdsInGroups
+      : userIdsInGroups.filter((id) => id !== userId);
 
-    // Get all user IDs in those groups
-    const usersInSameGroups = await db.userPrayerGroup.findMany({
-      where: {
-        prayerGroupId: { in: groupIds },
-      },
-      select: {
-        userId: true,
-      },
-    });
-
-    const userIdsInGroups = usersInSameGroups.map((ug) => ug.userId);
-
-    // Get all public prayer requests from users in those groups
+    // Public prayer requests from group users
     const publicPrayerRequestsFromGroupUsers = await db.prayerRequest.findMany({
       where: {
-        userId: { in: userIdsInGroups },
+        userId: { in: filteredUserIds },
         visibility: PrayerVisibility.PUBLIC,
       },
       include: {
@@ -112,7 +96,7 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
       },
     });
 
-    // Get prayer requests shared directly with user or user’s groups
+    // Shared with user or user's groups
     const sharedPrayerRequestIds = await db.prayerRequestShare.findMany({
       where: {
         OR: [
@@ -136,13 +120,13 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
       where: {
         id: { in: sharedRequestIds },
         visibility: PrayerVisibility.SHARED,
+        ...(includeUserRequests ? {} : { userId: { not: userId } }),
       },
       include: {
         user: true,
       },
     });
 
-    // Combine and filter unique by ID using .filter()
     const combinedRequests = [
       ...publicPrayerRequestsFromGroupUsers,
       ...sharedPrayerRequests,
@@ -153,7 +137,7 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
         (request, index, self) =>
           index === self.findIndex((r) => r.id === request.id)
       )
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+      .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime());
 
     return {
       success: true,
@@ -170,13 +154,12 @@ export async function getPrayerRequestsSharedWithUser(userId: string): Promise<{
   }
 }
 
-// GET public prayer requests for users in a group
 export async function getPublicPrayerRequestsForGroup(
   groupId: string
 ): Promise<{
   success: boolean;
   message: string;
-  data: { prayerRequest: PrayerRequest; user: User }[];
+  prayerRequests?: PrayerRequestWithUser[];
 }> {
   try {
     const groupUsers = await db.userPrayerGroup.findMany({
@@ -210,17 +193,13 @@ export async function getPublicPrayerRequestsForGroup(
     return {
       success: true,
       message: "Public prayer requests fetched successfully.",
-      data: prayerRequests.map((prayerRequest) => ({
-        prayerRequest,
-        user: prayerRequest.user,
-      })),
+      prayerRequests: prayerRequests,
     };
   } catch (error) {
     console.error("Error fetching public prayer requests:", error);
     return {
       success: false,
       message: "Failed to fetch public prayer requests.",
-      data: [],
     };
   }
 }
@@ -229,7 +208,7 @@ export async function getPublicPrayerRequestsForGroup(
 export async function getPrayerRequestsForGroup(groupId: string): Promise<{
   success: boolean;
   message: string;
-  data: { prayerRequest: PrayerRequest; user: User }[] | null;
+  prayerRequests?: PrayerRequestWithUser[];
 }> {
   try {
     const groupRequests = await db.prayerRequest.findMany({
@@ -255,26 +234,19 @@ export async function getPrayerRequestsForGroup(groupId: string): Promise<{
       return {
         success: false,
         message: "No prayer requests found for this group.",
-        data: null,
       };
     }
-
-    const data = groupRequests.map((prayerRequest) => ({
-      prayerRequest,
-      user: prayerRequest.user,
-    }));
 
     return {
       success: true,
       message: "Prayer requests retrieved successfully.",
-      data,
+      prayerRequests: groupRequests,
     };
   } catch (error) {
     console.error("Error retrieving prayer requests for group:", error);
     return {
       success: false,
       message: "Failed to retrieve prayer requests.",
-      data: null,
     };
   }
 }
@@ -286,16 +258,14 @@ export async function getSharedGroupIds(userId: string): Promise<{
   sharedWith?: string[];
 }> {
   try {
-    // Find all unique sharedWithIds for the given user
     const sharedWithGroupIds = await db.prayerRequestShare.findMany({
       where: { ownerId: userId },
       select: {
         sharedWithId: true,
       },
-      distinct: ["sharedWithId"], // Ensures only unique sharedWithId values are returned
+      distinct: ["sharedWithId"],
     });
 
-    // Extract the unique sharedWithIds from the result
     const uniqueSharedWithIds = sharedWithGroupIds.map(
       (share) => share.sharedWithId
     );
@@ -315,4 +285,29 @@ export async function getSharedGroupIds(userId: string): Promise<{
       message: "Error fetching shared groups for the user",
     };
   }
+}
+
+async function getAcceptedGroupIdsForUser(userId: string): Promise<string[]> {
+  const userGroups = await db.userPrayerGroup.findMany({
+    where: {
+      userId,
+      groupStatus: GroupStatus.ACCEPTED,
+    },
+    select: {
+      prayerGroupId: true,
+    },
+  });
+
+  return userGroups.map((group) => group.prayerGroupId);
+}
+async function getUserIdsInGroups(groupIds: string[]): Promise<string[]> {
+  const users = await db.userPrayerGroup.findMany({
+    where: {
+      prayerGroupId: { in: groupIds },
+      groupStatus: GroupStatus.ACCEPTED,
+    },
+    select: { userId: true },
+  });
+
+  return users.map((u) => u.userId);
 }

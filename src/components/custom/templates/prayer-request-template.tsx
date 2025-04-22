@@ -52,7 +52,7 @@ export default function PrayerRequestTemplate({
             <Star size="15px" className="mr-1" /> Answered
           </TabsTrigger>
           <TabsTrigger value="past" variant="underline">
-            <Package size="15px" className="mr-1" /> Past
+            <Package size="15px" className="mr-1" /> Archived
           </TabsTrigger>
         </TabsList>
 
@@ -99,7 +99,9 @@ export default function PrayerRequestTemplate({
                   />
                 ))
               ) : (
-                <div className="px-3">You have no past prayer requests.</div>
+                <div className="px-3">
+                  You have no archived prayer requests.
+                </div>
               )}
             </TabsContent>
           </PullToRefreshWrapper>

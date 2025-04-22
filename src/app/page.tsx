@@ -1,8 +1,7 @@
-// "use server" directive for server-side page
 "use server";
 
 import { auth } from "@/auth";
-import { getPersonalPrayerRequestsForUser } from "@/services/prayer-request";
+import { getInProgressPrayerRequestsForUser } from "@/services/prayer-request";
 import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share";
 import { getUserById } from "@/services/users";
 import WelcomePage from "@/components/custom/templates/welcome-page";
@@ -11,7 +10,6 @@ import { HomPagetemplate } from "@/components/custom/templates/home-page-templat
 export default async function Home() {
   const session = await auth();
 
-  // User is not signed in
   if (!session || !session.user) {
     return (
       <div className="h-80vh">
@@ -20,7 +18,6 @@ export default async function Home() {
     );
   }
 
-  // Getting current user info
   const id = session?.user.id;
 
   if (!id) {
@@ -35,20 +32,37 @@ export default async function Home() {
 
   // Fetching Prayer Requests
   const { success: FriendSuccess, prayerRequests: FriendPrayerRequests } =
-    await getPrayerRequestsSharedWithUser(id);
+    await getPrayerRequestsSharedWithUser(id, false);
 
   const {
     success: InProgressSuccess,
     prayerRequests: InProgressPrayerRequests,
-  } = await getPersonalPrayerRequestsForUser(id);
+  } = await getInProgressPrayerRequestsForUser(id);
+
+  if (!FriendSuccess || !InProgressSuccess) {
+    return <div>Error loading prayer requests. Please try again later.</div>;
+  }
+
+  const combinedPrayerRequests = [
+    ...(FriendPrayerRequests ?? []),
+    ...(InProgressPrayerRequests ?? []),
+  ];
+
+  const uniqueCombinedPrayerRequests = combinedPrayerRequests.filter(
+    (request, index, self) =>
+      index === self.findIndex((r) => r.id === request.id)
+  );
+
+  const allPrayerRequests = uniqueCombinedPrayerRequests.sort(
+    (a, b) => b.updatedAt.getTime() - a.updatedAt.getTime()
+  );
 
   return (
     <HomPagetemplate
       user={user}
       friendPrayerRequests={FriendPrayerRequests ?? []}
       inProgressPrayerRequests={InProgressPrayerRequests ?? []}
-      friendSuccess={FriendSuccess}
-      inProgressSuccess={InProgressSuccess}
+      allPrayerRequests={allPrayerRequests ?? []}
     />
   );
 }
