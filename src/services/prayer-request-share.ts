@@ -89,6 +89,7 @@ export async function getPrayerRequestsSharedWithUser(
     const publicPrayerRequestsFromGroupUsers = await db.prayerRequest.findMany({
       where: {
         userId: { in: filteredUserIds },
+        status: PrayerRequestStatus.IN_PROGRESS,
         visibility: PrayerVisibility.PUBLIC,
       },
       include: {

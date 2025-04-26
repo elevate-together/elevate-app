@@ -9,45 +9,46 @@ import { getUserById } from "./users";
 import { addNotification } from "./notification";
 import { NotificationType } from "@prisma/client";
 
+// Validate environment variables
+if (
+  !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
+  !process.env.VAPID_PRIVATE_KEY
+) {
+  throw new Error("VAPID keys are not set in environment variables.");
+}
+
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
+  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+  process.env.VAPID_PRIVATE_KEY
 );
 
 export async function subscribeDevice(
-  sub: {
-    endpoint: string;
-    keys: {
-      p256dh: string;
-      auth: string;
-    };
-  },
-  userId: string
-): Promise<{
-  success: boolean;
-  message: string;
-}> {
+  sub: { endpoint: string; keys: { p256dh: string; auth: string } },
+  userId: string,
+  name?: string
+): Promise<{ success: boolean; message: string }> {
   try {
     const { vendor, os } = await getDeviceInfo();
-    const name =
+    const deviceName =
       vendor && os
         ? `${vendor} ${os}`
         : `Device Added: ${format(new Date(), "yyyy-MM-dd")}`;
 
     await db.device.upsert({
-      where: { userId, endpoint: sub.endpoint },
+      where: { userId_endpoint: { userId, endpoint: sub.endpoint } },
       update: {
         endpoint: sub.endpoint,
         p256dh: sub.keys.p256dh,
         auth: sub.keys.auth,
+        title: name ?? deviceName,
       },
       create: {
         userId,
         endpoint: sub.endpoint,
         p256dh: sub.keys.p256dh,
         auth: sub.keys.auth,
-        title: name,
+        title: deviceName,
       },
     });
 
@@ -61,25 +62,15 @@ export async function subscribeDevice(
 export async function unsubscribeDevice(
   userId: string,
   endpoint: string
-): Promise<{
-  success: boolean;
-  message: string;
-}> {
+): Promise<{ success: boolean; message: string }> {
   if (!userId || !endpoint) {
     return { success: false, message: "User ID or Endpoint is missing" };
   }
 
   try {
-    const device = await db.device.delete({
-      where: { userId, endpoint },
+    await db.device.delete({
+      where: { userId_endpoint: { userId, endpoint } },
     });
-
-    if (!device) {
-      return {
-        success: false,
-        message: "Device not found for the user with the provided endpoint",
-      };
-    }
 
     return { success: true, message: "Device unsubscribed successfully" };
   } catch (error) {
@@ -91,116 +82,91 @@ export async function unsubscribeDevice(
 export const sendNotificationToGroups = async (
   sharedWithGroups: { id: string }[],
   userId: string
-) => {
-  const usersToNotify: string[] = [];
+) {
+  const usersToNotify = new Set<string>();
 
   for (const group of sharedWithGroups) {
     const groupData = await getUsersInPrayerGroup(group.id);
     if (groupData.success && groupData.users) {
       groupData.users.forEach((user) => {
-        if (!usersToNotify.includes(user.id)) {
-          usersToNotify.push(user.id);
+        if (user.id !== userId) {
+          usersToNotify.add(user.id);
         }
       });
     }
   }
 
   const { user } = await getUserById(userId);
+
   await Promise.all(
-    usersToNotify.map(async (tempId) => {
-      await sendNotificationAllDevices(
+    Array.from(usersToNotify).map((tempId) =>
+      sendNotificationAllDevices(
         tempId,
         `${user?.name || "Someone"} shared a prayer request with you!`,
         NotificationType.PRAYER,
         "New Prayer Request"
-      );
-    })
+      )
+    )
   );
-};
+}
 
 export async function sendNotificationToDevice(
   userId: string,
   endpoint: string,
   message: string,
-  title?: string
-): Promise<{
-  success: boolean;
-  message: string;
-}> {
+  title = "Notification"
+): Promise<{ success: boolean; message: string }> {
   try {
-    // Retrieve the device associated with the user and the specified endpoint
     const device = await db.device.findUnique({
-      where: { userId, endpoint }, // Query by userId and endpoint
+      where: { userId_endpoint: { userId, endpoint } },
     });
 
     if (!device) {
       return { success: false, message: "Device not found for the user" };
     }
 
-    // Construct the subscription object from the device details
     const subscription: webpush.PushSubscription = {
       endpoint: device.endpoint,
-      keys: {
-        p256dh: device.p256dh,
-        auth: device.auth,
-      },
+      keys: { p256dh: device.p256dh, auth: device.auth },
     };
 
-    const fallbackTitle = title || "Notification";
+    await webpush.sendNotification(
+      subscription,
+      JSON.stringify({
+        title,
+        body: message,
+        icon: "/icon.png",
+      })
+    );
 
-    // Send the push notification to the specific device
-    try {
-      await webpush.sendNotification(
-        subscription,
-        JSON.stringify({
-          title: fallbackTitle,
-          body: message,
-          icon: "/icon.png",
-        })
-      );
-      return {
-        success: true,
-        message: "Notification sent successfully to the device",
-      };
-    } catch (error) {
-      console.error("Error sending push notification:", error);
-      return {
-        success: false,
-        message: "Failed to send notification to the device",
-      };
-    }
+    return {
+      success: true,
+      message: "Notification sent successfully to the device",
+    };
   } catch (error) {
     console.error("Error sending push notification:", error);
-    return { success: false, message: "Failed to send notification" };
+    return {
+      success: false,
+      message: "Failed to send notification to the device",
+    };
   }
 }
+
 export async function sendNotificationAllDevices(
   userId: string,
   message: string,
   notificationType: NotificationType,
-  title?: string
-): Promise<{
-  success: boolean;
-  message: string;
-}> {
+  title = "Notification"
+): Promise<{ success: boolean; message: string }> {
   try {
-    const devices = await db.device.findMany({
-      where: { userId },
-    });
+    const devices = await db.device.findMany({ where: { userId } });
 
     const notification = await addNotification(
-      title || "Notification",
+      title,
       message,
       notificationType,
       userId
     );
-
-    if (!devices || devices.length === 0) {
-      return {
-        success: true,
-        message: "User doesn't have notifications enabled",
-      };
-    }
 
     if (!notification.success) {
       return {
@@ -209,24 +175,20 @@ export async function sendNotificationAllDevices(
       };
     }
 
+    if (devices.length === 0) {
+      return {
+        success: true,
+        message: "User doesn't have notifications enabled",
+      };
+    }
+
     await Promise.allSettled(
       devices.map((device) =>
-        sendNotificationToDevice(userId, device.endpoint, message, title).then(
-          (res) => {
-            if (!res.success) {
-              console.error(
-                `Failed to send notification to ${device.endpoint}: ${res.message}`
-              );
-            }
-          }
-        )
+        sendNotificationToDevice(userId, device.endpoint, message, title)
       )
     );
 
-    return {
-      success: true,
-      message: "Notification sent successfully.",
-    };
+    return { success: true, message: "Notification sent successfully." };
   } catch (error) {
     console.error("Error sending push notifications:", error);
     return { success: false, message: "Failed to send notification" };
@@ -236,19 +198,12 @@ export async function sendNotificationAllDevices(
 export async function updateDeviceTitle(
   deviceId: string,
   title: string
-): Promise<{
-  success: boolean;
-  message: string;
-}> {
+): Promise<{ success: boolean; message: string }> {
   try {
-    const device = await db.device.update({
+    await db.device.update({
       where: { id: deviceId },
       data: { title },
     });
-
-    if (!device) {
-      return { success: false, message: "Device not found" };
-    }
 
     return { success: true, message: "Device updated successfully" };
   } catch (error) {
@@ -259,13 +214,62 @@ export async function updateDeviceTitle(
 
 export async function checkIfDeviceExists(endpoint: string): Promise<boolean> {
   try {
-    const device = await db.device.findUnique({
-      where: { endpoint },
-    });
-
-    return !!device; // Return true if device exists, else false
+    const device = await db.device.findUnique({ where: { endpoint } });
+    return !!device;
   } catch (error) {
     console.error("Error checking device existence:", error);
     return false;
+  }
+}
+
+export async function sendTestNotificationToDevice(
+  userId: string,
+  endpoint: string
+): Promise<{ success: boolean; message: string }> {
+  try {
+    const device = await db.device.findUnique({
+      where: { userId_endpoint: { userId, endpoint } },
+    });
+
+    if (!device) {
+      return { success: false, message: "Device not found for the user" };
+    }
+
+    const title = "Test Notification";
+    const message =
+      "Your device has successfully been subscribed to receive notifications!";
+
+    const notification = await addNotification(
+      title,
+      message,
+      NotificationType.TESTPUSH,
+      userId
+    );
+
+    if (!notification.success) {
+      return {
+        success: false,
+        message: `Failed to log notification in database: ${notification.message}`,
+      };
+    }
+
+    const subscription: webpush.PushSubscription = {
+      endpoint: device.endpoint,
+      keys: { p256dh: device.p256dh, auth: device.auth },
+    };
+
+    await webpush.sendNotification(
+      subscription,
+      JSON.stringify({
+        title,
+        body: message,
+        icon: "/icon.png",
+      })
+    );
+
+    return { success: true, message: "Test notification sent successfully." };
+  } catch (error) {
+    console.error("Error sending test push notification:", error);
+    return { success: false, message: "Failed to send test notification" };
   }
 }

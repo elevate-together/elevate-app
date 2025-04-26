@@ -24,7 +24,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { sendNotificationToDevice, unsubscribeDevice } from "@/services/device";
+import {
+  sendTestNotificationToDevice,
+  unsubscribeDevice,
+} from "@/services/device";
 import { Device } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import { Bell, MoreVerticalIcon, Pencil, Trash } from "lucide-react";
@@ -47,11 +50,9 @@ export default function DeviceTable({
   const router = useRouter();
 
   const handleTestPush = async ({ device }: { device: Device }) => {
-    const { success, message } = await sendNotificationToDevice(
+    const { success, message } = await sendTestNotificationToDevice(
       userId,
-      device.endpoint,
-      "Your device has successfully been connected!",
-      "Test Push"
+      device.endpoint
     );
 
     if (!success) {

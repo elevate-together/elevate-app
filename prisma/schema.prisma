@@ -181,6 +181,7 @@ enum ShareType {
 enum NotificationType {
   PRAYER
   JOINEDGROUP
+  TESTPUSH
 }
 
 enum NotificationStatusType {
