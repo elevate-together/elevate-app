@@ -23,7 +23,7 @@ export async function addNotification(
         title,
         text,
         type,
-        status,
+        status: status ?? NotificationStatusType.UNREAD,
         userId,
       },
     });
@@ -132,12 +132,10 @@ export async function markAllNotificationsAsRead(userId: string): Promise<{
         userId,
         status: NotificationStatusType.READ,
         updatedAt: {
-          lt: new Date(currentDate.getTime() - 5 * 60 * 1000),
+          lt: new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000),
         },
       },
     });
-
-    // lt: new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000),
     await db.notification.updateMany({
       where: { userId, status: NotificationStatusType.UNREAD },
       data: { status: NotificationStatusType.READ },
