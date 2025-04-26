@@ -79,7 +79,7 @@ export async function unsubscribeDevice(
   }
 }
 
-export const sendNotificationToGroups = async (
+export async function sendNotificationToGroups(
   sharedWithGroups: { id: string }[],
   userId: string
 ) {
