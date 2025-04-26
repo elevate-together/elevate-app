@@ -2,6 +2,7 @@
 
 import React from "react";
 import { PullToRefreshWrapper } from "../functions/pull-to-refresh-wrapper";
+import PageHeightDiv from "./page-height-div";
 
 type PagePaddingWrapperProps = {
   children: React.ReactNode;
@@ -13,7 +14,7 @@ export default function PagePaddingWrapper({
   noPadding = false,
 }: PagePaddingWrapperProps) {
   return (
-    <div className="flex flex-1 overflow-y-auto min-h-[calc(100vh_-_40px_-_82px)] max-h-[calc(100vh_-_40px_-_82px)] md:min-h-[calc(100vh_-_0px)] md:max-h-[calc(100vh_-_0px)]">
+    <PageHeightDiv>
       <PullToRefreshWrapper className="flex flex-col flex-1">
         <div
           className={
@@ -25,6 +26,6 @@ export default function PagePaddingWrapper({
           {children}
         </div>
       </PullToRefreshWrapper>
-    </div>
+    </PageHeightDiv>
   );
 }

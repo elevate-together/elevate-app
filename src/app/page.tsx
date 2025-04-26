@@ -5,7 +5,7 @@ import { getInProgressPrayerRequestsForUser } from "@/services/prayer-request";
 import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share";
 import { getUserById } from "@/services/users";
 import WelcomePage from "@/components/custom/templates/welcome-page";
-import { HomPagetemplate } from "@/components/custom/templates/home-page-template";
+import { HomePagetemplate } from "@/components/custom/templates/home-page-template";
 
 export default async function Home() {
   const session = await auth();
@@ -30,17 +30,25 @@ export default async function Home() {
     return <div>Error loading user data</div>;
   }
 
-  // Fetching Prayer Requests
-  const { success: FriendSuccess, prayerRequests: FriendPrayerRequests } =
-    await getPrayerRequestsSharedWithUser(id, false);
+  const {
+    success: FriendSuccess,
+    message: friendMessage,
+    prayerRequests: FriendPrayerRequests,
+  } = await getPrayerRequestsSharedWithUser(id, false);
 
   const {
     success: InProgressSuccess,
+    message: inProgressMessage,
     prayerRequests: InProgressPrayerRequests,
   } = await getInProgressPrayerRequestsForUser(id);
 
   if (!FriendSuccess || !InProgressSuccess) {
-    return <div>Error loading prayer requests. Please try again later.</div>;
+    return (
+      <div>
+        Error loading prayer requests. Please try again later: {friendMessage}{" "}
+        {inProgressMessage}
+      </div>
+    );
   }
 
   const combinedPrayerRequests = [
@@ -58,7 +66,7 @@ export default async function Home() {
   );
 
   return (
-    <HomPagetemplate
+    <HomePagetemplate
       user={user}
       friendPrayerRequests={FriendPrayerRequests ?? []}
       inProgressPrayerRequests={InProgressPrayerRequests ?? []}

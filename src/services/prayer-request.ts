@@ -301,7 +301,7 @@ export async function getPrayerRequestsByUserId(userId: string): Promise<{
   try {
     const prayerRequests = await db.prayerRequest.findMany({
       where: {
-        userId: userId, // Filter prayer requests by user ID
+        userId: userId,
       },
     });
 
@@ -352,8 +352,9 @@ export async function getInProgressPrayerRequestsForUser(
 
     if (!prayerRequests.length) {
       return {
-        success: false,
+        success: true,
         message: "No prayer requests found for this user",
+        prayerRequests: [],
       };
     }
     return {

@@ -5,6 +5,10 @@ import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request
 import { PullToRefreshWrapper } from "@/components/custom/functions/pull-to-refresh-wrapper";
 import { PrayerRequestWithUser } from "@/lib/utils";
 import { User } from "@prisma/client";
+import PageHeightDiv from "./page-height-div";
+import NoDataDisplay from "./no-data-display";
+import { useState } from "react";
+import { HelpingHand } from "lucide-react";
 
 interface HomeClientTemplateProps {
   user: User;
@@ -13,14 +17,42 @@ interface HomeClientTemplateProps {
   allPrayerRequests: PrayerRequestWithUser[];
 }
 
-export const HomPagetemplate = ({
+export const HomePagetemplate = ({
   user,
   friendPrayerRequests,
   inProgressPrayerRequests,
   allPrayerRequests,
 }: HomeClientTemplateProps) => {
+  const [activeTab, setActiveTab] = useState<string>("all");
+
+  const renderPrayerRequests = (requests: PrayerRequestWithUser[]) => (
+    <PullToRefreshWrapper>
+      {requests.map((prayer) => (
+        <PrayerRequestCard
+          key={prayer.id}
+          user={prayer.user}
+          prayer={prayer}
+          isOwner={user.id === prayer.user.id}
+          currUserName={user.name}
+          hideActions
+        />
+      ))}
+    </PullToRefreshWrapper>
+  );
+
+  const renderNoData = (
+    title: string,
+    subtitle: string,
+    icon: React.ElementType
+  ) => <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />;
+
   return (
-    <Tabs defaultValue="all">
+    <Tabs
+      value={activeTab}
+      onValueChange={setActiveTab}
+      className="w-full"
+      defaultValue="all"
+    >
       <TabsList variant="fullWidth">
         <TabsTrigger value="all" variant="underline">
           All
@@ -32,60 +64,58 @@ export const HomPagetemplate = ({
           Personal
         </TabsTrigger>
       </TabsList>
+      <PageHeightDiv addTabs>
+        <TabsContent
+          value="all"
+          className={`${
+            activeTab === "all" && !allPrayerRequests.length
+              ? "flex flex-1 justify-center items-center h-full w-full"
+              : ""
+          }`}
+        >
+          {allPrayerRequests.length
+            ? renderPrayerRequests(allPrayerRequests)
+            : renderNoData(
+                "No active prayer requests!",
+                "There are no current prayer requests. Consider reaching out to others to see how you can pray for them, and feel free to add your own requests so the community can pray for you!",
+                HelpingHand
+              )}
+        </TabsContent>
 
-      <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_44px_-_82px)] md:max-h-[calc(100vh_-_44px)]">
-        <PullToRefreshWrapper>
-          <TabsContent value="all">
-            {allPrayerRequests.length > 0 && (
-              <div>
-                {allPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={user.id === prayer.user.id}
-                    currUserName={user.name}
-                    hideActions
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+        <TabsContent
+          value="community"
+          className={`${
+            activeTab === "community" && !friendPrayerRequests.length
+              ? "flex flex-1 justify-center items-center h-full w-full"
+              : ""
+          }`}
+        >
+          {friendPrayerRequests.length
+            ? renderPrayerRequests(friendPrayerRequests)
+            : renderNoData(
+                "No active prayer requests!",
+                "Your community doesn't have any current prayer requests. Consider asking how you can pray for others!",
+                HelpingHand
+              )}
+        </TabsContent>
 
-          <TabsContent value="community">
-            {friendPrayerRequests.length > 0 && (
-              <div>
-                {friendPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={user.id === prayer.user.id}
-                    currUserName={user.name}
-                    hideActions
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="personal">
-            {inProgressPrayerRequests.length > 0 && (
-              <div>
-                {inProgressPrayerRequests.map((prayer) => (
-                  <PrayerRequestCard
-                    key={prayer.id}
-                    user={prayer.user}
-                    prayer={prayer}
-                    isOwner={user.id === prayer.user.id}
-                    hideActions
-                  />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </PullToRefreshWrapper>
-      </div>
+        <TabsContent
+          value="personal"
+          className={`${
+            activeTab === "personal" && !inProgressPrayerRequests.length
+              ? "flex flex-1 justify-center items-center h-full w-full"
+              : ""
+          }`}
+        >
+          {inProgressPrayerRequests.length
+            ? renderPrayerRequests(inProgressPrayerRequests)
+            : renderNoData(
+                "No active prayer requests!",
+                "You have no prayer requests that are actively being prayed for. Consider adding a request so others can join in prayer with you!",
+                HelpingHand
+              )}
+        </TabsContent>
+      </PageHeightDiv>
     </Tabs>
   );
 };

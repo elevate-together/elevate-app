@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { PartyPopper } from "lucide-react";
 import PushNotificationManager from "../functions/push-notification-manager";
+import NoDataDisplay from "./no-data-display";
 
 interface NotificationPageTemplateProps {
   notifications: Notification[];
@@ -69,17 +70,11 @@ export const NotificationPageTemplate = ({
           </div>
         </div>
       ) : (
-        <div className="flex flex-1 items-center justify-center flex-col text-center space-y-4 pb-10">
-          <PartyPopper className="w-12 h-12 text-muted-foreground" />
-          <div>
-            <p className="text-lg font-semibold text-muted-foreground">
-              You&apos;re all caught up with notifications.
-            </p>
-            <p className="text-sm text-gray-400">
-              No new updates at the moment. Enjoy your day!
-            </p>
-          </div>
-        </div>
+        <NoDataDisplay
+          title=" You're all caught up with notifications."
+          subtitle="No new updates at the moment. Enjoy your day!"
+          icon={PartyPopper}
+        />
       )}
     </div>
   );
