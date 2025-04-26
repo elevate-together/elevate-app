@@ -60,10 +60,10 @@ export default function PrayerRequestCard({
     const title =
       currUserName != ""
         ? currUserName.includes(" ")
-          ? `${currUserName.split(" ")[0]} just prayed for you!`
-          : `${currUserName} just prayed for you!`
-        : "Someone just prayed for you!";
-    const message = `${currUserName} just prayed for ${prayer.request} `;
+          ? `${currUserName.split(" ")[0]} prayed for you!`
+          : `${currUserName} prayed for you!`
+        : "Someone prayed for you!";
+    const message = `${currUserName} prayed for ${prayer.request} `;
     const result = await sendNotificationAllDevices(user.id, message, title);
 
     if (result.success) {

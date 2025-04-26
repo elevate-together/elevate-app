@@ -9,12 +9,13 @@ export default function BackButton({ ...props }) {
 
   return (
     <Button
-      {...props}
+      className="text-md p-2  h-9"
       variant="ghost"
-      // size="default"
       onClick={() => router.back()}
+      {...props}
     >
-      <ChevronLeft /> Back
+      <ChevronLeft />
+      <span>Back</span>
     </Button>
   );
 }

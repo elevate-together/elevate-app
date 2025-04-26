@@ -26,7 +26,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { Bell, Loader } from "lucide-react";
+import { BellOff, BellRing, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import { getSharedGroupIds } from "@/services/prayer-request-share";
@@ -215,8 +215,13 @@ export default function PrayerRequestForm({
                             pressed={field.value}
                             onPressedChange={field.onChange}
                             aria-label="Toggle notify"
+                            className="hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:bg-transparent data-[state=on]:bg-transparent"
                           >
-                            <Bell className="h-4 w-4" />
+                            {field.value ? (
+                              <BellRing className="h-4 w-4" />
+                            ) : (
+                              <BellOff className="h-4 w-4" />
+                            )}
                           </Toggle>
                         </FormControl>
                       </FormItem>

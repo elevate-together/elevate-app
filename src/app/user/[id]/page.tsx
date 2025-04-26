@@ -1,5 +1,3 @@
-// app/(your-folder)/profile/[id]/page.tsx or similar
-
 import { auth } from "@/auth";
 import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
 import { ProfilePageTemplate } from "@/components/custom/templates/profile-page-template";

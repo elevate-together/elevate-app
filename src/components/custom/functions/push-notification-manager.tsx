@@ -59,9 +59,6 @@ export default function PushNotificationManager({
       const exists = await checkIfDeviceExists(endpoint);
 
       if (!exists) {
-        console.log(
-          "Subscription exists in browser but not in DB, unsubscribing."
-        );
         await subscription.unsubscribe(); // Clean up the subscription in the browser
       }
 
@@ -104,7 +101,6 @@ export default function PushNotificationManager({
       const existingSubscription =
         await registration.pushManager.getSubscription();
       if (existingSubscription) {
-        console.log("Already subscribed to push notifications");
         setIsSubscribed(true);
         return;
       }
@@ -153,7 +149,6 @@ export default function PushNotificationManager({
       if (sub) {
         try {
           await sub.unsubscribe();
-          console.log("Unsubscribed successfully after error");
         } catch (unsubscribeError) {
           console.error("Error unsubscribing device:", unsubscribeError);
         }
@@ -187,8 +182,6 @@ export default function PushNotificationManager({
         } else {
           console.error("Failed to unsubscribe from push notifications");
         }
-      } else {
-        console.log("No subscription found to unsubscribe");
       }
     } catch (error) {
       console.error("Error unsubscribing:", error);

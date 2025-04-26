@@ -64,11 +64,6 @@ export async function createPrayerRequest(requestData: {
     const hasPublicType = sharedWith.some((item) => item.type === "public");
     const hasPrivateType = sharedWith.some((item) => item.type === "private");
     const sharedWithGroups = sharedWith.filter((item) => item.type === "group");
-
-    console.log("public? ", hasPublicType);
-    console.log("private? ", hasPublicType);
-    console.log("groups? ", sharedWithGroups);
-
     let newPrayerRequest: PrayerRequest | undefined = undefined;
 
     const createPrayerRequestEntry = async (visibility: PrayerVisibility) => {

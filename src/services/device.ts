@@ -6,6 +6,8 @@ import webpush from "web-push";
 import { getDeviceInfo } from "./get-device-info";
 import { getUsersInPrayerGroup } from "./user-prayer-group";
 import { getUserById } from "./users";
+import { addNotification } from "./notification";
+import { NotificationStatusType, NotificationType } from "@prisma/client";
 
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
@@ -113,8 +115,6 @@ export const sendNotificationToGroups = async (
       );
     })
   );
-
-  console.log(`Notifications sent to ${usersToNotify.length} unique users.`);
 };
 
 export async function sendNotificationToDevice(
@@ -146,8 +146,6 @@ export async function sendNotificationToDevice(
     };
 
     const fallbackTitle = title || "Notification";
-
-    console.log(fallbackTitle);
 
     // Send the push notification to the specific device
     try {
@@ -196,21 +194,34 @@ export async function sendNotificationAllDevices(
       };
     }
 
-    // Loop through all devices and send notification to each
-    for (const device of devices) {
-      const response = await sendNotificationToDevice(
-        userId,
-        device.endpoint,
-        message,
-        title
-      );
+    const notification = await addNotification(
+      title || "Notification",
+      message,
+      NotificationType.PRAYER,
+      NotificationStatusType.UNREAD,
+      userId
+    );
 
-      if (!response.success) {
-        console.error(
-          `Failed to send notification to device ${device.endpoint}: ${response.message}`
-        );
-      }
+    if (!notification.success) {
+      return {
+        success: false,
+        message: `Failed to log notification in database: ${notification.message}`,
+      };
     }
+
+    await Promise.allSettled(
+      devices.map((device) =>
+        sendNotificationToDevice(userId, device.endpoint, message, title).then(
+          (res) => {
+            if (!res.success) {
+              console.error(
+                `Failed to send notification to ${device.endpoint}: ${res.message}`
+              );
+            }
+          }
+        )
+      )
+    );
 
     return {
       success: true,

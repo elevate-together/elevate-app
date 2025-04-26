@@ -24,11 +24,7 @@ model User {
   PrayerRequestShare PrayerRequestShare[]
   sentFriendRequests UserFriend[]         @relation("SentFriendRequests")
   receivedFriendRequests UserFriend[]     @relation("ReceivedFriendRequests")
-}
-
-enum FriendStatus {
-  PENDING
-  ACCEPTED
+  notifications           Notification[]
 }
 
 model UserFriend {
@@ -139,7 +135,20 @@ model Account {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
-  // @@index([userId])
+  @@index([userId])
+}
+
+model Notification {
+  id          String               @id @default(auto()) @map("_id") @db.ObjectId
+  title        String 
+  text        String 
+  type        NotificationType
+  status      NotificationStatusType
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+  userId    String                 @db.ObjectId
+
+  user      User                   @relation(fields: [userId], references: [id])
 }
 
 enum PrayerRequestStatus {
@@ -167,4 +176,18 @@ enum GroupStatus{
 enum ShareType {
   USER
   GROUP
+}
+
+enum NotificationType {
+  PRAYER
+}
+
+enum NotificationStatusType {
+  UNREAD
+  READ
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
 }

@@ -5,15 +5,17 @@ import { PullToRefreshWrapper } from "../functions/pull-to-refresh-wrapper";
 
 type PagePaddingWrapperProps = {
   children: React.ReactNode;
+  noPadding?: boolean;
 };
 
 export default function PagePaddingWrapper({
   children,
+  noPadding = false,
 }: PagePaddingWrapperProps) {
   return (
     <div className="flex-1 overflow-y-auto max-h-[calc(100vh_-_40px_-_82px)] md:max-h-[calc(100vh_-_0px)]">
       <PullToRefreshWrapper>
-        <div className="p-4 md:p-5">{children}</div>
+        <div className={noPadding ? "" : "p-4 md:p-5"}>{children}</div>
       </PullToRefreshWrapper>
     </div>
   );

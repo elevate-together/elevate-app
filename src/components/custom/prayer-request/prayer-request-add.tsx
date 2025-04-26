@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/drawer";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { ButtonProps } from "@/components/ui/button"; // adjust path as needed
+import { ButtonProps } from "@/components/ui/button";
 
 type PrayerGroupCreateProps = {
   id: string;
