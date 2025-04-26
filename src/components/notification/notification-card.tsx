@@ -1,6 +1,10 @@
-import { Notification, NotificationStatusType } from "@prisma/client";
+import {
+  Notification,
+  NotificationStatusType,
+  NotificationType,
+} from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
-import { HelpingHand } from "lucide-react";
+import { Bell, HelpingHand, Users } from "lucide-react";
 
 export function NotificationCard({
   notification,
@@ -8,9 +12,15 @@ export function NotificationCard({
   notification: Notification;
 }) {
   return (
-    <div className=" p-4 bg-card mb-1 shadow-sm flex items-center">
+    <div className=" p-4 bg-card border-b border-gray-200 shadow-sm flex items-center">
       <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mr-4">
-        <HelpingHand className="w-5 h-5 text-primary" />
+        {notification.type === NotificationType.PRAYER ? (
+          <HelpingHand className="w-5 h-5 text-primary" />
+        ) : notification.type === NotificationType.JOINEDGROUP ? (
+          <Users className="w-5 h-5 text-primary" />
+        ) : (
+          <Bell className="w-5 h-5 text-primary" />
+        )}
       </div>
       <div className="flex-1">
         <div className="text-md font-bold text-primary">

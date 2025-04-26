@@ -17,9 +17,13 @@ import { toast } from "sonner";
 export default function PushNotificationManager({
   userId,
   refreshTrigger,
+  hideSubscribed = false,
+  className = "",
 }: {
   userId: string;
   refreshTrigger?: number;
+  hideSubscribed?: boolean;
+  className?: string;
 }) {
   const router = useRouter();
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
@@ -137,7 +141,7 @@ export default function PushNotificationManager({
 
       if (success) {
         setIsSubscribed(true);
-        toast.success(message);
+        // toast.success(message);
         router.refresh();
       } else {
         console.error(message);
@@ -168,14 +172,14 @@ export default function PushNotificationManager({
         const success = await subscription.unsubscribe();
 
         if (success) {
-          const { success: successDatabse, message } = await unsubscribeDevice(
+          const { success: successUnsubscribe } = await unsubscribeDevice(
             userId,
             subscription.endpoint
           );
-          if (successDatabse) {
+          if (successUnsubscribe) {
             setIsSubscribed(false);
             router.refresh();
-            toast.success(message);
+            // toast.success(message);
           } else {
             console.error("Failed to unsubscribe from push notifications");
           }
@@ -195,17 +199,16 @@ export default function PushNotificationManager({
   }
 
   return (
-    <>
+    <div>
       {!supportsNotifications ? (
-        <div className="flex justify-center">
+        <div className={`flex justify-center ${className}`}>
           <Alert variant="destructive" className="w-full">
             <AlertDescription className="flex flex-row items-center gap-3">
+              <TriangleAlert className="h-4 w-4 text-red-500" />
               <div>
-                <TriangleAlert className="h-4 w-4 text-red-500" />
-              </div>
-              <div>
-                Push notifications are not supported in this browser. If on
-                mobile make sure that you add elevate to your homescreen first.
+                Push notifications are not supported in this browser. If
+                you&apos;re on mobile, make sure you&apos;ve added Elevate
+                to your homescreen first.
               </div>
             </AlertDescription>
           </Alert>
@@ -213,70 +216,77 @@ export default function PushNotificationManager({
       ) : (
         <div className="flex justify-center">
           {isSubscribed ? (
-            <Alert variant="success">
-              <AlertDescription>
-                <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
-                  <div>
-                    <div className="flex flex-row gap-2 items-center">
-                      <Check className="h-4 w-4 text-green-600" />
-                      <div className="font-bold">
-                        This devices is subscribed to notifications!
+            !hideSubscribed ? (
+              <div className={className}>
+                <Alert variant="success">
+                  <AlertDescription>
+                    <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
+                      <div>
+                        <div className="flex flex-row gap-2 items-center">
+                          <Check className="h-4 w-4 text-green-600" />
+                          <div className="font-bold">
+                            This devices is subscribed to notifications!
+                          </div>
+                        </div>
+
+                        <div className="ml-6">
+                          Elevate uses notifications to connect you with your
+                          friends. You can unsubscribe here at any time.
+                        </div>
+                      </div>
+                      <Button
+                        variant="secondary"
+                        onClick={handleRemovePushSubscription}
+                        disabled={isLoading}
+                        className="min-w-[102px]"
+                      >
+                        {isLoading ? (
+                          <Loader className="animate-spin h-4 w-4 mr-2" />
+                        ) : (
+                          "Unsubscribe"
+                        )}
+                      </Button>
+                    </div>
+                  </AlertDescription>
+                </Alert>
+              </div>
+            ) : null
+          ) : (
+            <div className={className}>
+              <Alert variant="warning">
+                <AlertDescription>
+                  <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
+                    <div>
+                      <div className="flex flex-row gap-2 items-center">
+                        <TriangleAlert className="h-4 w-4 text-yellow-700" />
+                        <div className="font-bold">Heads Up!</div>
+                      </div>
+
+                      <div className="ml-6">
+                        Your device is not subscribed to notifications yet.
+                        Enable them to get updates and stay connected with your
+                        groups.
                       </div>
                     </div>
-
-                    <div className="ml-6">
-                      Elevate uses notifications to connect you with your
-                      friends. You can unsubscribe here at any time.
-                    </div>
+                    <Button
+                      variant="secondary"
+                      onClick={handleAddPushSubscription}
+                      disabled={isLoading}
+                      className="min-w-[102px]"
+                    >
+                      {isLoading ? (
+                        <Loader className="animate-spin h-4 w-4 mr-2" />
+                      ) : (
+                        "Subscribe"
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    variant="secondary"
-                    onClick={handleRemovePushSubscription}
-                    disabled={isLoading}
-                    className="min-w-[102px]"
-                  >
-                    {isLoading ? (
-                      <Loader className="animate-spin h-4 w-4 mr-2" />
-                    ) : (
-                      "Unubscribe"
-                    )}
-                  </Button>
-                </div>
-              </AlertDescription>
-            </Alert>
-          ) : (
-            <Alert variant="warning">
-              <AlertDescription>
-                <div className="flex flex-col gap-2 sm:items-center justify-between md:flex-row">
-                  <div>
-                    <div className="flex flex-row gap-2 items-center">
-                      <TriangleAlert className="h-4 w-4 text-yellow-700" />
-                      <div className="font-bold">Heads Up!</div>
-                    </div>
-
-                    <div className="ml-6">
-                      This device is not subscribed to notifications. Enable
-                      them to stay in touch with your groups and get reminders
-                    </div>
-                  </div>
-                  <Button
-                    variant="secondary"
-                    onClick={handleAddPushSubscription}
-                    disabled={isLoading}
-                    className="min-w-[102px]"
-                  >
-                    {isLoading ? (
-                      <Loader className="animate-spin h-4 w-4 mr-2" />
-                    ) : (
-                      "Subscribe"
-                    )}
-                  </Button>
-                </div>
-              </AlertDescription>
-            </Alert>
+                </AlertDescription>
+              </Alert>
+            </div>
           )}
         </div>
       )}
-    </>
+    </div>
   );
 }

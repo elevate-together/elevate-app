@@ -1,17 +1,15 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
 import { Notification } from "@prisma/client";
 import { Button } from "@/components/ui/button";
-import {
-  deleteAllNotificationsForUser,
-  markAllNotificationsAsRead,
-} from "@/services/notification";
-import { toast } from "sonner";
+import { deleteAllNotificationsForUser } from "@/services/notification";
 import { NotificationCard } from "@/components/notification/notification-card";
+import { useEffect, useState } from "react";
+import { useNotificationStore } from "@/services/stores/notification";
+import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { Loader } from "lucide-react";
+import { PartyPopper } from "lucide-react";
+import PushNotificationManager from "../functions/push-notification-manager";
 
 interface NotificationPageTemplateProps {
   notifications: Notification[];
@@ -22,16 +20,18 @@ export const NotificationPageTemplate = ({
   notifications,
   userId,
 }: NotificationPageTemplateProps) => {
-  const router = useRouter();
+  const { setCount } = useNotificationStore();
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [readLoading, setReadLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    setCount(0);
+  }, [setCount]);
 
   const handleDeleteAllNotifications = async () => {
     setDeleteLoading(true);
     const res = await deleteAllNotificationsForUser(userId);
-
     if (res.success) {
-      toast.success(res.message);
       router.refresh();
     } else {
       toast.error(res.message);
@@ -39,57 +39,47 @@ export const NotificationPageTemplate = ({
     setDeleteLoading(false);
   };
 
-  const handleReadAllNotifications = async () => {
-    setReadLoading(true);
-    const res = await markAllNotificationsAsRead(userId);
-
-    if (res.success) {
-      toast.success(res.message);
-      router.refresh();
-    } else {
-      toast.error(res.message);
-    }
-    setReadLoading(false);
-  };
-
   return (
-    <div>
-      <div className="flex justify-between p-2 gap-2 items-center">
-        <div className="font-bold ml-2">Your Notifications</div>
-        <div className="flex flex-row gap-1 items-center">
-          <Button
-            variant="ghost"
-            onClick={handleReadAllNotifications}
-            disabled={readLoading}
-            className="w-[120px] flex justify-center items-center"
-          >
-            {readLoading ? (
-              <Loader className="animate-spin h-4 w-4 mr-2" />
-            ) : (
-              "Mark All Read"
-            )}
-          </Button>
-          <Separator orientation="vertical" className="h-6 w-px bg-primary" />
-          <Button
-            variant="ghost"
-            onClick={handleDeleteAllNotifications}
-            disabled={deleteLoading}
-            className="w-[92px] flex justify-center items-center"
-          >
-            {deleteLoading ? (
-              <Loader className="animate-spin h-4 w-4 " />
-            ) : (
-              "Delete All"
-            )}
-          </Button>
-        </div>
-      </div>
+    <div className="flex flex-col flex-1 min-h-full">
+      <PushNotificationManager userId={userId} className="p-4" hideSubscribed />
+
       {notifications.length > 0 ? (
-        notifications.map((notification) => (
-          <NotificationCard key={notification.id} notification={notification} />
-        ))
+        <div className="space-y-4">
+          <div className="flex flex-col">
+            {notifications.map((notification) => (
+              <NotificationCard
+                key={notification.id}
+                notification={notification}
+              />
+            ))}
+          </div>
+
+          <div className="flex flex-1 flex-col items-center space-y-2">
+            <div className="text-sm text-primary font-bold">
+              Read notifications will be deleted after seven days.
+            </div>
+            <Button
+              variant="link"
+              className="underline py-0 h-6"
+              onClick={handleDeleteAllNotifications}
+              disabled={deleteLoading}
+            >
+              {deleteLoading ? "Deleting..." : "Delete all notifications"}
+            </Button>
+          </div>
+        </div>
       ) : (
-        <p>No notifications to display.</p>
+        <div className="flex flex-1 items-center justify-center flex-col text-center space-y-4 pb-10">
+          <PartyPopper className="w-12 h-12 text-muted-foreground" />
+          <div>
+            <p className="text-lg font-semibold text-muted-foreground">
+              You&apos;re all caught up with notifications.
+            </p>
+            <p className="text-sm text-gray-400">
+              No new updates at the moment. Enjoy your day!
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

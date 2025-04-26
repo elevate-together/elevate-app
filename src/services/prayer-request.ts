@@ -2,6 +2,7 @@
 
 import db from "@/lib/db";
 import {
+  NotificationType,
   PrayerRequest,
   PrayerRequestStatus,
   PrayerVisibility,
@@ -100,6 +101,7 @@ export async function createPrayerRequest(requestData: {
         await sendNotificationAllDevices(
           userId,
           "You just added a new private prayer request.",
+          NotificationType.PRAYER,
           "New Prayer Request"
         );
       }

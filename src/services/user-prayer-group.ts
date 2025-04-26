@@ -5,12 +5,14 @@ import { MinimalUser, ResponseMessage } from "@/lib/utils";
 import {
   GroupStatus,
   GroupType,
+  NotificationType,
   PrayerGroup,
   PrayerRequestStatus,
   PrayerVisibility,
   ShareType,
   User,
 } from "@prisma/client";
+import { sendNotificationAllDevices } from "./device";
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(
@@ -381,10 +383,10 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
   }
 }
 
-export async function updateUserPrayerGroupStatus(
+export async function acceptUserPrayerGroupStatus(
   userId: string,
   groupId: string,
-  newStatus: GroupStatus
+  groupName?: string
 ): Promise<ResponseMessage> {
   try {
     await db.userPrayerGroup.update({
@@ -395,13 +397,24 @@ export async function updateUserPrayerGroupStatus(
         },
       },
       data: {
-        groupStatus: newStatus,
+        groupStatus: GroupStatus.ACCEPTED,
       },
     });
 
+    await sendNotificationAllDevices(
+      userId,
+      groupName
+        ? `You're now a part of the group ${groupName}. Start sharing prayer requests and praying for others in the group!`
+        : `You're now a part of a new group! Start sharing prayer requests and praying for others as you grow together.`,
+      NotificationType.JOINEDGROUP,
+      groupName
+        ? `You've been added to ${groupName}`
+        : "You've been added to a new group"
+    );
+
     return {
       success: true,
-      message: `User status updated to ${newStatus}.`,
+      message: `Accepted User.`,
     };
   } catch (error) {
     console.error("Error updating user group status:", error);

@@ -12,7 +12,7 @@ export async function addNotification(
   text: string,
   type: NotificationType,
   userId: string,
-  status?: NotificationStatusType,
+  status?: NotificationStatusType
 ): Promise<{
   success: boolean;
   message: string;
@@ -103,6 +103,7 @@ export async function getNotificationCountForUser(userId: string): Promise<{
     const count = await db.notification.count({
       where: {
         userId,
+        status: NotificationStatusType.UNREAD,
       },
     });
 
@@ -125,6 +126,18 @@ export async function markAllNotificationsAsRead(userId: string): Promise<{
   message: string;
 }> {
   try {
+    const currentDate = new Date();
+    await db.notification.deleteMany({
+      where: {
+        userId,
+        status: NotificationStatusType.READ,
+        updatedAt: {
+          lt: new Date(currentDate.getTime() - 5 * 60 * 1000),
+        },
+      },
+    });
+
+    // lt: new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000),
     await db.notification.updateMany({
       where: { userId, status: NotificationStatusType.UNREAD },
       data: { status: NotificationStatusType.READ },

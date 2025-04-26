@@ -7,6 +7,9 @@ import BackButton from "./functions/back-button";
 import { Bell, Settings } from "lucide-react";
 import { Button } from "../ui/button";
 import PrayerRequestAdd from "./prayer-request/prayer-request-add";
+import { getNotificationCountForUser } from "@/services/notification";
+import { useEffect } from "react";
+import { useNotificationStore } from "@/services/stores/notification";
 
 type Props = {
   id: string;
@@ -24,6 +27,18 @@ export default function ClientNavbarUser({
   const pathname = usePathname();
   const router = useRouter();
 
+  const { count, setCount } = useNotificationStore();
+
+  useEffect(() => {
+    async function fetchCount() {
+      const res = await getNotificationCountForUser(id);
+      if (res.success) {
+        setCount(res.count || 0);
+      }
+    }
+    fetchCount();
+  }, [id, setCount]);
+
   const isOnProfile = pathname === `/user/${id}`;
   const isOnHome = pathname === "/";
   const isOnGroups = pathname === "/groups";
@@ -35,10 +50,9 @@ export default function ClientNavbarUser({
 
   return (
     <div className="relative flex items-center justify-between bg-card w-full py-1 px-3 shadow-none md:flex">
-      {/* Left side */}
       {isOnHome ? (
         <Link href={`/requests/${id}`}>
-          <Avatar className="h-9 w-9 w-9 ml-1">
+          <Avatar className="h-8 w-8 ml-1">
             <AvatarImage src={image ?? undefined} />
             <AvatarFallback>
               {name?.charAt(0).toUpperCase() || "?"}
@@ -49,7 +63,6 @@ export default function ClientNavbarUser({
         <BackButton />
       )}
 
-      {/* Center text absolutely positioned */}
       <div className="absolute left-1/2 transform -translate-x-1/2 text-center font-bold">
         {isOnProfile
           ? "Settings"
@@ -66,28 +79,28 @@ export default function ClientNavbarUser({
           : "Hello"}
       </div>
 
-      {/* Right side */}
       <div className="flex gap-1 items-center mr-1">
         <PrayerRequestAdd id={id} variant="ghost" className="h-9 w-9" />
         <Button
-          size="icon"
           variant="ghost"
+          size="largeIcon"
           className="h-9 w-9"
           onClick={() => router.push(`/user/${id}`)}
         >
-          <Settings />
+          <Settings className="h-8 w-8" />
         </Button>
+
         <div className="relative">
           <Button
-            size="icon"
             variant="ghost"
+            size="largeIcon"
             className="h-9 w-9"
             onClick={() => router.push(`/notifications`)}
           >
-            <Bell />
-            {typeof notificationCount === "number" && notificationCount > 0 && (
-              <span className="absolute top-2 right-3 translate-x-1/2 -translate-y-1/2 bg-primary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {notificationCount > 9 ? "9+" : notificationCount}
+            <Bell className="h-6 w-6" />
+            {count > 0 && (
+              <span className="absolute top-2 right-3 translate-x-1/2 -translate-y-1/2 bg-primary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center border border-card">
+                {count > 9 ? "9+" : notificationCount}
               </span>
             )}
           </Button>

@@ -1,7 +1,10 @@
 import { auth } from "@/auth";
 import { NotificationPageTemplate } from "@/components/custom/templates/notification-template";
 import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
-import { getAllNotificationsForUser } from "@/services/notification";
+import {
+  getAllNotificationsForUser,
+  markAllNotificationsAsRead,
+} from "@/services/notification";
 
 export default async function ProfilePage() {
   const session = await auth();
@@ -10,17 +13,19 @@ export default async function ProfilePage() {
     return <div>You must be logged in to view this page.</div>;
   }
 
-  const data = await getAllNotificationsForUser(session.user.id);
+  const markAsRead = await markAllNotificationsAsRead(session.user.id);
 
-  if (!data.success) {
-    return <div>Error getting notifications: {data.message}</div>;
+  const allNotifications = await getAllNotificationsForUser(session.user.id);
+
+  if (!allNotifications.success || !markAsRead.success) {
+    return <div>Error getting notifications</div>;
   }
 
   return (
     <PagePaddingWrapper noPadding>
       <NotificationPageTemplate
         userId={session.user.id}
-        notifications={data.notifications || []}
+        notifications={allNotifications.notifications || []}
       />
     </PagePaddingWrapper>
   );

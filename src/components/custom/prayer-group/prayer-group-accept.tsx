@@ -1,8 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { updateUserPrayerGroupStatus } from "@/services/user-prayer-group";
-import { GroupStatus } from "@prisma/client";
+import { acceptUserPrayerGroupStatus } from "@/services/user-prayer-group";
 import { Check, Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -11,22 +10,20 @@ import { toast } from "sonner";
 type PrayerGroupAcceptProps = {
   userId: string;
   groupId: string;
+  groupName?: string;
 };
 
 export default function PrayerGroupAccept({
   userId,
   groupId,
+  groupName,
 }: PrayerGroupAcceptProps) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const acceptUser = async () => {
     setIsLoading(true);
-    const res = await updateUserPrayerGroupStatus(
-      userId,
-      groupId,
-      GroupStatus.ACCEPTED
-    );
+    const res = await acceptUserPrayerGroupStatus(userId, groupId, groupName);
 
     if (res.success) {
       toast.success(res.message);

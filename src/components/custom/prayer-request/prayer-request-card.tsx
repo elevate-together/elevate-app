@@ -10,7 +10,12 @@ import {
 } from "@/components/ui/card";
 import { sendNotificationAllDevices } from "@/services/device";
 import { updatePrayerRequestStatus } from "@/services/prayer-request";
-import { PrayerRequestStatus, User, type PrayerRequest } from "@prisma/client";
+import {
+  NotificationType,
+  PrayerRequestStatus,
+  User,
+  type PrayerRequest,
+} from "@prisma/client";
 import { format, isSameSecond } from "date-fns";
 import {
   Bell,
@@ -20,6 +25,7 @@ import {
   Star,
   EllipsisVertical,
   Loader,
+  Check,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -54,6 +60,7 @@ export default function PrayerRequestCard({
   const router = useRouter();
   const [isOpen, setIsPopoverOpen] = useState(false);
   const [notificationLoading, setNotificationLoading] = useState(false);
+  const [notificationSuccess, setNotificationSuccess] = useState(false);
 
   const handleSendNotification = async () => {
     setNotificationLoading(true);
@@ -64,15 +71,19 @@ export default function PrayerRequestCard({
           : `${currUserName} prayed for you!`
         : "Someone prayed for you!";
     const message = `${currUserName} prayed for ${prayer.request} `;
-    const result = await sendNotificationAllDevices(user.id, message, title);
+    const result = await sendNotificationAllDevices(
+      user.id,
+      message,
+      NotificationType.PRAYER,
+      title
+    );
 
     if (result.success) {
-      if (result.message == "User doesn't have notifications enabled")
-        toast.warning(result.message);
-      else {
-        toast.success(result.message);
-      }
       router.refresh();
+      setNotificationSuccess(true);
+      setTimeout(() => {
+        setNotificationSuccess(false);
+      }, 3000);
     } else {
       toast.error(result.message);
     }
@@ -117,6 +128,8 @@ export default function PrayerRequestCard({
                 >
                   {notificationLoading ? (
                     <Loader className="animate-spin" />
+                  ) : notificationSuccess ? (
+                    <Check />
                   ) : (
                     <Bell />
                   )}

@@ -9,8 +9,9 @@ export default function BackButton({ ...props }) {
 
   return (
     <Button
-      className="text-md p-2  h-9"
+      className="text-md p-2 gap-1"
       variant="ghost"
+      size="largeIcon"
       onClick={() => router.back()}
       {...props}
     >

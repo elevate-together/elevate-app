@@ -111,6 +111,7 @@ export const sendNotificationToGroups = async (
       await sendNotificationAllDevices(
         tempId,
         `${user?.name || "Someone"} shared a prayer request with you!`,
+        NotificationType.PRAYER,
         "New Prayer Request"
       );
     })
@@ -176,16 +177,23 @@ export async function sendNotificationToDevice(
 export async function sendNotificationAllDevices(
   userId: string,
   message: string,
+  notificationType: NotificationType,
   title?: string
 ): Promise<{
   success: boolean;
   message: string;
 }> {
   try {
-    // Retrieve all devices associated with the user
     const devices = await db.device.findMany({
       where: { userId },
     });
+
+    const notification = await addNotification(
+      title || "Notification",
+      message,
+      notificationType,
+      userId
+    );
 
     if (!devices || devices.length === 0) {
       return {
@@ -193,13 +201,6 @@ export async function sendNotificationAllDevices(
         message: "User doesn't have notifications enabled",
       };
     }
-
-    const notification = await addNotification(
-      title || "Notification",
-      message,
-      NotificationType.PRAYER,
-      userId
-    );
 
     if (!notification.success) {
       return {

@@ -180,6 +180,7 @@ enum ShareType {
 
 enum NotificationType {
   PRAYER
+  JOINEDGROUP
 }
 
 enum NotificationStatusType {

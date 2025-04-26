@@ -52,7 +52,7 @@ export default function PrayerRequestAdd({
       <DrawerTrigger asChild>
         {isMobile && !isMenu ? (
           <Button
-            size={includeText ? "default" : "icon"}
+            size={includeText ? "default" : "largeIcon"}
             variant={isMenu ? "ghost" : "secondary"}
             {...props}
           >
@@ -92,7 +92,7 @@ export default function PrayerRequestAdd({
       <DialogTrigger asChild>
         {isMobile && !isMenu ? (
           <Button
-            size={includeText ? "default" : "icon"}
+            size={includeText ? "default" : "largeIcon"}
             variant={isMenu ? "ghost" : "secondary"}
             {...props}
           >

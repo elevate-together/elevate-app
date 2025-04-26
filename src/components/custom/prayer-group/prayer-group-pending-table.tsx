@@ -22,7 +22,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import UserAvatar from "../user/user-avatar";
-import PrayerGroupUpdateStatus from "./prayer-group-accept";
+import PrayerGroupAccept from "./prayer-group-accept";
 import PrayerGroupDecline from "./prayer-group-decline";
 
 type PrayerGroupPendingTableProps = {
@@ -90,9 +90,10 @@ export default function PrayerGroupPendingTable({
               userId={row.original.id}
               prayerGroup={prayerGroup}
             />
-            <PrayerGroupUpdateStatus
+            <PrayerGroupAccept
               userId={row.original.id}
               groupId={prayerGroup.id}
+              groupName= {prayerGroup.name}
             />
           </div>
         );
