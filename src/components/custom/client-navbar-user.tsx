@@ -85,7 +85,7 @@ export default function ClientNavbarUser({
             onClick={() => router.push(`/notifications`)}
           >
             <Bell />
-            {notificationCount && notificationCount > 0 && (
+            {typeof notificationCount === "number" && notificationCount > 0 && (
               <span className="absolute top-2 right-3 translate-x-1/2 -translate-y-1/2 bg-primary text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
                 {notificationCount > 9 ? "9+" : notificationCount}
               </span>

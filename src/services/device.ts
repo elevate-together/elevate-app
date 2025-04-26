@@ -7,7 +7,7 @@ import { getDeviceInfo } from "./get-device-info";
 import { getUsersInPrayerGroup } from "./user-prayer-group";
 import { getUserById } from "./users";
 import { addNotification } from "./notification";
-import { NotificationStatusType, NotificationType } from "@prisma/client";
+import { NotificationType } from "@prisma/client";
 
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
@@ -198,7 +198,6 @@ export async function sendNotificationAllDevices(
       title || "Notification",
       message,
       NotificationType.PRAYER,
-      NotificationStatusType.UNREAD,
       userId
     );
 

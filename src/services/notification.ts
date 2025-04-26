@@ -11,8 +11,8 @@ export async function addNotification(
   title: string,
   text: string,
   type: NotificationType,
-  status: NotificationStatusType,
-  userId: string
+  userId: string,
+  status?: NotificationStatusType,
 ): Promise<{
   success: boolean;
   message: string;
