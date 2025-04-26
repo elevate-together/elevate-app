@@ -29,7 +29,6 @@ export default function PrayerGroupDecline({
     );
 
     if (res.success) {
-      toast.success(res.message);
       router.refresh();
     } else {
       toast.error(res.message);

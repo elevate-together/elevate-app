@@ -94,7 +94,6 @@ export default function PrayerRequestCard({
     const result = await updatePrayerRequestStatus(prayer.id, status);
 
     if (result.success) {
-      toast.success(result.message);
       router.refresh();
     } else {
       toast.error(result.message);

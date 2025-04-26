@@ -48,7 +48,6 @@ export default function PrayerRequestDelete({
     setLoading(true);
     const result = await deletePrayerRequest(id);
     if (result.success) {
-      toast.success(result.message);
       setIsOpen(false);
       setTimeout(() => {
         router.refresh();

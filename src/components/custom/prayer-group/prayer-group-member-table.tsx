@@ -59,7 +59,6 @@ export default function PrayerGroupMemberTable({
     setLoading(true);
     const result = await removeUserFromPrayerGroup(userId, groupId, ownerId);
     if (result.success) {
-      toast.success(result.message);
       router.refresh();
     } else {
       toast.error(result.message);

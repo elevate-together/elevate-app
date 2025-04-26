@@ -66,7 +66,6 @@ export default function PrayerGroupOwnerForm({
       );
 
       if (result.success) {
-        toast.success("Prayer group owner updated.");
         router.refresh();
         onSubmit();
       } else {

@@ -26,7 +26,6 @@ export default function PrayerGroupAccept({
     const res = await acceptUserPrayerGroupStatus(userId, groupId, groupName);
 
     if (res.success) {
-      toast.success(res.message);
       router.refresh();
     } else {
       toast.error(res.message);

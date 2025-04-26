@@ -54,9 +54,7 @@ export default function DeviceTable({
       "Test Push"
     );
 
-    if (success) {
-      toast.success(message);
-    } else {
+    if (!success) {
       toast.error(message);
     }
   };
@@ -65,7 +63,6 @@ export default function DeviceTable({
     const { success, message } = await unsubscribeDevice(userId, endpoint);
 
     if (success) {
-      toast.success(message);
       router.refresh();
       if (onDeviceChange) {
         onDeviceChange();

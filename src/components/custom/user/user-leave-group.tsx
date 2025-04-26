@@ -39,7 +39,6 @@ export default function UserLeaveGroup({
     );
 
     if (response.success) {
-      toast.success(response.message);
       setOpen(false);
       router.refresh();
     } else {

@@ -24,7 +24,6 @@ export default function UserJoinGroup({
     try {
       const response = await addUserToPrayerGroup(userId, groupId);
       if (response.success) {
-        toast.success(response.message);
         if (onClose) {
           onClose();
         }

@@ -54,7 +54,6 @@ export default function DeviceForm({
       result = await updateDeviceTitle(device.id, title);
     }
     if (result?.success) {
-      toast.success(result?.message || "An error occurred.");
       router.refresh();
       if (onSubmit) {
         onSubmit();

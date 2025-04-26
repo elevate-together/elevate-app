@@ -141,7 +141,6 @@ export default function PushNotificationManager({
 
       if (success) {
         setIsSubscribed(true);
-        // toast.success(message);
         router.refresh();
       } else {
         console.error(message);
@@ -179,7 +178,6 @@ export default function PushNotificationManager({
           if (successUnsubscribe) {
             setIsSubscribed(false);
             router.refresh();
-            // toast.success(message);
           } else {
             console.error("Failed to unsubscribe from push notifications");
           }

@@ -78,7 +78,6 @@ export default function PrayerGroupForm({
     }
 
     if (result.success && result.prayerGroup) {
-      toast.success(result.message);
       router.refresh();
       onSubmit();
     } else {

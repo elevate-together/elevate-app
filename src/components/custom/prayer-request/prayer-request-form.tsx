@@ -149,7 +149,6 @@ export default function PrayerRequestForm({
     }
 
     if (result.success && result?.prayerRequest) {
-      toast.success(result.message);
       router.refresh();
       onSubmit?.();
     } else {
