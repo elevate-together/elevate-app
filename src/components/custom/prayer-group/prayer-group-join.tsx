@@ -112,7 +112,7 @@ export default function PrayerGroupJoin({
         if (!open) handleClose();
       }}
     >
-      <DrawerContent className="min-h-[400px]">
+      <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
