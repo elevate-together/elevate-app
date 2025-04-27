@@ -1,7 +1,6 @@
 "use client";
 
 import { useIsMobile } from "@/components/hooks/use-mobile";
-
 import PrayerRequestForm from "@/components/custom/prayer-request/prayer-request-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,86 +46,59 @@ export default function PrayerRequestAdd({
     setIsOpen(false);
   };
 
+  const buttonLabel = includeText ? "Add" : "Add Prayer Request";
+  const drawerTitle = "New Prayer Request";
+  const drawerDescription = "Let others know how they can be praying for you.";
+  const dialogTitle = "Add New Prayer Request";
+  const dialogDescription = "Let others know how they can be praying for you.";
+
+  const renderButton = (
+    <Button
+      size={
+        isMobile && !isMenu
+          ? includeText
+            ? "default"
+            : "largeIcon"
+          : "default"
+      }
+      variant={isMenu ? "ghost" : "secondary"}
+      {...props}
+    >
+      <Plus />
+      {isMobile && !isMenu ? (includeText ? "Add" : "") : buttonLabel}
+    </Button>
+  );
+
+  const prayerRequestForm = (
+    <PrayerRequestForm
+      userId={id}
+      onSubmit={handleClose}
+      onCancel={handleClose}
+      isOpen={isOpen && isMobile}
+    />
+  );
+
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
-        {isMobile && !isMenu ? (
-          <Button
-            size={includeText ? "default" : "largeIcon"}
-            variant={isMenu ? "ghost" : "secondary"}
-            {...props}
-          >
-            <Plus />
-            {includeText && "Add"}
-          </Button>
-        ) : (
-          <Button
-            className={`${
-              isMenu ? "flex justify-start items-center w-full p-2" : ""
-            }`}
-            variant={isMenu ? "ghost" : "secondary"}
-          >
-            <Plus /> Add Prayer Request
-          </Button>
-        )}
-      </DrawerTrigger>
+      <DrawerTrigger asChild>{renderButton}</DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-10 md:p-0">
-          <DrawerHeader className="text-left p-0">
-            <DrawerTitle>New Prayer Request</DrawerTitle>
-            <DrawerDescription>
-              Let others know how they can be praying for you.
-            </DrawerDescription>
-          </DrawerHeader>
-          <PrayerRequestForm
-            userId={id}
-            onSubmit={handleClose}
-            onCancel={handleClose}
-            isOpen={isOpen && isMobile}
-          />
-        </div>
+        <DrawerHeader>
+          <DrawerTitle>{drawerTitle}</DrawerTitle>
+          <DrawerDescription>{drawerDescription}</DrawerDescription>
+        </DrawerHeader>
+        {prayerRequestForm}
       </DrawerContent>
     </Drawer>
   ) : (
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        {isMobile && !isMenu ? (
-          <Button
-            size={includeText ? "default" : "largeIcon"}
-            variant={isMenu ? "ghost" : "secondary"}
-            {...props}
-          >
-            <Plus />
-            {includeText && "Add"}
-          </Button>
-        ) : (
-          <Button
-            className={`${
-              isMenu ? "flex justify-start items-center w-full p-2" : ""
-            }`}
-            variant={isMenu ? "ghost" : "secondary"}
-          >
-            <Plus /> Add Prayer Request
-          </Button>
-        )}
-      </DialogTrigger>
-      <DialogContent
-        className="max-w-sm"
-        aria-describedby="Add New Prayer Request"
-      >
+      <DialogTrigger asChild>{renderButton}</DialogTrigger>
+      <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Add New Prayer Request</DialogTitle>
-          <DialogDescription>
-            Let others know how they can be praying for you.
-          </DialogDescription>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
-        <PrayerRequestForm
-          isOpen={isOpen && !isMobile}
-          userId={id}
-          onSubmit={handleClose}
-          onCancel={handleClose}
-        />
-        <DialogDescription hidden>Add New Prayer Request</DialogDescription>
+        {prayerRequestForm}
+        <DialogDescription hidden>{dialogDescription}</DialogDescription>
       </DialogContent>
     </Dialog>
   );

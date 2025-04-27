@@ -56,7 +56,7 @@ export default function PrayerRequestUserTemplate({
   const renderNoData = (
     title: string,
     subtitle: string,
-    icon: React.ElementType
+    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   ) => <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />;
 
   return (

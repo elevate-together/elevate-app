@@ -43,10 +43,12 @@ export default function ClientNavbarUser({
   const isOnHome = pathname === "/";
   const isOnGroups = pathname === "/groups";
   const isOnGroupHome =
-    pathname.startsWith("/groups/") && pathname.split("/").length === 3;
+    pathname.startsWith("/group/") && pathname.split("/").length === 3;
   const isOnUserPrayerRequests =
     pathname.startsWith("/requests/") && pathname.split("/").length === 3;
   const isNotifications = pathname === "/notifications";
+  const isJoinGroup =
+    pathname.startsWith("/group/join/") && pathname.split("/").length === 4;
 
   return (
     <div className="relative flex items-center justify-between bg-card w-full py-1 px-3 shadow-none md:flex">
@@ -76,6 +78,8 @@ export default function ClientNavbarUser({
           ? "Your Requests"
           : isNotifications
           ? "Notifications"
+          : isJoinGroup
+          ? "Join Group"
           : "Hello"}
       </div>
 

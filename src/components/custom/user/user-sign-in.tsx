@@ -6,13 +6,21 @@ import { Loader, LogIn } from "lucide-react";
 import { useState } from "react";
 import { ButtonProps } from "@/components/ui/button";
 
-export default function SignIn({ children, ...prop }: ButtonProps) {
+type SignInProps = ButtonProps & {
+  callback?: string;
+};
+
+export default function SignIn({
+  callback = "/",
+  children,
+  ...prop
+}: SignInProps) {
   const [isLoading, setLoading] = useState(false);
 
   const handleClick = async () => {
     setLoading(true);
     try {
-      await handleSignIn();
+      await handleSignIn(callback);
     } catch (error) {
       console.error("Sign-in failed:", error);
     } finally {

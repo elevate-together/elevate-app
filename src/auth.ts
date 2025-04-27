@@ -30,8 +30,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
 
-    redirect() {
-      return "/";
+    redirect({ url, baseUrl }) {
+      if (url.startsWith(baseUrl)) {
+        return url;
+      }
+      return baseUrl;
     },
   },
 });

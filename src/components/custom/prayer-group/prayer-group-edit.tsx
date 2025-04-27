@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/drawer";
 import { PrayerGroup } from "@prisma/client";
 
-type PrayerGroupCreateProps = {
+type PrayerGroupEditProps = {
   id: string;
   group: PrayerGroup;
   isMenu?: boolean;
@@ -35,11 +35,17 @@ export default function PrayerGroupEdit({
   group,
   isMenu = false,
   hideOnMobile = false,
-}: PrayerGroupCreateProps) {
+}: PrayerGroupEditProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
   if (hideOnMobile && isMobile) return null;
+
+  const dialogTitle = "Edit Prayer Group";
+  const dialogDescription = "Edit Prayer Group";
+  const buttonLabel = "Edit Prayer Group";
+  const buttonLabelShort = "Edit Group";
+  const ariaLabel = "Create a new prayer group";
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -48,59 +54,53 @@ export default function PrayerGroupEdit({
     setIsOpen(false);
   };
 
+  const prayerForm = (
+    <PrayerGroupForm
+      ownerId={id}
+      group={group}
+      onSubmit={handleSubmit}
+      onCancel={handleCancel}
+    />
+  );
+
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
         <Button
-          aria-label="Create a new prayer group"
-          size={isMobile ? "icon" : "default"}
-          className={`${
-            isMenu ? "flex justify-start items-center w-full p-2" : ""
-          }`}
+          aria-label={ariaLabel}
+          size="icon"
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Edit2 /> {!isMobile && "Edit Prayer Group"}
+          <Edit2 /> {!isMobile && buttonLabel}
         </Button>
       </DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-6">
-          <DrawerHeader className="text-left px-0 py-3">
-            <DrawerTitle>Edit Prayer Group</DrawerTitle>
-          </DrawerHeader>
-          <PrayerGroupForm
-            ownerId={id}
-            group={group}
-            onSubmit={handleSubmit}
-            onCancel={handleCancel}
-          />
-          <DrawerDescription hidden>Edit Prayer Group</DrawerDescription>
-        </div>
+        <DrawerHeader>
+          <DrawerTitle>{dialogTitle}</DrawerTitle>
+        </DrawerHeader>
+        {prayerForm}
+        <DrawerDescription hidden>{dialogDescription}</DrawerDescription>
       </DrawerContent>
     </Drawer>
   ) : (
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
-          aria-label="Edit prayer group"
+          aria-label={ariaLabel}
           className={`${
             isMenu ? "flex justify-start items-center w-full p-2" : ""
           }`}
           variant={isMenu ? "ghost" : "secondary"}
         >
-          <Edit2 /> Edit Group
+          <Edit2 /> {buttonLabelShort}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Edit Prayer Group</DialogTitle>
+          <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
-        <PrayerGroupForm
-          ownerId={id}
-          group={group}
-          onSubmit={handleSubmit}
-          onCancel={handleCancel}
-        />
-        <DialogDescription hidden>Edit Prayer Group</DialogDescription>
+        {prayerForm}
+        <DialogDescription hidden>{dialogDescription}</DialogDescription>
       </DialogContent>
     </Dialog>
   );

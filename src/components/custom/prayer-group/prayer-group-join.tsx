@@ -1,186 +1,140 @@
 "use client";
 
+import { useIsMobile } from "@/components/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
-
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { PrayerGroupWithOwnerAndUsers } from "@/lib/utils";
-import { GroupType, User } from "@prisma/client";
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
+import { PrayerGroupWithOwnerAndCount } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { addUserToPrayerGroup } from "@/services/user-prayer-group";
+import ActiveLoader from "../functions/active-loader";
+import { GroupType } from "@prisma/client";
 import UserAvatar from "../user/user-avatar";
-import JoinGroup from "../user/user-join-group";
-import PrayerGroupDialog from "./prayer-group-dialog";
-import { Badge } from "@/components/ui/badge";
 
-type JoinGroupProps = {
-  data: PrayerGroupWithOwnerAndUsers[];
+type PrayerGroupJoinProps = {
   userId: string;
+  group: PrayerGroupWithOwnerAndCount;
 };
-export default function PrayerGroupJoin({ data, userId }: JoinGroupProps) {
-  const columns: ColumnDef<PrayerGroupWithOwnerAndUsers>[] = [
-    {
-      accessorKey: "name",
-      enableHiding: false,
-      header: "Group Name",
-      cell: ({ row }) => (
-        <div className="flex gap-2">
-          <div className="font-bold"> {row.getValue("name")}</div>
-          <Badge variant="outline">
-            {row.original.groupType.charAt(0).toUpperCase() +
-              row.original.groupType.slice(1).toLowerCase()}
-          </Badge>
+
+export default function PrayerGroupJoin({
+  userId,
+  group,
+}: PrayerGroupJoinProps) {
+  const [isOpen, setIsOpen] = useState(true);
+  const isMobile = useIsMobile();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const isPrivate = group.groupType === GroupType.PRIVATE;
+
+  const title = isPrivate
+    ? `Confirm Request to Join ${group.name}`
+    : `Confirm Join ${group.name}`;
+  const description = isPrivate
+    ? "This group is private, you must be approved by the owner to join."
+    : "By joining, you can share prayer requests and pray with the group.";
+
+  const handleJoin = async () => {
+    setLoading(true);
+    try {
+      const data = await addUserToPrayerGroup(userId, group.id);
+      if (data.success) {
+        router.push(`/group/${group.id}`); // After joining, navigate to the group page
+      } else {
+        alert("Failed to join group. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error joining group:", error);
+      alert("Something went wrong.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClose = () => {
+    router.push("/");
+  };
+
+  const content = (
+    <div className="flex flex-col gap-3">
+      {group.description && (
+        <div className="flex flex-col gap-1">
+          <p className="text-sm font-semibold">Description:</p>
+          <div>{group.description}</div>
         </div>
-      ),
-    },
-    {
-      accessorKey: "owner",
-      enableHiding: false,
-      header: () => (
-        <div className="hidden lg:block">Owner</div> // Hides the column header on mobile
-      ),
-      cell: ({ row }) => {
-        const owner: User = row.getValue("owner");
+      )}
+      <div className="flex ">
+        <div className="flex-1 flex flex-col gap-2 mb-2">
+          <p className="text-sm font-semibold">Owner:</p>
+          <UserAvatar
+            name={group.owner.name}
+            email={group.owner.email}
+            image={group.owner.image ?? undefined}
+            includeEmail={false}
+            size="small"
+          />
+        </div>
 
-        return (
-          <div className="capitalize hidden lg:block">
-            {owner && owner.name && owner.image ? (
-              <UserAvatar
-                name={owner.name}
-                email={owner.email}
-                image={owner.image}
-                includeEmail={false}
-                size="small"
-              />
-            ) : (
-              <div>-</div>
-            )}
-          </div>
-        );
-      },
-    },
-    {
-      id: "join",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const groupId = row.original.id;
-        return (
-          <div className="flex gap-3 justify-end">
-            <PrayerGroupDialog group={row.original} userId={userId} />
-            <JoinGroup
-              groupId={groupId}
-              userId={userId}
-              requestToJoin={row.original.groupType === GroupType.PRIVATE}
-            />
-          </div>
-        );
-      },
-    },
-  ];
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-  });
-
-  return (
-    <div className="w-full">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Find a Group..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <div className="flex-1 flex flex-col gap-2 mb-2">
+          <p className="text-sm font-semibold"> Group:</p>
+          <p className="text-sm color-muted">{group._count.users} members</p>
+        </div>
       </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="flex items-top justify-between py-4">
-        <div className="text-xs text-center text-muted-foreground pl-2">
-          Private groups require approval to join.
-        </div>
-        <div className="flex flex-row items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+
+      <div className="flex gap-2">
+        <Button className="w-full" variant="secondary" onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button className="w-full mb-2" onClick={handleJoin} disabled={loading}>
+          {loading ? <ActiveLoader /> : "Join Group"}
+        </Button>
       </div>
     </div>
+  );
+
+  return isMobile ? (
+    <Drawer
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) handleClose();
+      }}
+    >
+      <DrawerContent className="min-h-[400px]">
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>{description}</DrawerDescription>
+        </DrawerHeader>
+        {content}
+      </DrawerContent>
+    </Drawer>
+  ) : (
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) handleClose();
+      }}
+    >
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {content}
+      </DialogContent>
+    </Dialog>
   );
 }

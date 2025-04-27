@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { getUserById } from "@/services/users";
 import {
   getPrayerGroupsForUser,
-  getPrayerGroupsNotIn,
   getPrayerGroupsPendingForUser,
 } from "@/services/user-prayer-group";
 import PrayerGroupAllTemplate from "@/components/custom/templates/prayer-group-all-template";
@@ -21,10 +20,10 @@ export default async function AllGroupsPage() {
     return <div className="p-2">Unable to Find User</div>;
   }
 
-  const [yourGroups, pendingGroups, remainingGroups] = await Promise.all([
+  const [yourGroups, pendingGroups] = await Promise.all([
     getPrayerGroupsForUser(user.id),
     getPrayerGroupsPendingForUser(user.id),
-    getPrayerGroupsNotIn(user.id),
+    // getPrayerGroupsNotIn(user.id),
   ]);
 
   return (
@@ -33,7 +32,7 @@ export default async function AllGroupsPage() {
         user={user}
         yourGroups={yourGroups?.prayerGroups ?? []}
         pendingGroups={pendingGroups?.prayerGroups ?? []}
-        remainingGroups={remainingGroups?.prayerGroups ?? []}
+        // remainingGroups={remainingGroups?.prayerGroups ?? []}
       />
     </PagePaddingWrapper>
   );

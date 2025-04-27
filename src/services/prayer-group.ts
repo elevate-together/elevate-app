@@ -1,7 +1,10 @@
 "use server";
 
 import db from "@/lib/db";
-import { PrayerGroupWithOwner } from "@/lib/utils";
+import {
+  PrayerGroupWithOwner,
+  PrayerGroupWithOwnerAndCount,
+} from "@/lib/utils";
 import { GroupStatus, GroupType, PrayerGroup } from "@prisma/client";
 import type { User } from "@prisma/client";
 
@@ -16,6 +19,43 @@ export async function getPrayerGroupById(id: string): Promise<{
       where: { id },
       include: {
         owner: true,
+      },
+    });
+
+    if (!prayerGroup) {
+      return {
+        success: false,
+        message: "Prayer group not found",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Prayer group found",
+      prayerGroup: prayerGroup,
+    };
+  } catch (error) {
+    console.error(`Error fetching prayer group with ID ${id}:`, error);
+    return {
+      success: false,
+      message: "Error fetching prayer group by ID",
+    };
+  }
+}
+
+export async function getPrayerGroupWithCountById(id: string): Promise<{
+  success: boolean;
+  message: string;
+  prayerGroup?: PrayerGroupWithOwnerAndCount;
+}> {
+  try {
+    const prayerGroup = await db.prayerGroup.findUnique({
+      where: { id },
+      include: {
+        owner: true,
+        _count: {
+          select: { users: true },
+        },
       },
     });
 

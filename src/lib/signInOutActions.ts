@@ -2,9 +2,11 @@
 
 import { signIn, signOut } from "@/auth";
 
-export const handleSignIn = async () => {
+export const handleSignIn = async (callbackUrl?: string) => {
   try {
-    await signIn("google");
+    await signIn("google", {
+      callbackUrl: callbackUrl || "/",
+    });
   } catch (error) {
     throw error;
   }

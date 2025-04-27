@@ -16,6 +16,10 @@ export type PrayerGroupWithOwner = PrayerGroup & {
   owner: UserDef;
 };
 
+export type PrayerGroupWithOwnerAndCount = PrayerGroupWithOwner & {
+  _count: { users: number };
+};
+
 export type PrayerGroupWithOwnerAndUsers = PrayerGroup & {
   owner: UserDef;
   users: Pick<UserDef, "name">[];

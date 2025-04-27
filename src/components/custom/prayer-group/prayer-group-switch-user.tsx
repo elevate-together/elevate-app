@@ -39,53 +39,47 @@ export default function PrayerGroupOwnerChange({
   const handleCancel = () => setIsOpen(false);
   const handleSubmit = () => setIsOpen(false);
 
+  const title = "Change Prayer Group Owner";
+
+  const triggerButton = (
+    <Button
+      aria-label="{title}"
+      variant="secondary"
+      size={isMobile ? "icon" : "default"}
+    >
+      <ArrowLeftRight /> {!isMobile && " Change Owner"}
+    </Button>
+  );
+
+  const prayerGroupForm = (
+    <PrayerGroupOwnerForm
+      prayerGroup={prayerGroup}
+      members={members}
+      onCancel={handleCancel}
+      onSubmit={handleSubmit}
+    />
+  );
+
   return isMobile ? (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
-        <Button
-          aria-label="Change prayer group owner"
-          variant="secondary"
-          size="icon"
-        >
-          <ArrowLeftRight />
-        </Button>
-      </DrawerTrigger>
+      <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
       <DrawerContent>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 mb-10">
-          <DrawerHeader className="text-left px-0 py-3">
-            <DrawerTitle>Change Prayer Group Owner</DrawerTitle>
-          </DrawerHeader>
-          <PrayerGroupOwnerForm
-            prayerGroup={prayerGroup}
-            members={members}
-            onCancel={handleCancel}
-            onSubmit={handleSubmit}
-          />
-          <DrawerDescription hidden>
-            Change Prayer Group Owner
-          </DrawerDescription>
-        </div>
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+        </DrawerHeader>
+        {prayerGroupForm}
+        <DrawerDescription hidden>{title}</DrawerDescription>
       </DrawerContent>
     </Drawer>
   ) : (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button aria-label="Change prayer group owner" variant="secondary">
-          <ArrowLeftRight />
-          Change Owner
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
-          <DialogTitle>Change Prayer Group Owner</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <PrayerGroupOwnerForm
-          prayerGroup={prayerGroup}
-          members={members}
-          onCancel={handleCancel}
-          onSubmit={handleSubmit}
-        />
-        <DialogDescription hidden>Change Prayer Group Owner</DialogDescription>
+        {prayerGroupForm}
+        <DialogDescription hidden>{title}</DialogDescription>
       </DialogContent>
     </Dialog>
   );

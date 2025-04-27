@@ -14,22 +14,20 @@ import {
 import { EllipsisVerticalIcon } from "lucide-react";
 import PrayerGroupCreate from "../prayer-group/prayer-group-create";
 import PrayerGroupView from "../prayer-group/prayer-group-view";
-import PrayerGroupJoin from "../prayer-group/prayer-group-join";
-import { PrayerGroupWithOwnerAndUsers } from "@/lib/utils";
 
 type Props = {
   user: User;
   yourGroups: PrayerGroup[];
   pendingGroups: PrayerGroup[];
-  remainingGroups: PrayerGroupWithOwnerAndUsers[];
+  // remainingGroups: PrayerGroupWithOwnerAndUsers[];
 };
 
 export default function PrayerGroupAllTemplate({
   user,
   yourGroups,
   pendingGroups,
-  remainingGroups,
-}: Props) {
+}: // remainingGroups,
+Props) {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
@@ -102,12 +100,12 @@ export default function PrayerGroupAllTemplate({
 
       <Separator />
 
-      {remainingGroups.length > 0 && (
+      {/* {remainingGroups.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold">Looking for your group?</h2>
           <PrayerGroupJoin data={remainingGroups} userId={user.id} />
         </div>
-      )}
+      )} */}
     </div>
   );
 }

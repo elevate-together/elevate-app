@@ -12,7 +12,7 @@ export default function PrayerGroupView({ id }: { id: string }) {
       variant="ghost"
       className="pl-3 justify-start"
       onClick={() => {
-        router.push(`/groups/${id}`);
+        router.push(`/group/${id}`);
       }}
     >
       <House />

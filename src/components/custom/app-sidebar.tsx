@@ -99,7 +99,7 @@ export default async function AppSidebar() {
                     {userPrayerGroups.map((group) => (
                       <SidebarMenuSub key={group.id}>
                         <SidebarMenuButton>
-                          <a href={`/groups/${group.id}`}>
+                          <a href={`/group/${group.id}`}>
                             <span className="text-">{group.name}</span>
                           </a>
                         </SidebarMenuButton>

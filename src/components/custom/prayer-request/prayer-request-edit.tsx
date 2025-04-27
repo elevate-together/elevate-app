@@ -40,6 +40,8 @@ export default function PrayerRequestEdit({
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
+  const title = "Edit Prayer Request";
+
   const triggerButton = (
     <Button
       size={includeText ? "default" : "icon"}
@@ -52,39 +54,35 @@ export default function PrayerRequestEdit({
     </Button>
   );
 
+  const prayerRequestFrom = (
+    <PrayerRequestForm
+      userId={userId}
+      prayer={prayer}
+      isOpen={isOpen && isMobile}
+      onSubmit={() => setIsOpen(false)}
+      onCancel={() => setIsOpen(false)}
+    />
+  );
+
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-      <DrawerContent aria-describedby={undefined}>
-        <div className="mx-auto w-full max-w-sm py-5 px-5 md:p-0">
-          <DrawerHeader className="text-left p-0">
-            <DrawerTitle className="mb-2">Edit Prayer Request</DrawerTitle>
-          </DrawerHeader>
-          <PrayerRequestForm
-            userId={userId}
-            prayer={prayer}
-            isOpen={isOpen && isMobile}
-            onSubmit={() => setIsOpen(false)}
-            onCancel={() => setIsOpen(false)}
-          />
-        </div>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle className="mb-2">{title}</DrawerTitle>
+        </DrawerHeader>
+        {prayerRequestFrom}
         <DrawerFooter></DrawerFooter>
       </DrawerContent>
     </Drawer>
   ) : (
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="max-w-md" aria-describedby={undefined}>
+      <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Edit Prayer Request</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
         </DialogHeader>
-        <PrayerRequestForm
-          prayer={prayer}
-          userId={userId}
-          isOpen={isOpen}
-          onSubmit={() => setIsOpen(false)}
-          onCancel={() => setIsOpen(false)}
-        />
+        {prayerRequestFrom}
       </DialogContent>
     </Dialog>
   );

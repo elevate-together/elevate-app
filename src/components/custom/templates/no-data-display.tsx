@@ -4,9 +4,10 @@ import React from "react";
 
 type NoDataDisplayProps = {
   title: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
   subtitle?: string;
   className?: string;
+  redirectButton?: React.ReactNode;
 };
 
 export default function NoDataDisplay({
@@ -14,6 +15,7 @@ export default function NoDataDisplay({
   icon: Icon,
   subtitle = "",
   className = "",
+  redirectButton = null,
 }: NoDataDisplayProps) {
   return (
     <div
@@ -24,6 +26,7 @@ export default function NoDataDisplay({
         <p className="text-lg font-semibold text-muted-foreground">{title}</p>
         {subtitle && <p className="text-sm text-gray-400">{subtitle}</p>}
       </div>
+      {redirectButton && <div>{redirectButton}</div>}
     </div>
   );
 }

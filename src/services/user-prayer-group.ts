@@ -467,3 +467,63 @@ export async function getPrayerGroupsPendingForUser(userId: string): Promise<{
     };
   }
 }
+
+export async function isUserInGroup(
+  groupId: string,
+  userId: string
+): Promise<boolean> {
+  try {
+    const membership = await db.userPrayerGroup.findFirst({
+      where: {
+        prayerGroupId: groupId,
+        userId: userId,
+      },
+      select: { id: true },
+    });
+
+    return membership !== null;
+  } catch (error) {
+    console.error(
+      `Error checking if user ${userId} is in group ${groupId}:`,
+      error
+    );
+    return false;
+  }
+}
+
+export async function getUserGroupStatus(
+  groupId: string,
+  userId: string
+): Promise<"accepted" | "pending" | "none"> {
+  try {
+    const membership = await db.userPrayerGroup.findFirst({
+      where: {
+        prayerGroupId: groupId,
+        userId: userId,
+      },
+      select: {
+        groupStatus: true,
+      },
+    });
+
+    if (!membership) {
+      return "none";
+    }
+
+    if (membership.groupStatus === GroupStatus.ACCEPTED) {
+      return "accepted";
+    }
+
+    if (membership.groupStatus === GroupStatus.PENDING) {
+      return "pending";
+    }
+
+    return "none";
+  } catch (error) {
+    console.error(
+      `Error checking group status for user ${userId} in group ${groupId}:`,
+      error
+    );
+    return "none";
+  }
+}
