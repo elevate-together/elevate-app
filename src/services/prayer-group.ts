@@ -9,7 +9,7 @@ import type { User } from "@prisma/client";
 export async function getPrayerGroupById(id: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroupWithOwner;
+  prayerGroup?: PrayerGroupWithOwner; // Use the `User` type here as well
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
@@ -62,7 +62,7 @@ export async function createPrayerGroup(groupData: {
         groupType: groupType,
       },
       include: {
-        owner: true,
+        owner: true, // Include the owner information in the result
       },
     });
 
@@ -96,7 +96,7 @@ export async function updatePrayerGroup(
 ): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User };
+  prayerGroup?: PrayerGroup & { owner: User }; // Include owner of type `User`
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
@@ -114,7 +114,7 @@ export async function updatePrayerGroup(
       where: { id },
       data: groupData,
       include: {
-        owner: true,
+        owner: true, // Include owner details (all `User` fields)
       },
     });
 
