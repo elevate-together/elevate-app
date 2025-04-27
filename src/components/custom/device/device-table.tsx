@@ -42,7 +42,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import DeviceForm from "./device-form";
 import NoDataDisplay from "../templates/no-data-display";
-import { Separator } from "@/components/ui/separator";
 
 type DeviceTableProps = {
   devices: Device[];
