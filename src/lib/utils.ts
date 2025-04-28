@@ -58,7 +58,7 @@ export const menu_items = [
     auth: true,
   },
   {
-    title: "Find a Group",
+    title: "Your Groups",
     url: "/groups",
     icon: Users,
     auth: true,

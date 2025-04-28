@@ -39,7 +39,7 @@ export default function PrayerGroupCreate({
   const dialogTitle = "Create New Prayer Group";
   const dialogDescription = "Create New Prayer Group";
   const buttonLabel = "Create New Group";
-  const buttonLabelShort = "New Group";
+  const buttonLabelShort = "Create Group";
 
   if (hideOnMobile && isMobile) return null;
 

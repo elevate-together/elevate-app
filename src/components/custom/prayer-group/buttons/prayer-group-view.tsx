@@ -10,13 +10,12 @@ export default function PrayerGroupView({ id }: { id: string }) {
   return (
     <Button
       variant="ghost"
-      className="pl-3 justify-start"
+      size='icon'
       onClick={() => {
         router.push(`/group/${id}`);
       }}
     >
       <House />
-      Group Home
     </Button>
   );
 }
