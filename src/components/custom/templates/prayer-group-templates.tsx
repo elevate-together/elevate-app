@@ -14,6 +14,7 @@ import {
 } from "@/lib/utils";
 import PrayerGroupPendingTable from "../prayer-group/prayer-group-pending-table";
 import PrayerGroupOwnerSwitch from "../prayer-group/prayer-group-switch-user";
+import PrayerGroupJoinLink from "../prayer-group/prayer-group-join-link";
 
 type Props = {
   prayerGroup: PrayerGroupWithOwner;
@@ -53,6 +54,7 @@ export default function PrayerGroupTemplate({
               members={members}
             />
           )}
+          <PrayerGroupJoinLink prayerGroup={prayerGroup}/>
         </div>
       </div>
 
