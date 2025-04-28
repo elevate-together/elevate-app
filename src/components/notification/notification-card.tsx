@@ -23,7 +23,7 @@ export function NotificationCard({
         )}
       </div>
       <div className="flex-1">
-        <div className="text-md font-bold text-primary">
+        <div className="text-md font-bold text-primary leading-tight">
           {notification.title}
         </div>
         <div className="text-sm text-primary">{notification.text}</div>
