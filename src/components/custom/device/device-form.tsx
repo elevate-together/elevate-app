@@ -18,25 +18,23 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 
-// Validation Schema
 const formSchema = z.object({
   title: z.string().min(1, { message: "Title cannot be left blank" }),
 });
 
-type UserFormProps = {
+type DeviceFormProps = {
   device: Device;
-  onCancel?: () => void; // Optional callback for the cancel action
-  onSubmit?: () => void; // Optional callback for the submit action
+  onCancel?: () => void;
+  onSubmit?: () => void;
 };
 
 export default function DeviceForm({
   onSubmit,
   device,
   onCancel,
-}: UserFormProps) {
+}: DeviceFormProps) {
   const router = useRouter();
 
-  // Initialize form with default values if prayer exists
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -44,13 +42,11 @@ export default function DeviceForm({
     },
   });
 
-  // Handle the form submission (for creating or updating)
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     const { title } = values;
     let result;
 
     if (device?.id) {
-      // Update the prayer request
       result = await updateDeviceTitle(device.id, title);
     }
     if (result?.success) {
@@ -65,7 +61,6 @@ export default function DeviceForm({
     form.reset();
   };
 
-  // Handle the cancel action, reset the form
   const handleCancel = () => {
     form.reset({
       title: device?.title || "",

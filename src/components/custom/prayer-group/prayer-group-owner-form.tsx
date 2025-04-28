@@ -25,7 +25,7 @@ import { updatePrayerGroupOwner } from "@/services/prayer-group";
 import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { MinimalUser } from "@/lib/utils";
-import UserAvatar from "../user/user-avatar";
+import UserAvatar from "@/components/custom/user/user-avatar";
 import { PrayerGroup } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 

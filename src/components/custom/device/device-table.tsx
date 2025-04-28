@@ -40,8 +40,8 @@ import {
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-import DeviceForm from "./device-form";
-import NoDataDisplay from "../templates/no-data-display";
+import DeviceForm from "@/components/custom/device/device-form";
+import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
 
 type DeviceTableProps = {
   devices: Device[];

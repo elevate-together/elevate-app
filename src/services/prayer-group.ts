@@ -12,7 +12,7 @@ import type { User } from "@prisma/client";
 export async function getPrayerGroupById(id: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroupWithOwner; // Use the `User` type here as well
+  prayerGroup?: PrayerGroupWithOwner;
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
@@ -80,7 +80,7 @@ export async function getPrayerGroupWithCountById(id: string): Promise<{
   }
 }
 
-// Create prayer group
+// CREATE prayer group
 export async function createPrayerGroup(groupData: {
   name: string;
   ownerId: string;
@@ -93,7 +93,6 @@ export async function createPrayerGroup(groupData: {
 }> {
   try {
     const { name, ownerId, groupType, description } = groupData;
-    // Create the new prayer group
     const newPrayerGroup = await db.prayerGroup.create({
       data: {
         name: name,
@@ -102,11 +101,10 @@ export async function createPrayerGroup(groupData: {
         groupType: groupType,
       },
       include: {
-        owner: true, // Include the owner information in the result
+        owner: true,
       },
     });
 
-    // Add the owner as a member of the prayer group
     await db.userPrayerGroup.create({
       data: {
         userId: groupData.ownerId,
@@ -136,7 +134,7 @@ export async function updatePrayerGroup(
 ): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User }; // Include owner of type `User`
+  prayerGroup?: PrayerGroup & { owner: User };
 }> {
   try {
     const prayerGroup = await db.prayerGroup.findUnique({
@@ -154,7 +152,7 @@ export async function updatePrayerGroup(
       where: { id },
       data: groupData,
       include: {
-        owner: true, // Include owner details (all `User` fields)
+        owner: true,
       },
     });
 
@@ -205,6 +203,7 @@ export async function deletePrayerGroup(
   }
 }
 
+// UPDATE a PrayerGroup owner
 export async function updatePrayerGroupOwner(
   prayerGroupId: string,
   newOwnerId: string

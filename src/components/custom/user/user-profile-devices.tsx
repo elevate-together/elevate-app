@@ -1,9 +1,9 @@
 "use client";
 
 import { Device, User } from "@prisma/client";
-import PushNotificationManager from "../functions/push-notification-manager";
+import PushNotificationManager from "@/components/custom/helpers/push-notification-manager";
 import { Separator } from "@/components/ui/separator";
-import DeviceTable from "../device/device-table";
+import DeviceTable from "@/components/custom/device/device-table";
 import { useState } from "react";
 
 type UserProfileDevicesProps = {

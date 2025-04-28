@@ -8,12 +8,15 @@ import {
   PrayerVisibility,
   ShareType,
 } from "@prisma/client";
-import { sendNotificationAllDevices, sendNotificationToGroups } from "./device";
-import { getPrayerGroupsForUser } from "./user-prayer-group";
+import {
+  sendNotificationAllDevices,
+  sendNotificationToGroups,
+} from "@/services/device";
+import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import {
   createPrayerRequestShare,
   deletePrayerRequestShare,
-} from "./prayer-request-share";
+} from "@/services/prayer-request-share";
 import { PrayerRequestWithUser, ResponseMessage } from "@/lib/utils";
 
 // GET Prayer Request by ID
@@ -78,22 +81,18 @@ export async function createPrayerRequest(requestData: {
       });
     };
 
-    // Share the prayer request with everyone
     if (hasPublicType) {
       newPrayerRequest = await createPrayerRequestEntry(
         PrayerVisibility.PUBLIC
       );
 
-      // send a notification to all users in groups
       if (notify) {
         const data = await getPrayerGroupsForUser(userId);
         if (data.prayerGroups) {
           await sendNotificationToGroups(data.prayerGroups, userId);
         }
       }
-    }
-    // Just share with yourself
-    else if (hasPrivateType) {
+    } else if (hasPrivateType) {
       newPrayerRequest = await createPrayerRequestEntry(
         PrayerVisibility.PRIVATE
       );
@@ -105,9 +104,7 @@ export async function createPrayerRequest(requestData: {
           "New Prayer Request"
         );
       }
-    }
-    // Share with groups, create entry in the join table for which groups
-    else if (sharedWithGroups.length > 0) {
+    } else if (sharedWithGroups.length > 0) {
       newPrayerRequest = await createPrayerRequestEntry(
         PrayerVisibility.SHARED
       );
@@ -175,7 +172,6 @@ export async function updatePrayerRequest(
       };
     }
 
-    // Prepare the data for update
     const { request, status, sharedWith } = requestData;
     const hasPublicType = sharedWith.some((item) => item.type === "public");
     const hasPrivateType = sharedWith.some((item) => item.type === "private");
@@ -195,7 +191,6 @@ export async function updatePrayerRequest(
       visibility,
     };
 
-    // If public or private there should be no entries in the shared table
     if (hasPrivateType || hasPublicType) {
       await Promise.all(
         existingShares.map(async (share) => {
@@ -206,9 +201,7 @@ export async function updatePrayerRequest(
       );
     }
 
-    // If its shared with a group, then update the groups that its shared for.
     if (sharedWithGroups.length > 0) {
-      // Only update sharedWith if there are changes
       const sharesToAdd = sharedWith.filter(
         (newShare) =>
           !existingShares.some(
@@ -239,7 +232,6 @@ export async function updatePrayerRequest(
       );
     }
 
-    // Update the prayer request with the new data
     const updatedPrayerRequest = await db.prayerRequest.update({
       where: { id },
       data: updatedData,
@@ -334,7 +326,7 @@ export async function getInProgressPrayerRequestsForUser(
 ): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequestWithUser[]; // PrayerRequest with associated User
+  prayerRequests?: PrayerRequestWithUser[];
 }> {
   try {
     const prayerRequests = await db.prayerRequest.findMany({
@@ -343,7 +335,7 @@ export async function getInProgressPrayerRequestsForUser(
         status: PrayerRequestStatus.IN_PROGRESS,
       },
       include: {
-        user: true, // Include user data with each prayer request
+        user: true,
       },
       orderBy: {
         updatedAt: "desc",

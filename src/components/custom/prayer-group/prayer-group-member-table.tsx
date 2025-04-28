@@ -19,7 +19,7 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import UserAvatar from "../user/user-avatar";
+import UserAvatar from "@/components/custom/user/user-avatar";
 import { useRouter } from "next/navigation";
 import {
   DropdownMenu,
@@ -129,9 +129,7 @@ export default function PrayerGroupMemberTable({
     {
       accessorKey: "createdAt",
       enableHiding: false,
-      header: () => (
-        <div className="lg:block hidden">Joined</div> // Hides the column header on mobile
-      ),
+      header: () => <div className="lg:block hidden">Joined</div>,
       cell: ({ row }) => {
         return (
           <div className="capitalize lg:block hidden">

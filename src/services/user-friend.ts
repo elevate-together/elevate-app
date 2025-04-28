@@ -1,7 +1,6 @@
 import { FriendStatus } from "@prisma/client";
 import db from "@/lib/db";
 
-// Send a friend request
 export async function sendFriendRequest(
   senderId: string,
   receiverId: string
@@ -11,7 +10,6 @@ export async function sendFriendRequest(
   friendRequestId?: string;
 }> {
   try {
-    // Check if a friend request already exists between these users
     const existingRequest = await db.userFriend.findFirst({
       where: {
         OR: [
@@ -53,7 +51,6 @@ export async function sendFriendRequest(
   }
 }
 
-// Accept a friend request
 export async function acceptFriendRequest(
   senderId: string,
   receiverId: string
@@ -102,7 +99,6 @@ export async function acceptFriendRequest(
   }
 }
 
-// Reject a friend request
 export async function rejectFriendRequest(
   senderId: string,
   receiverId: string
@@ -148,7 +144,6 @@ export async function rejectFriendRequest(
   }
 }
 
-// Get the friendship status between two users
 export async function getFriendStatus(
   userId1: string,
   userId2: string
@@ -191,7 +186,6 @@ export async function getFriendStatus(
   }
 }
 
-// Get all friends of a user
 export async function getUserFriends(userId: string): Promise<{
   success: boolean;
   message: string;
@@ -224,7 +218,6 @@ export async function getUserFriends(userId: string): Promise<{
   }
 }
 
-// Remove a friend (break the friendship)
 export async function removeFriend(
   userId1: string,
   userId2: string

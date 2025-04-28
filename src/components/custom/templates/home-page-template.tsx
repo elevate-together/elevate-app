@@ -2,11 +2,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
-import { PullToRefreshWrapper } from "@/components/custom/functions/pull-to-refresh-wrapper";
+import { PullToRefreshWrapper } from "@/components/custom/templates/helper/pull-to-refresh-wrapper";
 import { PrayerRequestWithUser } from "@/lib/utils";
 import { User } from "@prisma/client";
-import PageHeightDiv from "./page-height-div";
-import NoDataDisplay from "./no-data-display";
+import PageHeightDiv from "@/components/custom/templates/helper/page-height-div";
+import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
 import { useState } from "react";
 import { HelpingHand } from "lucide-react";
 

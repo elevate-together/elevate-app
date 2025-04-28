@@ -1,5 +1,5 @@
-import SignIn from "@/components/custom/user/user-sign-in";
-import SignOut from "@/components/custom/user/user-sign-out";
+import SignIn from "@/components/custom/user/buttons/user-sign-in";
+import SignOut from "@/components/custom/user/buttons/user-sign-out";
 
 import {
   DropdownMenu,
@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { menu_items } from "@/lib/utils";
-import UserAvatar from "./user-avatar";
+import UserAvatar from "@/components/custom/user/user-avatar";
 
 type UserInfoProps = {
   id: string | undefined;

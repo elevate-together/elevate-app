@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import { NotificationPageTemplate } from "@/components/custom/templates/notification-template";
-import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
+import { NotificationPageTemplate } from "@/components/custom/templates/notification-page-template";
+import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 import {
   getAllNotificationsForUser,
   markAllNotificationsAsRead,

@@ -1,19 +1,19 @@
 import { auth } from "@/auth";
 import { getPrayerGroupWithCountById } from "@/services/prayer-group";
-import PrayerGroupJoin from "@/components/custom/prayer-group/prayer-group-join";
-import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
-import LogInPrompt from "@/components/custom/functions/log-in-prompt";
+import PrayerGroupJoin from "@/components/custom/prayer-group/join/prayer-group-join";
+import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
+import LogInPrompt from "@/components/custom/helpers/log-in-prompt";
 import { getUserGroupStatus } from "@/services/user-prayer-group";
-import PrayerGroupAccepted from "@/components/custom/prayer-group/prayer-group-accepted";
-import PrayerGroupNotAccepted from "@/components/custom/prayer-group/prayer-group-not-accepted";
+import PrayerGroupAccepted from "@/components/custom/prayer-group/status/prayer-group-accepted";
+import PrayerGroupNotAccepted from "@/components/custom/prayer-group/status/prayer-group-not-accepted";
 
 export default async function JoinGroupPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id: groupId } = await params; // Make sure this is resolved
-  const session = await auth(); // Get session
+  const { id: groupId } = await params; 
+  const session = await auth(); 
   if (!session) {
     return <LogInPrompt callback={`group/join/${groupId}`} />;
   }

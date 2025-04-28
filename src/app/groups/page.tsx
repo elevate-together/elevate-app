@@ -4,8 +4,8 @@ import {
   getPrayerGroupsForUser,
   getPrayerGroupsPendingForUser,
 } from "@/services/user-prayer-group";
-import PrayerGroupAllTemplate from "@/components/custom/templates/prayer-group-all-template";
-import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
+import PrayerGroupAllPageTemplate from "@/components/custom/templates/prayer-group-all-page-template";
+import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 
 export default async function AllGroupsPage() {
   const session = await auth();
@@ -23,16 +23,14 @@ export default async function AllGroupsPage() {
   const [yourGroups, pendingGroups] = await Promise.all([
     getPrayerGroupsForUser(user.id),
     getPrayerGroupsPendingForUser(user.id),
-    // getPrayerGroupsNotIn(user.id),
   ]);
 
   return (
     <PagePaddingWrapper>
-      <PrayerGroupAllTemplate
+      <PrayerGroupAllPageTemplate
         user={user}
         yourGroups={yourGroups?.prayerGroups ?? []}
         pendingGroups={pendingGroups?.prayerGroups ?? []}
-        // remainingGroups={remainingGroups?.prayerGroups ?? []}
       />
     </PagePaddingWrapper>
   );

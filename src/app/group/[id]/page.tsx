@@ -10,10 +10,10 @@ import {
   getPrayerRequestsForGroup,
   getPublicPrayerRequestsForGroup,
 } from "@/services/prayer-request-share";
-import PagePaddingWrapper from "@/components/custom/templates/page-padding-wrapper";
-import PrayerGroupTemplate from "@/components/custom/templates/prayer-group-templates";
-import PrayerGroupNotAccepted from "@/components/custom/prayer-group/prayer-group-not-accepted";
-import PrayerGroupNotIn from "@/components/custom/prayer-group/prayer-group-not-in";
+import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
+import PrayerGroupPageTemplate from "@/components/custom/templates/prayer-group-page-templates";
+import PrayerGroupNotAccepted from "@/components/custom/prayer-group/status/prayer-group-not-accepted";
+import PrayerGroupNotIn from "@/components/custom/prayer-group/status/prayer-group-not-in";
 
 export default async function GroupPage({
   params,
@@ -63,7 +63,7 @@ export default async function GroupPage({
 
   return (
     <PagePaddingWrapper>
-      <PrayerGroupTemplate
+      <PrayerGroupPageTemplate
         prayerGroup={prayerGroup}
         currentUser={user}
         members={users ?? []}

@@ -47,7 +47,7 @@ export async function getUserById(id: string): Promise<{
     return {
       success: true,
       message: "User found",
-      user, // Single User type
+      user,
     };
   } catch (error) {
     console.error(`Error fetching user with ID ${id}:`, error);
@@ -164,7 +164,6 @@ export async function getUserDevices(userId: string): Promise<{
   devices?: Device[];
 }> {
   try {
-    // Fetch all devices associated with the user
     const devices = await db.device.findMany({
       where: { userId },
     });

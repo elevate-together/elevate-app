@@ -20,7 +20,7 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ArrowLeftRight } from "lucide-react";
-import PrayerGroupOwnerForm from "./prayer-group-owner-form";
+import PrayerGroupOwnerForm from "@/components/custom/prayer-group/prayer-group-owner-form";
 import { PrayerGroup } from "@prisma/client";
 import { MinimalUser } from "@/lib/utils";
 

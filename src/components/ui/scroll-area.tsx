@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 type ScrollAreaProps = React.ComponentPropsWithoutRef<
   typeof ScrollAreaPrimitive.Root
 > & {
-  isHidden?: boolean; // Custom prop for scrollbar style
+  isHidden?: boolean;
 };
 
 const ScrollArea = React.forwardRef<
@@ -32,7 +32,7 @@ ScrollArea.displayName = ScrollAreaPrimitive.Root.displayName;
 type ScrollBarProps = React.ComponentPropsWithoutRef<
   typeof ScrollAreaPrimitive.ScrollAreaScrollbar
 > & {
-  shouldHide: boolean; // Custom prop for scrollbar style
+  shouldHide: boolean;
 };
 const ScrollBar = React.forwardRef<
   React.ElementRef<typeof ScrollAreaPrimitive.ScrollAreaScrollbar>,

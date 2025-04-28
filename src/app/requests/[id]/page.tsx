@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
-import PrayerRequestGuestTemplate from "@/components/custom/templates/prayer-request-guest-template";
-import PrayerRequestUserTemplate from "@/components/custom/templates/prayer-request-user-template";
+import PrayerRequestGuestPageTemplate from "@/components/custom/templates/prayer-request-guest-page-template";
+import PrayerRequestUserPageTemplate from "@/components/custom/templates/prayer-request-user-page-template";
 import {
   getInProgressPrayerRequestsForUser,
   getPrayerRequestsByUserId,
@@ -29,7 +29,7 @@ export default async function UserRequests({
     }
 
     return (
-      <PrayerRequestUserTemplate
+      <PrayerRequestUserPageTemplate
         currUser={currUser}
         prayerRequests={prayerRequests ?? []}
       />
@@ -46,7 +46,7 @@ export default async function UserRequests({
   }
 
   return (
-    <PrayerRequestGuestTemplate
+    <PrayerRequestGuestPageTemplate
       user={pageUser}
       prayerRequests={prayerRequests ?? []}
     />

@@ -4,7 +4,7 @@ import { Separator } from "@/components/ui/separator";
 import Image from "next/image";
 import { useIsMobile } from "@/components/hooks/use-mobile";
 import { UserRoundPlus } from "lucide-react";
-import SignIn from "../user/user-sign-in";
+import SignIn from "@/components/custom/user/buttons/user-sign-in";
 
 export default function WelcomePage() {
   const isMobile = useIsMobile();
@@ -26,18 +26,6 @@ export default function WelcomePage() {
             that help us support and uplift each other, fostering growth and
             connection.
           </p>
-          {/* <Collapsible>
-            <CollapsibleTrigger asChild className="max-w-[200px] m-auto">
-              <Button variant="ghost">
-                <ChevronDown />
-                Learn More
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              Yes. Free to use for personal and commercial projects. No
-              attribution required.
-            </CollapsibleContent>
-          </Collapsible> */}
         </div>
       </div>
 

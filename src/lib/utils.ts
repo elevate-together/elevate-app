@@ -67,9 +67,7 @@ export const menu_items = [
 
 export function urlBase64ToUint8Array(base64String: string): Uint8Array {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+") // Replace '-' with '+'
-    .replace(/_/g, "/"); // Replace '_' with '/'
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
 
   const rawData = window.atob(base64);
   const outputArray = new Uint8Array(rawData.length);
@@ -82,6 +80,6 @@ export function urlBase64ToUint8Array(base64String: string): Uint8Array {
 
 export function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
   if (!buffer) return "";
-  const uint8Array = new Uint8Array(buffer); // Convert ArrayBuffer to Uint8Array
-  return btoa(String.fromCharCode(...uint8Array)); // Convert Uint8Array to Base64
+  const uint8Array = new Uint8Array(buffer);
+  return btoa(String.fromCharCode(...uint8Array));
 }

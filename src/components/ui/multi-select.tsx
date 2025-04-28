@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-// Variants for the multi-select component to handle different styles.
 const multiSelectVariants = cva("px-2 py-1 mr-1", {
   variants: {
     variant: {
@@ -26,7 +25,6 @@ const multiSelectVariants = cva("px-2 py-1 mr-1", {
   },
 });
 
-// Props for MultiSelect component
 export interface MultiSelectProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof multiSelectVariants> {
@@ -37,8 +35,8 @@ export interface MultiSelectProps
     icon?: React.ComponentType<{ className?: string }>;
   }[];
   onValueChange: (value: string[]) => void;
-  selectedValues: string[]; // Accept selectedValues from parent
-  setSelectedValues: React.Dispatch<React.SetStateAction<string[]>>; // Accept setSelectedValues function from parent
+  selectedValues: string[];
+  setSelectedValues: React.Dispatch<React.SetStateAction<string[]>>;
   placeholder?: string;
   maxCount?: number;
   specialSelection?: boolean;
@@ -81,10 +79,8 @@ export const MultiSelect = React.forwardRef<
 
       if (specialSelection) {
         if (isExclusive) {
-          // Exclusive options replace everything
           newSelectedValues = [option];
         } else {
-          // Remove exclusive selections if non-exclusive option is picked
           const cleaned = selectedValues.filter((v) => v !== "1" && v !== "2");
 
           newSelectedValues = isSelected

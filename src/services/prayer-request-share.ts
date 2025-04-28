@@ -80,12 +80,10 @@ export async function getPrayerRequestsSharedWithUser(
     const groupIds = await getAcceptedGroupIdsForUser(userId);
     const userIdsInGroups = await getUserIdsInGroups(groupIds);
 
-    // Exclude user if needed
     const filteredUserIds = includeUserRequests
       ? userIdsInGroups
       : userIdsInGroups.filter((id) => id !== userId);
 
-    // Public prayer requests from group users
     const publicPrayerRequestsFromGroupUsers = await db.prayerRequest.findMany({
       where: {
         userId: { in: filteredUserIds },
@@ -97,7 +95,6 @@ export async function getPrayerRequestsSharedWithUser(
       },
     });
 
-    // Shared with user or user's groups
     const sharedPrayerRequestIds = await db.prayerRequestShare.findMany({
       where: {
         OR: [
@@ -155,6 +152,7 @@ export async function getPrayerRequestsSharedWithUser(
   }
 }
 
+// GET public prayer requests for a group
 export async function getPublicPrayerRequestsForGroup(
   groupId: string
 ): Promise<{
@@ -288,6 +286,7 @@ export async function getSharedGroupIds(userId: string): Promise<{
   }
 }
 
+// GET prayer requests for a group
 async function getAcceptedGroupIdsForUser(userId: string): Promise<string[]> {
   const userGroups = await db.userPrayerGroup.findMany({
     where: {

@@ -1,5 +1,5 @@
-import AppSidebar from "@/components/custom/app-sidebar";
-import Navbar from "@/components/custom/navbar";
+import AppSidebar from "@/components/custom/helpers/bars/app-sidebar";
+import Navbar from "@/components/custom/helpers/bars/navbar/navbar";
 import ServiceWorker from "@/components/service-worker";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import MobileFooter from "@/components/custom/mobile-footer";
+import MobileFooter from "@/components/custom/helpers/bars/footer/mobile-footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

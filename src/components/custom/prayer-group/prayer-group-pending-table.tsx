@@ -21,9 +21,9 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import UserAvatar from "../user/user-avatar";
-import PrayerGroupAccept from "./prayer-group-accept";
-import PrayerGroupDecline from "./prayer-group-decline";
+import UserAvatar from "@/components/custom/user/user-avatar";
+import PrayerGroupAccept from "@/components/custom/prayer-group/buttons/prayer-group-accept";
+import PrayerGroupDecline from "@/components/custom/prayer-group/buttons/prayer-group-decline";
 
 type PrayerGroupPendingTableProps = {
   data: User[];
@@ -67,9 +67,7 @@ export default function PrayerGroupPendingTable({
     {
       accessorKey: "createdAt",
       enableHiding: false,
-      header: () => (
-        <div className="lg:block hidden">Request Date</div> // Hides the column header on mobile
-      ),
+      header: () => <div className="lg:block hidden">Request Date</div>,
       cell: ({ row }) => {
         return (
           <div className="capitalize lg:block hidden">
@@ -93,7 +91,7 @@ export default function PrayerGroupPendingTable({
             <PrayerGroupAccept
               userId={row.original.id}
               groupId={prayerGroup.id}
-              groupName= {prayerGroup.name}
+              groupName={prayerGroup.name}
             />
           </div>
         );

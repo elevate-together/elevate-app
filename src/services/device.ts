@@ -3,13 +3,12 @@
 import db from "@/lib/db";
 import { format } from "date-fns";
 import webpush from "web-push";
-import { getDeviceInfo } from "./get-device-info";
-import { getUsersInPrayerGroup } from "./user-prayer-group";
-import { getUserById } from "./users";
-import { addNotification } from "./notification";
+import { getDeviceInfo } from "@/services/get-device-info";
+import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
+import { getUserById } from "@/services/users";
+import { addNotification } from "@/services/notification";
 import { NotificationType } from "@prisma/client";
 
-// Validate environment variables
 if (
   !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
   !process.env.VAPID_PRIVATE_KEY

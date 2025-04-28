@@ -29,9 +29,9 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import UserAvatar from "../user/user-avatar";
-import PrayerRequestDelete from "./prayer-request-delete";
-import PrayerRequestEdit from "./prayer-request-edit";
+import UserAvatar from "@/components/custom/user/user-avatar";
+import PrayerRequestDelete from "@/components/custom/prayer-request/prayer-request-delete";
+import PrayerRequestEdit from "@/components/custom/prayer-request/handlers/prayer-request-edit";
 import {
   DropdownMenuItem,
   DropdownMenuLabel,

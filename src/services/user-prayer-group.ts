@@ -12,7 +12,7 @@ import {
   ShareType,
   User,
 } from "@prisma/client";
-import { sendNotificationAllDevices } from "./device";
+import { sendNotificationAllDevices } from "@/services/device";
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(
@@ -20,7 +20,6 @@ export async function addUserToPrayerGroup(
   groupId: string
 ): Promise<ResponseMessage> {
   try {
-    // Check if the user is already part of the prayer group
     const existingMembership = await db.userPrayerGroup.findUnique({
       where: {
         userId_prayerGroupId: {
@@ -78,7 +77,6 @@ export async function removeUserFromPrayerGroup(
   ownerId: string
 ): Promise<ResponseMessage> {
   try {
-    // Prevent the owner from being removed from the prayer group
     if (userId === ownerId) {
       return {
         success: false,
@@ -87,7 +85,6 @@ export async function removeUserFromPrayerGroup(
       };
     }
 
-    // Check if the user is part of the prayer group
     const userPrayerGroup = await db.userPrayerGroup.findUnique({
       where: {
         userId_prayerGroupId: {
@@ -166,7 +163,6 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
   users?: User[];
 }> {
   try {
-    // Fetch all the users associated with the given prayer group
     const usersInGroup = await db.userPrayerGroup.findMany({
       where: {
         prayerGroupId: groupId,
@@ -184,7 +180,6 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
       };
     }
 
-    // Map to return only the user data, as `userPrayerGroup` contains references to both
     const users = usersInGroup.map((userPrayerGroup) => userPrayerGroup.user);
 
     return {
@@ -217,7 +212,6 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
 
     const joinedGroupIds = userPrayerGroups.map((upg) => upg.prayerGroupId);
 
-    // Get all prayer groups NOT in that list
     const prayerGroups = await db.prayerGroup.findMany({
       where: {
         id: { notIn: joinedGroupIds },
