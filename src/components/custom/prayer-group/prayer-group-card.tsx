@@ -15,7 +15,7 @@ export default function PrayerGroupRow({
   pending = false,
 }: PrayerGroupCardProps) {
   return (
-    <div className="flex flex-row items-center justify-between py-4 border-b">
+    <div className="flex flex-row items-center justify-between gap-2 py-4 border-b">
       <div className="flex flex-col items-start gap-1">
         <div className="flex items-center justify-between gap-2">
           <h3 className="text-lg font-bold">{prayerGroup.name}</h3>
@@ -29,7 +29,7 @@ export default function PrayerGroupRow({
         )}
       </div>
 
-      <div>
+      <div className="min-w-[72px]">
         <PrayerGroupView id={prayerGroup.id} />
         <UserLeaveGroup
           group={prayerGroup}
