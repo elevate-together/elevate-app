@@ -30,6 +30,7 @@ import { BellOff, BellRing, Loader } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import { getSharedGroupIds } from "@/services/prayer-request-share";
+import SessionNotFound from "@/components/not-found/session";
 
 const formSchema = z.object({
   request: z.string().min(1, { message: "Request cannot be left blank" }),
@@ -81,7 +82,7 @@ export default function PrayerRequestForm({
       const res = await fetch("/api/auth/session");
       const session = await res.json();
 
-      if (!session?.user?.id) return;
+      if (!session?.user?.id) return <SessionNotFound />;
 
       const constants = [
         { value: "1", label: "Everyone", type: "public" },

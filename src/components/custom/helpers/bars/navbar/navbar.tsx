@@ -2,13 +2,12 @@ import { auth } from "@/auth";
 import { Separator } from "@/components/ui/separator";
 import { getNotificationCountForUser } from "@/services/notification";
 import ClientNavbarUser from "@/components/custom/helpers/bars/navbar/client-navbar-user";
+import SessionNotFound from "@/components/not-found/session";
 
 export default async function Navbar() {
   const session = await auth();
 
-  if (!session?.user) return null;
-
-  if (!session?.user?.id) return null;
+  if (!session?.user?.id) return <SessionNotFound />;
 
   const data = await getNotificationCountForUser(session.user.id);
 

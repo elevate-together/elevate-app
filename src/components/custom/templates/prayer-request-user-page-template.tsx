@@ -6,7 +6,9 @@ import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request
 import { PrayerRequest, PrayerRequestStatus, User } from "@prisma/client";
 import { Hand, Package, Star } from "lucide-react";
 import { PullToRefreshWrapper } from "@/components/custom/templates/helper/pull-to-refresh-wrapper";
-import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
+import NoDataDisplay, {
+  IconName,
+} from "@/components/custom/templates/helper/no-data-display";
 import PageHeightDiv from "@/components/custom/templates/helper/page-height-div";
 
 type PrayerRequestUserPageTemplateProps = {
@@ -53,11 +55,9 @@ export default function PrayerRequestUserPageTemplate({
     </PullToRefreshWrapper>
   );
 
-  const renderNoData = (
-    title: string,
-    subtitle: string,
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-  ) => <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />;
+  const renderNoData = (title: string, subtitle: string, icon: IconName) => (
+    <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />
+  );
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -86,7 +86,7 @@ export default function PrayerRequestUserPageTemplate({
             : renderNoData(
                 "No active prayer requests!",
                 "You have no prayer requests that are actively being prayed for. Consider adding a request so others can join in prayer with you!",
-                Hand
+                "Hand"
               )}
         </TabsContent>
         <TabsContent
@@ -102,7 +102,7 @@ export default function PrayerRequestUserPageTemplate({
             : renderNoData(
                 "No answered prayer requests yet!",
                 "You have no answered requests at the moment. Keep praying, the Lord is faithful. Remember Matthew 7:11!",
-                Star
+                "Star"
               )}
         </TabsContent>
         <TabsContent
@@ -118,7 +118,7 @@ export default function PrayerRequestUserPageTemplate({
             : renderNoData(
                 "No archived prayer requests yet!",
                 "You don't have any archived prayer requests at the moment. Archived requests are those that are no longer active or in progress.",
-                Package
+                "Package"
               )}
         </TabsContent>
       </PageHeightDiv>

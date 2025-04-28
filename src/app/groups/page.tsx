@@ -6,6 +6,7 @@ import {
 } from "@/services/user-prayer-group";
 import PrayerGroupAllPageTemplate from "@/components/custom/templates/prayer-group-all-page-template";
 import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
+import UserNotFound from "@/components/not-found/user";
 
 export default async function AllGroupsPage() {
   const session = await auth();
@@ -17,7 +18,7 @@ export default async function AllGroupsPage() {
 
   const { user } = await getUserById(userId);
   if (!user) {
-    return <div className="p-2">Unable to Find User</div>;
+    return <UserNotFound />;
   }
 
   const [yourGroups, pendingGroups] = await Promise.all([

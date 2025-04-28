@@ -6,6 +6,9 @@ import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share
 import { getUserById } from "@/services/users";
 import WelcomePage from "@/components/custom/templates/welcome-page";
 import { HomePagetemplate } from "@/components/custom/templates/home-page-template";
+import UserNotFound from "@/components/not-found/user";
+import SessionNotFound from "@/components/not-found/session";
+import PrayerRequestNotFound from "@/components/not-found/prayer-request";
 
 export default async function Home() {
   const session = await auth();
@@ -21,34 +24,25 @@ export default async function Home() {
   const id = session?.user.id;
 
   if (!id) {
-    return <div>Error loading user data</div>;
+    return <SessionNotFound />;
   }
 
   const { user } = await getUserById(id);
 
   if (!user) {
-    return <div>Error loading user data</div>;
+    return <UserNotFound />;
   }
 
-  const {
-    success: FriendSuccess,
-    message: friendMessage,
-    prayerRequests: FriendPrayerRequests,
-  } = await getPrayerRequestsSharedWithUser(id, false);
+  const { success: FriendSuccess, prayerRequests: FriendPrayerRequests } =
+    await getPrayerRequestsSharedWithUser(id, false);
 
   const {
     success: InProgressSuccess,
-    message: inProgressMessage,
     prayerRequests: InProgressPrayerRequests,
   } = await getInProgressPrayerRequestsForUser(id);
 
   if (!FriendSuccess || !InProgressSuccess) {
-    return (
-      <div>
-        Error loading prayer requests. Please try again later: {friendMessage}{" "}
-        {inProgressMessage}
-      </div>
-    );
+    return <PrayerRequestNotFound />;
   }
 
   const combinedPrayerRequests = [

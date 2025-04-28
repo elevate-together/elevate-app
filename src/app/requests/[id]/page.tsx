@@ -1,6 +1,8 @@
 import { auth } from "@/auth";
 import PrayerRequestGuestPageTemplate from "@/components/custom/templates/prayer-request-guest-page-template";
 import PrayerRequestUserPageTemplate from "@/components/custom/templates/prayer-request-user-page-template";
+import SessionNotFound from "@/components/not-found/session";
+import UserNotFound from "@/components/not-found/user";
 import {
   getInProgressPrayerRequestsForUser,
   getPrayerRequestsByUserId,
@@ -14,7 +16,7 @@ export default async function UserRequests({
 }) {
   const session = await auth();
   if (!session?.user?.id) {
-    return <div className="p-2">Unable to Find User</div>;
+    return <SessionNotFound />;
   }
   const currUserId = session.user.id;
   const { id: pageUserId } = await params;
@@ -25,7 +27,7 @@ export default async function UserRequests({
     const { user: currUser } = await getUserById(currUserId);
 
     if (!currUser) {
-      return <div className="p-2">Unable to Find User</div>;
+      return <UserNotFound />;
     }
 
     return (
@@ -42,7 +44,7 @@ export default async function UserRequests({
   );
 
   if (!pageUser) {
-    return <div className="p-2">Unable to Find User</div>;
+    return <UserNotFound />;
   }
 
   return (

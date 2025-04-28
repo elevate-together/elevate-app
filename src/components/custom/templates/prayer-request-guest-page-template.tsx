@@ -2,10 +2,12 @@
 
 import PrayerRequestCard from "@/components/custom/prayer-request/prayer-request-card";
 import { PrayerRequest, User } from "@prisma/client";
-import { HelpingHand, UserIcon } from "lucide-react";
+import { UserIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PullToRefreshWrapper } from "@/components/custom/templates/helper/pull-to-refresh-wrapper";
-import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
+import NoDataDisplay, {
+  IconName,
+} from "@/components/custom/templates/helper/no-data-display";
 import { PrayerRequestWithUser } from "@/lib/utils";
 
 type PrayerRequestGuestPageTemplateProps = {
@@ -30,11 +32,9 @@ export default function PrayerRequestGuestPageTemplate({
     </PullToRefreshWrapper>
   );
 
-  const renderNoData = (
-    title: string,
-    subtitle: string,
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-  ) => <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />;
+  const renderNoData = (title: string, subtitle: string, icon: IconName) => (
+    <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />
+  );
 
   return (
     <div
@@ -55,7 +55,7 @@ export default function PrayerRequestGuestPageTemplate({
         : renderNoData(
             `${user.name} has no prayer requests yet!`,
             `${user.name} doesn't have any requests right now, but you can still lift them up in prayer. Maybe ask how you can pray for them.`,
-            HelpingHand
+            "HelpingHand"
           )}
     </div>
   );

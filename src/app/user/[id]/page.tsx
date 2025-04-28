@@ -1,6 +1,7 @@
 import { auth } from "@/auth";
 import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 import { ProfilePageTemplate } from "@/components/custom/templates/helper/profile-page-template";
+import UserNotFound from "@/components/not-found/user";
 import { getUserById, getUserDevices } from "@/services/users";
 
 export default async function ProfilePage({
@@ -20,7 +21,7 @@ export default async function ProfilePage({
   const currUser = session.user;
 
   if (!currUser || !pageUser) {
-    return <div className="p-2">Unable to Find User</div>;
+    return <UserNotFound />;
   }
 
   const isOwner = currUser.id === pageId;

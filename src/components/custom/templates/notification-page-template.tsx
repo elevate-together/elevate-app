@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import { useNotificationStore } from "@/services/stores/notification";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { PartyPopper } from "lucide-react";
 import PushNotificationManager from "@/components/custom/helpers/push-notification-manager";
 import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
 
@@ -73,7 +72,7 @@ export const NotificationPageTemplate = ({
         <NoDataDisplay
           title=" You're all caught up with notifications."
           subtitle="No new updates at the moment. Enjoy your day!"
-          icon={PartyPopper}
+          icon="PartyPopper"
         />
       )}
     </div>

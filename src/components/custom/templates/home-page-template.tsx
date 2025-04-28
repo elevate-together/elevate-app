@@ -6,9 +6,10 @@ import { PullToRefreshWrapper } from "@/components/custom/templates/helper/pull-
 import { PrayerRequestWithUser } from "@/lib/utils";
 import { User } from "@prisma/client";
 import PageHeightDiv from "@/components/custom/templates/helper/page-height-div";
-import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
+import NoDataDisplay, {
+  IconName,
+} from "@/components/custom/templates/helper/no-data-display";
 import { useState } from "react";
-import { HelpingHand } from "lucide-react";
 
 interface HomeClientTemplateProps {
   user: User;
@@ -40,11 +41,9 @@ export const HomePagetemplate = ({
     </PullToRefreshWrapper>
   );
 
-  const renderNoData = (
-    title: string,
-    subtitle: string,
-    icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
-  ) => <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />;
+  const renderNoData = (title: string, subtitle: string, icon: IconName) => (
+    <NoDataDisplay title={title} subtitle={subtitle} icon={icon} />
+  );
 
   return (
     <Tabs
@@ -78,7 +77,7 @@ export const HomePagetemplate = ({
             : renderNoData(
                 "No active prayer requests!",
                 "There are no current prayer requests. Consider reaching out to others to see how you can pray for them, and feel free to add your own requests so the community can pray for you!",
-                HelpingHand
+                "HelpingHand"
               )}
         </TabsContent>
 
@@ -95,7 +94,7 @@ export const HomePagetemplate = ({
             : renderNoData(
                 "No active prayer requests!",
                 "Your community doesn't have any current prayer requests. Consider asking how you can pray for others!",
-                HelpingHand
+                "HelpingHand"
               )}
         </TabsContent>
 
@@ -112,7 +111,7 @@ export const HomePagetemplate = ({
             : renderNoData(
                 "No active prayer requests!",
                 "You have no prayer requests that are actively being prayed for. Consider adding a request so others can join in prayer with you!",
-                HelpingHand
+                "HelpingHand"
               )}
         </TabsContent>
       </PageHeightDiv>

@@ -1,5 +1,5 @@
 "use client";
-import { Home, Users } from "lucide-react";
+import { Home } from "lucide-react";
 import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -15,7 +15,7 @@ export default function PrayerGroupAccepted({
     <NoDataDisplay
       title="Youre Already In This Group!"
       subtitle="Click below to view the group's home page."
-      icon={Users}
+      icon="Users"
       redirectButton={
         <Button
           variant="muted"

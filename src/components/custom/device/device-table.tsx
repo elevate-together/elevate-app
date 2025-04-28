@@ -32,7 +32,6 @@ import { Device } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import {
   Bell,
-  MonitorSmartphone,
   MoreVerticalIcon,
   Pencil,
   Trash,
@@ -178,7 +177,7 @@ export default function DeviceTable({
         <NoDataDisplay
           title="You have no devices registered"
           subtitle="Register your device to start receiving notifications and be notified when others are praying for you."
-          icon={MonitorSmartphone}
+          icon="MonitorSmartphone"
           className="py-8"
         />
       )}

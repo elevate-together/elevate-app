@@ -14,6 +14,9 @@ import PagePaddingWrapper from "@/components/custom/templates/helper/page-paddin
 import PrayerGroupPageTemplate from "@/components/custom/templates/prayer-group-page-templates";
 import PrayerGroupNotAccepted from "@/components/custom/prayer-group/status/prayer-group-not-accepted";
 import PrayerGroupNotIn from "@/components/custom/prayer-group/status/prayer-group-not-in";
+import UserNotFound from "@/components/not-found/user";
+import PrayerGroupNotFound from "@/components/not-found/prayer-group";
+import SessionNotFound from "@/components/not-found/session";
 
 export default async function GroupPage({
   params,
@@ -26,12 +29,17 @@ export default async function GroupPage({
   const userId = session?.user?.id;
 
   if (!userId) {
-    return <div>Error loading user data</div>;
+    return <SessionNotFound />;
   }
 
   const { user } = await getUserById(userId);
   if (!user) {
-    return <div>Unable to find user</div>;
+    return <UserNotFound />;
+  }
+
+  const { prayerGroup } = await getPrayerGroupById(groupId);
+  if (!prayerGroup) {
+    return <PrayerGroupNotFound />;
   }
 
   const groupStatus = await getUserGroupStatus(groupId, userId);
@@ -40,11 +48,6 @@ export default async function GroupPage({
     return <PrayerGroupNotIn />;
   } else if (groupStatus === "pending") {
     return <PrayerGroupNotAccepted />;
-  }
-
-  const { prayerGroup } = await getPrayerGroupById(groupId);
-  if (!prayerGroup) {
-    return <div>Prayer group not found</div>;
   }
 
   const { users } = await getUsersByPrayerGroup(groupId);
