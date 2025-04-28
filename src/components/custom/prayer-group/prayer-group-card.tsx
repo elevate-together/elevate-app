@@ -21,7 +21,6 @@ export default function PrayerGroupRow({
           <h3 className="text-lg font-bold">{prayerGroup.name}</h3>
           {pending && <Badge variant="outline">Pending Approval</Badge>}
         </div>
-
         {prayerGroup.description && (
           <p className="text-sm text-muted-foreground">
             {prayerGroup.description}
