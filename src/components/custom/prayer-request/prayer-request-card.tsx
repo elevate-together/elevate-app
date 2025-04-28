@@ -101,7 +101,7 @@ export default function PrayerRequestCard({
   };
 
   return (
-    <Card className="rounded-none mb-2 shadow border-none">
+    <Card className="rounded-none mb-1 shadow border-none">
       <CardHeader className="pb-3">
         <CardTitle>
           <div className="flex justify-between items-start">

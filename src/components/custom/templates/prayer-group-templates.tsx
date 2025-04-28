@@ -54,7 +54,7 @@ export default function PrayerGroupTemplate({
               members={members}
             />
           )}
-          <PrayerGroupJoinLink prayerGroup={prayerGroup}/>
+          <PrayerGroupJoinLink prayerGroup={prayerGroup} />
         </div>
       </div>
 
@@ -75,7 +75,7 @@ export default function PrayerGroupTemplate({
               Prayer Requests Shared With This Group:
             </div>
             {sharedRequests.length > 0 ? (
-              <div>
+              <div className="flex flex-col">
                 {sharedRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}
@@ -94,7 +94,7 @@ export default function PrayerGroupTemplate({
 
             <div className="text-base font-bold">Other Prayer Requests</div>
             {publicRequests.length > 0 ? (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col">
                 {publicRequests.map((prayer) => (
                   <PrayerRequestCard
                     key={prayer.id}

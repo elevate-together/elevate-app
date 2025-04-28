@@ -55,7 +55,7 @@ export default function PrayerGroupJoinLink({
     <Button
       aria-label="Invite friends to your prayer group"
       size="icon"
-      variant="ghost"
+      variant="secondary"
     >
       <Share />
     </Button>

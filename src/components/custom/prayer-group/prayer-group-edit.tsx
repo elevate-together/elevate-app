@@ -43,9 +43,6 @@ export default function PrayerGroupEdit({
 
   const dialogTitle = "Edit Prayer Group";
   const dialogDescription = "Edit Prayer Group";
-  const buttonLabel = "Edit Prayer Group";
-  const buttonLabelShort = "Edit Group";
-  const ariaLabel = "Create a new prayer group";
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -63,17 +60,19 @@ export default function PrayerGroupEdit({
     />
   );
 
+  const buttonTrigger = (
+    <Button
+      aria-label={dialogDescription}
+      size="icon"
+      variant={isMenu ? "ghost" : "secondary"}
+    >
+      <Edit2 />
+    </Button>
+  );
+
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
-        <Button
-          aria-label={ariaLabel}
-          size="icon"
-          variant={isMenu ? "ghost" : "secondary"}
-        >
-          <Edit2 /> {!isMobile && buttonLabel}
-        </Button>
-      </DrawerTrigger>
+      <DrawerTrigger asChild>{buttonTrigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader>
           <DrawerTitle>{dialogTitle}</DrawerTitle>
@@ -84,17 +83,7 @@ export default function PrayerGroupEdit({
     </Drawer>
   ) : (
     <Dialog open={isOpen && !isMobile} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          aria-label={ariaLabel}
-          className={`${
-            isMenu ? "flex justify-start items-center w-full p-2" : ""
-          }`}
-          variant={isMenu ? "ghost" : "secondary"}
-        >
-          <Edit2 /> {buttonLabelShort}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{buttonTrigger}</DialogTrigger>
       <DialogContent className="max-w-sm">
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>

@@ -62,6 +62,9 @@ export default function PrayerRequestAdd({
           : "default"
       }
       variant={isMenu ? "ghost" : "secondary"}
+      className={`${
+        isMenu ? "flex justify-start items-center w-full p-2" : ""
+      }`}
       {...props}
     >
       <Plus />

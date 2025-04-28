@@ -47,7 +47,7 @@ export default function PrayerGroupOwnerChange({
       variant="secondary"
       size={isMobile ? "icon" : "default"}
     >
-      <ArrowLeftRight /> {!isMobile && " Change Owner"}
+      <ArrowLeftRight />
     </Button>
   );
 
