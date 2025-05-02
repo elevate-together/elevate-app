@@ -19,7 +19,6 @@ import Link from "next/link";
 import PrayerGroupCreate from "@/components/custom/prayer-group/handlers/prayer-group-create";
 import PrayerRequestAdd from "@/components/custom/prayer-request/handlers/prayer-request-add";
 import UserInfo from "@/components/custom/user/user-info";
-import SessionNotFound from "@/components/not-found/session";
 
 export default async function AppSidebar() {
   const session = await auth();
@@ -32,7 +31,7 @@ export default async function AppSidebar() {
     !session.user.email ||
     !session.user.name
   ) {
-    return <SessionNotFound />;
+    return null;
   }
 
   const user = session.user as UserBasics;
