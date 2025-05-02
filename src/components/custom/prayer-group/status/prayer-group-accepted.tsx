@@ -22,7 +22,7 @@ export default function PrayerGroupAccepted({
           onClick={() => router.push(`/group/${groupId}`)}
         >
           <Home />
-          View Group Home
+          Go To Group Home
         </Button>
       }
     />
