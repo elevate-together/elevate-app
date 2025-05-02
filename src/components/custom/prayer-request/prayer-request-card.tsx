@@ -141,7 +141,7 @@ export default function PrayerRequestCard({
                     )}
                   {!hideActions &&
                     prayer.status !== PrayerRequestStatus.ANSWERED && (
-                      <PrayerRequestDelete id={prayer.id} />
+                      <PrayerRequestDelete requestId={prayer.id} />
                     )}
                   <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
                     <DropdownMenuTrigger asChild>

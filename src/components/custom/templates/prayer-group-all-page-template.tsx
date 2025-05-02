@@ -19,7 +19,7 @@ export default function PrayerGroupAllPageTemplate({
     <div className="flex flex-col gap-4">
       <div className="flex flex-row items-center justify-between">
         <div className="text-xl font-semibold">Your Groups</div>
-        <PrayerGroupCreate id={user.id} />
+        <PrayerGroupCreate groupId={user.id} />
       </div>
 
       <div className="flex flex-col">
@@ -27,7 +27,7 @@ export default function PrayerGroupAllPageTemplate({
           <div className="flex flex-col gap-0">
             {yourGroups.map((group) => (
               <div key={group.id}>
-                <PrayerGroupCard prayerGroup={group} />
+                <PrayerGroupCard prayerGroup={group} userId={user.id} />
               </div>
             ))}
           </div>
@@ -37,7 +37,7 @@ export default function PrayerGroupAllPageTemplate({
           <div className="flex flex-col gap-0">
             {pendingGroups.map((group) => (
               <div key={group.id}>
-                <PrayerGroupCard prayerGroup={group} pending />
+                <PrayerGroupCard prayerGroup={group} userId={user.id} pending />
               </div>
             ))}
           </div>

@@ -12,14 +12,14 @@ import { useNotificationStore } from "@/services/stores/notification";
 import BackButton from "@/components/custom/helpers/buttons/back-button";
 
 type Props = {
-  id: string;
+  userId: string;
   image?: string | null;
   name?: string | null;
   notificationCount: number | undefined;
 };
 
 export default function ClientNavbarUser({
-  id,
+  userId,
   image,
   name,
   notificationCount,
@@ -31,15 +31,15 @@ export default function ClientNavbarUser({
 
   useEffect(() => {
     async function fetchCount() {
-      const res = await getNotificationCountForUser(id);
+      const res = await getNotificationCountForUser(userId);
       if (res.success) {
         setCount(res.count || 0);
       }
     }
     fetchCount();
-  }, [id, setCount]);
+  }, [userId, setCount]);
 
-  const isOnProfile = pathname === `/user/${id}`;
+  const isOnProfile = pathname === `/user/${userId}`;
   const isOnHome = pathname === "/";
   const isOnGroups = pathname === "/groups";
   const isOnGroupHome =
@@ -53,7 +53,7 @@ export default function ClientNavbarUser({
   return (
     <div className="relative flex items-center justify-between bg-card w-full py-1 px-3 shadow-none md:flex">
       {isOnHome ? (
-        <Link href={`/requests/${id}`}>
+        <Link href={`/requests/${userId}`}>
           <Avatar className="h-8 w-8 ml-1">
             <AvatarImage src={image ?? undefined} />
             <AvatarFallback>
@@ -84,12 +84,12 @@ export default function ClientNavbarUser({
       </div>
 
       <div className="flex gap-1 items-center mr-1">
-        <PrayerRequestAdd id={id} variant="ghost" className="h-9 w-9" />
+        <PrayerRequestAdd userId={userId} variant="ghost" className="h-9 w-9" />
         <Button
           variant="ghost"
           size="largeIcon"
           className="h-9 w-9"
-          onClick={() => router.push(`/user/${id}`)}
+          onClick={() => router.push(`/user/${userId}`)}
         >
           <Settings className="h-8 w-8" />
         </Button>

@@ -47,12 +47,12 @@ export default function PrayerGroupPageTemplate({
         </div>
         <div className="space-x-2">
           <PrayerRequestAdd
-            id={currentUser.id}
+            userId={currentUser.id}
             defaultGroupId={prayerGroup.id}
           />
 
           {isOwner && (
-            <PrayerGroupEdit id={currentUser.id} group={prayerGroup} />
+            <PrayerGroupEdit ownerId={currentUser.id} group={prayerGroup} />
           )}
           {isOwner && (
             <PrayerGroupOwnerSwitch

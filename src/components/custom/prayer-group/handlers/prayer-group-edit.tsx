@@ -24,14 +24,14 @@ import {
 import { PrayerGroup } from "@prisma/client";
 
 type PrayerGroupEditProps = {
-  id: string;
+  ownerId: string;
   group: PrayerGroup;
   isMenu?: boolean;
   hideOnMobile?: boolean;
 };
 
 export default function PrayerGroupEdit({
-  id,
+  ownerId,
   group,
   isMenu = false,
   hideOnMobile = false,
@@ -53,7 +53,7 @@ export default function PrayerGroupEdit({
 
   const prayerForm = (
     <PrayerGroupForm
-      ownerId={id}
+      ownerId={ownerId}
       group={group}
       onSubmit={handleSubmit}
       onCancel={handleCancel}

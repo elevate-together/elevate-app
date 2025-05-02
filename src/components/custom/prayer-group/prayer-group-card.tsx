@@ -6,12 +6,14 @@ import PrayerGroupView from "./buttons/prayer-group-view";
 import { Badge } from "@/components/ui/badge";
 
 type PrayerGroupCardProps = {
+  userId: string;
   prayerGroup: PrayerGroup;
   pending?: boolean;
 };
 
-export default function PrayerGroupRow({
+export default function PrayerGroupCard({
   prayerGroup,
+  userId,
   pending = false,
 }: PrayerGroupCardProps) {
   return (
@@ -29,10 +31,10 @@ export default function PrayerGroupRow({
       </div>
 
       <div className="min-w-[72px]">
-        <PrayerGroupView id={prayerGroup.id} />
+        <PrayerGroupView groupId={prayerGroup.id} />
         <UserLeaveGroup
           group={prayerGroup}
-          id={prayerGroup.id}
+          userId={userId}
           isRequested={pending}
         />
       </div>

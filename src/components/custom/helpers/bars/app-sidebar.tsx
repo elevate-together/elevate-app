@@ -86,11 +86,11 @@ export default async function AppSidebar() {
 
                 <div>
                   <SidebarMenuItem>
-                    <PrayerRequestAdd id={id} isMenu />
+                    <PrayerRequestAdd userId={id} isMenu />
                   </SidebarMenuItem>
 
                   <SidebarMenuItem>
-                    <PrayerGroupCreate id={id} isMenu />
+                    <PrayerGroupCreate groupId={id} isMenu />
                   </SidebarMenuItem>
                   <SidebarSeparator />
                 </div>

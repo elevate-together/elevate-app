@@ -27,13 +27,13 @@ import { removeUserFromPrayerGroup } from "@/services/user-prayer-group";
 
 type UserLeaveGroupProps = {
   group: PrayerGroup;
-  id: string;
+  userId: string;
   isRequested?: boolean;
 };
 
 export default function UserLeaveGroup({
   group,
-  id,
+  userId,
   isRequested = false,
 }: UserLeaveGroupProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -42,7 +42,7 @@ export default function UserLeaveGroup({
 
   const handleSubmit = async () => {
     const response = await removeUserFromPrayerGroup(
-      id,
+      userId,
       group.id,
       group.ownerId
     );

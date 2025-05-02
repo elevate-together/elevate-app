@@ -4,7 +4,7 @@ import { usePathname } from "next/navigation";
 import { Users, HelpingHandIcon, Hand, User } from "lucide-react";
 import Link from "next/link";
 
-export default function ClientMobileFooter({ id }: { id: string }) {
+export default function ClientMobileFooter({ userId }: { userId: string }) {
   const pathname = usePathname();
 
   const linkClass = (path: string) =>
@@ -26,11 +26,11 @@ export default function ClientMobileFooter({ id }: { id: string }) {
         <Users className={iconClass} />
         <span className="text-xs">Groups</span>
       </Link>
-      <Link href={`/requests/${id}`} className={linkClass("/requests")}>
+      <Link href={`/requests/${userId}`} className={linkClass("/requests")}>
         <Hand className={iconClass} />
         <span className="text-xs">Requests</span>
       </Link>
-      <Link href={`/user/${id}`} className={linkClass("/user")}>
+      <Link href={`/user/${userId}`} className={linkClass("/user")}>
         <User className={iconClass} />
         <span className="text-xs">Profile</span>
       </Link>

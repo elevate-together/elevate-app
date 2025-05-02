@@ -13,7 +13,7 @@ export default async function Navbar() {
   return (
     <div className="block shadow-sm z-10 md:hidden">
       <ClientNavbarUser
-        id={session.user.id}
+        userId={session.user.id}
         image={session.user.image}
         name={session.user.name}
         notificationCount={data.count}

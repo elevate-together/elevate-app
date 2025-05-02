@@ -23,13 +23,13 @@ import {
 } from "@/components/ui/drawer";
 
 type PrayerGroupCreateProps = {
-  id: string;
+  groupId: string;
   isMenu?: boolean;
   hideOnMobile?: boolean;
 };
 
 export default function PrayerGroupCreate({
-  id,
+  groupId,
   isMenu = false,
   hideOnMobile = false,
 }: PrayerGroupCreateProps) {
@@ -71,7 +71,7 @@ export default function PrayerGroupCreate({
           <DrawerTitle>{dialogTitle}</DrawerTitle>
         </DrawerHeader>
         <PrayerGroupForm
-          ownerId={id}
+          ownerId={groupId}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />
@@ -86,7 +86,7 @@ export default function PrayerGroupCreate({
           <DialogTitle>{dialogTitle}</DialogTitle>
         </DialogHeader>
         <PrayerGroupForm
-          ownerId={id}
+          ownerId={groupId}
           onSubmit={handleSubmit}
           onCancel={handleCancel}
         />

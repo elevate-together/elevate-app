@@ -23,18 +23,18 @@ import { Plus } from "lucide-react";
 import { useState } from "react";
 import { ButtonProps } from "@/components/ui/button";
 
-type PrayerGroupCreateProps = {
-  id: string;
+type PrayerRequestAddProps = {
+  userId: string;
   isMenu?: boolean;
   defaultGroupId?: string; // only for create
 } & ButtonProps;
 
 export default function PrayerRequestAdd({
-  id,
+  userId,
   isMenu = false,
   defaultGroupId = "",
   ...props
-}: PrayerGroupCreateProps) {
+}: PrayerRequestAddProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
@@ -71,7 +71,7 @@ export default function PrayerRequestAdd({
           <DrawerDescription>{drawerDescription}</DrawerDescription>
         </DrawerHeader>
         <PrayerRequestForm
-          userId={id}
+          userId={userId}
           onSubmit={handleClose}
           onCancel={handleClose}
           isOpen={isOpen && isMobile}
@@ -88,7 +88,7 @@ export default function PrayerRequestAdd({
           <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
         <PrayerRequestForm
-          userId={id}
+          userId={userId}
           onSubmit={handleClose}
           onCancel={handleClose}
           isOpen={isOpen && !isMobile}

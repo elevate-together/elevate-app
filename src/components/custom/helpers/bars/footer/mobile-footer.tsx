@@ -8,5 +8,5 @@ export default async function MobileFooter() {
     return null;
   }
 
-  return <ClientMobileFooter id={session.user?.id} />;
+  return <ClientMobileFooter userId={session.user?.id} />;
 }

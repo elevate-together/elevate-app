@@ -28,17 +28,17 @@ import { deletePrayerRequest } from "@/services/prayer-request";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-type PrayerGroupDeleteProps = {
-  id: string;
+type PrayerRequestDeleteProps = {
+  requestId: string;
   includeText?: boolean;
   className?: string;
 };
 
 export default function PrayerRequestDelete({
-  id,
+  requestId,
   includeText = false,
   className = "",
-}: PrayerGroupDeleteProps) {
+}: PrayerRequestDeleteProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const isMobile = useIsMobile();
@@ -46,7 +46,7 @@ export default function PrayerRequestDelete({
 
   const handleDeleteRequest = async () => {
     setLoading(true);
-    const result = await deletePrayerRequest(id);
+    const result = await deletePrayerRequest(requestId);
     if (result.success) {
       setIsOpen(false);
       setTimeout(() => {
