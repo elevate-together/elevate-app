@@ -7,13 +7,12 @@ import { getUserById } from "@/services/users";
 import WelcomePage from "@/components/custom/templates/welcome-page";
 import { HomePagetemplate } from "@/components/custom/templates/home-page-template";
 import UserNotFound from "@/components/not-found/user";
-import SessionNotFound from "@/components/not-found/session";
 import PrayerRequestNotFound from "@/components/not-found/prayer-request";
 
 export default async function Home() {
   const session = await auth();
 
-  if (!session || !session.user) {
+  if (!session || !session.user || !session.user.id) {
     return (
       <div className="h-80vh">
         <WelcomePage />
@@ -21,11 +20,7 @@ export default async function Home() {
     );
   }
 
-  const id = session?.user.id;
-
-  if (!id) {
-    return <SessionNotFound />;
-  }
+  const id = session.user.id;
 
   const { user } = await getUserById(id);
 

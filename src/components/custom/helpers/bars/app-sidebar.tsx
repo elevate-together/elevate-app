@@ -12,22 +12,31 @@ import {
   SidebarMenuSub,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { menu_items as items } from "@/lib/utils";
+import { menu_items as items, UserBasics } from "@/lib/utils";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import Image from "next/image";
 import Link from "next/link";
 import PrayerGroupCreate from "@/components/custom/prayer-group/handlers/prayer-group-create";
-import PrayerRequestCreate from "@/components/custom/prayer-request/handlers/prayer-request-add";
+import PrayerRequestAdd from "@/components/custom/prayer-request/handlers/prayer-request-add";
 import UserInfo from "@/components/custom/user/user-info";
+import SessionNotFound from "@/components/not-found/session";
 
 export default async function AppSidebar() {
   const session = await auth();
 
-  if (session == null) {
-    return null;
+  if (
+    !session ||
+    !session.user ||
+    !session.user.id ||
+    !session.user.image ||
+    !session.user.email ||
+    !session.user.name
+  ) {
+    return <SessionNotFound />;
   }
 
-  const { id, name, email, image } = session?.user || {};
+  const user = session.user as UserBasics;
+  const id = user.id;
 
   let userPrayerGroups;
   if (id) {
@@ -57,7 +66,7 @@ export default async function AppSidebar() {
                     <SidebarMenuItem key={item.title}>
                       <SidebarMenuButton asChild>
                         {item.auth ? (
-                          session?.user ? (
+                          session.user ? (
                             <a href={url}>
                               <item.icon />
                               <span className="text-">{item.title}</span>
@@ -76,18 +85,16 @@ export default async function AppSidebar() {
 
                 <SidebarSeparator />
 
-                {session && id && (
-                  <div>
-                    <SidebarMenuItem>
-                      <PrayerRequestCreate id={id} isMenu />
-                    </SidebarMenuItem>
+                <div>
+                  <SidebarMenuItem>
+                    <PrayerRequestAdd id={id} isMenu />
+                  </SidebarMenuItem>
 
-                    <SidebarMenuItem>
-                      <PrayerGroupCreate id={id} isMenu />
-                    </SidebarMenuItem>
-                    <SidebarSeparator />
-                  </div>
-                )}
+                  <SidebarMenuItem>
+                    <PrayerGroupCreate id={id} isMenu />
+                  </SidebarMenuItem>
+                  <SidebarSeparator />
+                </div>
 
                 {userPrayerGroups && userPrayerGroups.length > 0 && (
                   <div>
@@ -111,12 +118,7 @@ export default async function AppSidebar() {
           </SidebarGroup>
         </SidebarContent>
         <SidebarFooter>
-          <UserInfo
-            name={name ?? ""}
-            email={email ?? ""}
-            image={image ?? ""}
-            id={id ?? undefined}
-          />
+          <UserInfo user={user} />
         </SidebarFooter>
       </Sidebar>
     </div>

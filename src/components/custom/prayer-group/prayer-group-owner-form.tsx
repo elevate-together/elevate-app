@@ -101,9 +101,7 @@ export default function PrayerGroupOwnerForm({
                       >
                         <div className="flex items-center gap-3">
                           <UserAvatar
-                            name={user.name}
-                            email={user.email}
-                            image={user.image || ""}
+                            user={user}
                             size="small"
                             boldName
                             includeEmail

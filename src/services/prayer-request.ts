@@ -69,6 +69,7 @@ export async function createPrayerRequest(requestData: {
     const hasPrivateType = sharedWith.some((item) => item.type === "private");
     const sharedWithGroups = sharedWith.filter((item) => item.type === "group");
     let newPrayerRequest: PrayerRequest | undefined = undefined;
+    const link = `requests/${userId}`;
 
     const createPrayerRequestEntry = async (visibility: PrayerVisibility) => {
       return await db.prayerRequest.create({
@@ -89,7 +90,7 @@ export async function createPrayerRequest(requestData: {
       if (notify) {
         const data = await getPrayerGroupsForUser(userId);
         if (data.prayerGroups) {
-          await sendNotificationToGroups(data.prayerGroups, userId);
+          await sendNotificationToGroups(data.prayerGroups, userId, link);
         }
       }
     } else if (hasPrivateType) {
@@ -101,6 +102,7 @@ export async function createPrayerRequest(requestData: {
           userId,
           "You just added a new private prayer request.",
           NotificationType.PRAYER,
+          link,
           "New Prayer Request"
         );
       }
@@ -122,7 +124,7 @@ export async function createPrayerRequest(requestData: {
           })
         );
         if (notify) {
-          await sendNotificationToGroups(sharedWithGroups, userId);
+          await sendNotificationToGroups(sharedWithGroups, userId, link);
         }
       }
     } else {
@@ -386,6 +388,80 @@ export async function updatePrayerRequestStatus(
     return {
       success: false,
       message: "Failed to update prayer request status.",
+    };
+  }
+}
+
+export async function getUserPrayerRequestsVisibleUser(
+  userId: string,
+  guestUserId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  prayerRequests: PrayerRequestWithUser[];
+}> {
+  try {
+    const publicRequests = await db.prayerRequest.findMany({
+      where: {
+        userId: userId,
+        visibility: PrayerVisibility.PUBLIC,
+        status: PrayerRequestStatus.IN_PROGRESS,
+      },
+      include: {
+        user: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    const mutualGroupIdsResult = await db.userPrayerGroup.groupBy({
+      by: ["prayerGroupId"],
+      where: {
+        userId: { in: [userId, guestUserId] },
+        groupStatus: "ACCEPTED",
+      },
+      having: {
+        prayerGroupId: {
+          _count: {
+            equals: 2,
+          },
+        },
+      },
+    });
+
+    const mutualGroupIds = mutualGroupIdsResult.map((g) => g.prayerGroupId);
+
+    const groupSharedRequests = await db.prayerRequest.findMany({
+      where: {
+        userId,
+        status: "IN_PROGRESS",
+        PrayerRequestShare: {
+          some: {
+            sharedWithId: { in: mutualGroupIds },
+            sharedWithType: "GROUP",
+          },
+        },
+      },
+      include: { user: true },
+    });
+
+    const allVisibleRequests = [...publicRequests, ...groupSharedRequests];
+
+    return {
+      success: true,
+      message: "Successfully fetched prayer requests for this user",
+      prayerRequests: allVisibleRequests,
+    };
+  } catch (error) {
+    console.error(
+      `Error fetching prayer requests for user with ID ${userId}:`,
+      error
+    );
+    return {
+      success: false,
+      message: "Error fetching prayer requests for the user",
+      prayerRequests: [],
     };
   }
 }

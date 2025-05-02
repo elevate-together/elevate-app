@@ -30,6 +30,11 @@ export type MinimalUser = Pick<
   "id" | "name" | "email" | "image" | "createdAt"
 >;
 
+export type UserBasics = Pick<
+  User,
+  "id" | "name" | "email" | "image" 
+>;
+
 export type PrayerRequestWithUser = PrayerRequest & { user: UserDef };
 
 export type ResponseMessage = {

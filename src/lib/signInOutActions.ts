@@ -14,7 +14,7 @@ export const handleSignIn = async (callbackUrl?: string) => {
 
 export const handleSignOut = async () => {
   try {
-    await signOut();
+    await signOut({ redirectTo: "/" });
   } catch (error) {
     throw error;
   }

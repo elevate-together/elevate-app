@@ -9,52 +9,36 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { menu_items } from "@/lib/utils";
+import { menu_items, UserBasics } from "@/lib/utils";
 import UserAvatar from "@/components/custom/user/user-avatar";
 
 type UserInfoProps = {
-  id: string | undefined;
-  name: string;
-  email: string;
-  image: string;
+  user: UserBasics;
 };
-export default function UserInfo({ id, name, email, image }: UserInfoProps) {
+export default function UserInfo({ user }: UserInfoProps) {
   return (
     <div className="flex items-center">
-      {name != "" && email != "" ? (
+      {user.name != "" && user.email != "" ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div className="p-2 my-3 rounded-lg w-full hover:bg-accent">
-              <UserAvatar
-                name={name}
-                email={email}
-                image={image}
-                icon
-                includeEmail
-              />
+              <UserAvatar user={user} icon includeEmail excludeLink />
             </div>
           </DropdownMenuTrigger>
 
           <DropdownMenuContent sideOffset={7} className="p-2">
             <DropdownMenuLabel>
-              <div>
-                <UserAvatar
-                  name={name}
-                  email={email}
-                  image={image}
-                  includeEmail
-                />
-              </div>
+              <UserAvatar user={user} includeEmail />
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-1 " />
             <DropdownMenuItem disabled>Quick Actions</DropdownMenuItem>
             {menu_items.map((item) => {
-              const url = item.url.replace("{id}", id || "");
+              const url = item.url.replace("{id}", user.id || "");
 
               return (
                 <span key={item.title}>
                   {item.auth ? (
-                    id ? (
+                    user.id ? (
                       <a href={url}>
                         <DropdownMenuItem className="flex flex-row">
                           <item.icon width={16} />

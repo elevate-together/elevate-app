@@ -71,10 +71,12 @@ export default function PrayerRequestCard({
           : `${currUserName} prayed for you!`
         : "Someone prayed for you!";
     const message = `${currUserName} prayed for ${prayer.request} `;
+    const link = `/requests/${user.id}`;
     const result = await sendNotificationAllDevices(
       user.id,
       message,
       NotificationType.PRAYER,
+      link,
       title
     );
 
@@ -106,9 +108,7 @@ export default function PrayerRequestCard({
         <CardTitle>
           <div className="flex justify-between items-start">
             <UserAvatar
-              name={user.name}
-              email={user.email}
-              image={user.image || undefined}
+              user={user}
               size="medium"
               secondLine={
                 <span className="flex items-center gap-1">

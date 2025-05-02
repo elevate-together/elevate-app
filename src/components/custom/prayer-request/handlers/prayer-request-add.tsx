@@ -26,27 +26,23 @@ import { ButtonProps } from "@/components/ui/button";
 type PrayerGroupCreateProps = {
   id: string;
   isMenu?: boolean;
-  hideOnMobile?: boolean;
-  includeText?: boolean;
+  defaultGroupId?: string; // only for create
 } & ButtonProps;
 
 export default function PrayerRequestAdd({
   id,
   isMenu = false,
-  hideOnMobile = false,
-  includeText = false,
+  defaultGroupId = "",
   ...props
 }: PrayerGroupCreateProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  if (hideOnMobile && isMobile) return null;
-
   const handleClose = () => {
     setIsOpen(false);
   };
 
-  const buttonLabel = includeText ? "Add" : "Add Prayer Request";
+  const buttonLabel = "Add Prayer Request";
   const drawerTitle = "New Prayer Request";
   const drawerDescription = "Let others know how they can be praying for you.";
   const dialogTitle = "Add New Prayer Request";
@@ -54,13 +50,7 @@ export default function PrayerRequestAdd({
 
   const renderButton = (
     <Button
-      size={
-        isMobile && !isMenu
-          ? includeText
-            ? "default"
-            : "largeIcon"
-          : "default"
-      }
+      size={isMenu ? "default" : "icon"}
       variant={isMenu ? "ghost" : "secondary"}
       className={`${
         isMenu ? "flex justify-start items-center w-full p-2" : ""
@@ -68,17 +58,8 @@ export default function PrayerRequestAdd({
       {...props}
     >
       <Plus />
-      {isMobile && !isMenu ? (includeText ? "Add" : "") : buttonLabel}
+      {isMenu && buttonLabel}
     </Button>
-  );
-
-  const prayerRequestForm = (
-    <PrayerRequestForm
-      userId={id}
-      onSubmit={handleClose}
-      onCancel={handleClose}
-      isOpen={isOpen && isMobile}
-    />
   );
 
   return isMobile ? (
@@ -89,7 +70,13 @@ export default function PrayerRequestAdd({
           <DrawerTitle>{drawerTitle}</DrawerTitle>
           <DrawerDescription>{drawerDescription}</DrawerDescription>
         </DrawerHeader>
-        {prayerRequestForm}
+        <PrayerRequestForm
+          userId={id}
+          onSubmit={handleClose}
+          onCancel={handleClose}
+          isOpen={isOpen && isMobile}
+          defaultGroupId={defaultGroupId}
+        />
       </DrawerContent>
     </Drawer>
   ) : (
@@ -100,7 +87,13 @@ export default function PrayerRequestAdd({
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
-        {prayerRequestForm}
+        <PrayerRequestForm
+          userId={id}
+          onSubmit={handleClose}
+          onCancel={handleClose}
+          isOpen={isOpen && !isMobile}
+          defaultGroupId={defaultGroupId}
+        />
         <DialogDescription hidden>{dialogDescription}</DialogDescription>
       </DialogContent>
     </Dialog>

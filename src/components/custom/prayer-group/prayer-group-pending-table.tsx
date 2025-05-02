@@ -39,15 +39,7 @@ export default function PrayerGroupPendingTable({
       enableHiding: false,
       header: "User",
       cell: ({ row }) => {
-        return (
-          <UserAvatar
-            name={row.original.name}
-            email={row.original.email}
-            image={row.original.image ?? undefined}
-            size="small"
-            profileUrl={`/user/${row.original.id}`}
-          />
-        );
+        return <UserAvatar user={row.original} size="small" />;
       },
     },
     {

@@ -46,6 +46,7 @@ type PrayerRequestFormProps = {
   onSubmit?: () => void;
   isOpen?: boolean;
   userId: string;
+  defaultGroupId?: string; // only for create
 };
 
 export default function PrayerRequestForm({
@@ -54,6 +55,7 @@ export default function PrayerRequestForm({
   onCancel,
   isOpen = false,
   userId,
+  defaultGroupId = "",
 }: PrayerRequestFormProps) {
   const router = useRouter();
 
@@ -111,15 +113,19 @@ export default function PrayerRequestForm({
           form.setValue("sharedWith", sharedWith || []);
         }
       } else {
-        setSelectedValues(["1"]);
-        form.setValue("sharedWith", ["1"]);
+        if (defaultGroupId !== "") {
+          setSelectedValues([defaultGroupId]);
+          form.setValue("sharedWith", [defaultGroupId]);
+        } else {
+          setSelectedValues(["1"]);
+          form.setValue("sharedWith", ["1"]);
+        }
       }
-
       setLoadingPane(false);
     }
 
     fetchData();
-  }, [prayer, form]);
+  }, [prayer, form, defaultGroupId]);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoadingSubmit(true);

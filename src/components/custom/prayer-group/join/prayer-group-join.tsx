@@ -78,13 +78,7 @@ export default function PrayerGroupJoin({
       <div className="flex ">
         <div className="flex-1 flex flex-col gap-2 mb-2">
           <p className="text-sm font-semibold">Owner:</p>
-          <UserAvatar
-            name={group.owner.name}
-            email={group.owner.email}
-            image={group.owner.image ?? undefined}
-            includeEmail={false}
-            size="small"
-          />
+          <UserAvatar user={group.owner} includeEmail={false} size="small" />
         </div>
 
         <div className="flex-1 flex flex-col gap-2 mb-2">

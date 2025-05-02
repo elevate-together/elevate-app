@@ -80,7 +80,8 @@ export async function unsubscribeDevice(
 
 export async function sendNotificationToGroups(
   sharedWithGroups: { id: string }[],
-  userId: string
+  userId: string,
+  notificationLink: string
 ) {
   const usersToNotify = new Set<string>();
 
@@ -103,6 +104,7 @@ export async function sendNotificationToGroups(
         tempId,
         `${user?.name || "Someone"} shared a prayer request with you!`,
         NotificationType.PRAYER,
+        notificationLink,
         "New Prayer Request"
       )
     )
@@ -155,7 +157,8 @@ export async function sendNotificationAllDevices(
   userId: string,
   message: string,
   notificationType: NotificationType,
-  title = "Notification"
+  notificationLink: string,
+  title: string
 ): Promise<{ success: boolean; message: string }> {
   try {
     const devices = await db.device.findMany({ where: { userId } });
@@ -164,6 +167,7 @@ export async function sendNotificationAllDevices(
       title,
       message,
       notificationType,
+      notificationLink,
       userId
     );
 
@@ -235,6 +239,7 @@ export async function sendTestNotificationToDevice(
     }
 
     const title = "Test Notification";
+    const link = `/user/${userId}`;
     const message =
       "Your device has successfully been subscribed to receive notifications!";
 
@@ -242,6 +247,7 @@ export async function sendTestNotificationToDevice(
       title,
       message,
       NotificationType.TESTPUSH,
+      link,
       userId
     );
 

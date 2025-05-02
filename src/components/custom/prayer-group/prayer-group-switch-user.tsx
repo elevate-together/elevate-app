@@ -42,11 +42,7 @@ export default function PrayerGroupOwnerChange({
   const title = "Change Prayer Group Owner";
 
   const triggerButton = (
-    <Button
-      aria-label="{title}"
-      variant="secondary"
-      size={isMobile ? "icon" : "default"}
-    >
+    <Button aria-label="{title}" variant="secondary" size="icon">
       <ArrowLeftRight />
     </Button>
   );

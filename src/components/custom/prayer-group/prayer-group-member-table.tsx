@@ -112,13 +112,7 @@ export default function PrayerGroupMemberTable({
       cell: ({ row }) => {
         return (
           <div className="flex gap-2 items-center">
-            <UserAvatar
-              name={row.original.name}
-              email={row.original.email}
-              image={row.original.image ?? undefined}
-              size="small"
-              profileUrl={`/user/${row.original.id}`}
-            />
+            <UserAvatar user={row.original} size="small" />
             {row.original.id === ownerId && (
               <Badge variant="outline">Owner</Badge>
             )}

@@ -15,6 +15,7 @@ import {
 import PrayerGroupPendingTable from "@/components/custom/prayer-group/prayer-group-pending-table";
 import PrayerGroupOwnerSwitch from "@/components/custom/prayer-group/prayer-group-switch-user";
 import PrayerGroupJoinLink from "@/components/custom/prayer-group/join/prayer-group-join-link";
+import PrayerRequestAdd from "../prayer-request/handlers/prayer-request-add";
 
 type Props = {
   prayerGroup: PrayerGroupWithOwner;
@@ -45,6 +46,11 @@ export default function PrayerGroupPageTemplate({
           </Badge>
         </div>
         <div className="space-x-2">
+          <PrayerRequestAdd
+            id={currentUser.id}
+            defaultGroupId={prayerGroup.id}
+          />
+
           {isOwner && (
             <PrayerGroupEdit id={currentUser.id} group={prayerGroup} />
           )}

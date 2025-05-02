@@ -3,29 +3,26 @@
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { EllipsisVertical } from "lucide-react";
+import { UserBasics } from "@/lib/utils";
 
 type AvatarProps = {
-  name: string;
-  email: string;
-  image?: string;
+  user: UserBasics;
   icon?: boolean;
   size?: "small" | "medium" | "large";
   includeEmail?: boolean;
   boldName?: boolean;
   secondLine?: React.ReactNode;
-  profileUrl?: string; 
+  excludeLink?: boolean;
 };
 
 export default function UserAvatar({
-  name,
-  email,
-  image,
+  user,
   icon = false,
   size = "medium",
   includeEmail = false,
   boldName = false,
   secondLine = "",
-  profileUrl,
+  excludeLink = false,
 }: AvatarProps) {
   const sizeClasses = {
     small: "w-8 h-8 text-xs",
@@ -41,8 +38,10 @@ export default function UserAvatar({
   const AvatarContent = (
     <div className="flex items-center gap-2">
       <Avatar className={avatarSizeClass}>
-        <AvatarImage src={image ?? undefined} />
-        <AvatarFallback>{name?.charAt(0).toUpperCase() || "?"}</AvatarFallback>
+        <AvatarImage src={user.image ?? undefined} />
+        <AvatarFallback>
+          {user.name?.charAt(0).toUpperCase() || "?"}
+        </AvatarFallback>
       </Avatar>
 
       <div className="flex flex-col leading-tight">
@@ -51,14 +50,14 @@ export default function UserAvatar({
             size === "large" ? "text-xl" : "text-sm"
           }`}
         >
-          {name}
+          {user.name}
         </span>
 
         {includeEmail ? (
           <p
             className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
           >
-            {email}
+            {user.email}
           </p>
         ) : secondLine ? (
           <p
@@ -73,12 +72,12 @@ export default function UserAvatar({
 
   return (
     <div className="flex items-center justify-between">
-      {profileUrl ? (
-        <Link href={profileUrl} className="hover:underline">
+      {excludeLink ? (
+        AvatarContent
+      ) : (
+        <Link href={`/user/${user.id}`} className="hover:underline">
           {AvatarContent}
         </Link>
-      ) : (
-        AvatarContent
       )}
 
       {icon && <EllipsisVertical width={17} />}

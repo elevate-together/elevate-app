@@ -11,6 +11,7 @@ export async function addNotification(
   title: string,
   text: string,
   type: NotificationType,
+  link: string,
   userId: string,
   status?: NotificationStatusType
 ): Promise<{
@@ -23,6 +24,7 @@ export async function addNotification(
         title,
         text,
         type,
+        link,
         status: status ?? NotificationStatusType.UNREAD,
         userId,
       },
