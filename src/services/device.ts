@@ -5,7 +5,7 @@ import { format } from "date-fns";
 import webpush from "web-push";
 import { getDeviceInfo } from "@/services/get-device-info";
 import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
-import { getUserById } from "@/services/users";
+import { getUserById } from "@/services/user";
 import { addNotification } from "@/services/notification";
 import { NotificationType } from "@prisma/client";
 

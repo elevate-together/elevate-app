@@ -7,7 +7,7 @@ import {
   getPrayerRequestsByUserId,
   getUserPrayerRequestsVisibleUser,
 } from "@/services/prayer-request";
-import { getUserById } from "@/services/users";
+import { getUserById } from "@/services/user";
 
 export default async function UserRequests({
   params,

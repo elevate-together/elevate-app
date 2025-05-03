@@ -33,8 +33,8 @@ model UserFriend {
   senderId       String       @db.ObjectId
   receiverId     String       @db.ObjectId
 
-  sender         User         @relation("SentFriendRequests", fields: [senderId], references: [id])
-  receiver       User         @relation("ReceivedFriendRequests", fields: [receiverId], references: [id])
+  sender         User         @relation("SentFriendRequests", fields: [senderId], references: [id], onDelete: Cascade) 
+  receiver       User         @relation("ReceivedFriendRequests", fields: [receiverId], references: [id], onDelete: Cascade) 
 
   @@unique([senderId, receiverId])
 }
@@ -80,7 +80,7 @@ model PrayerRequestShare {
   createdAt       DateTime  @default(now())
 
   prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
-  owner         User          @relation(fields: [ownerId], references: [id])
+  owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
 
   @@index([sharedWithId])
   @@index([prayerRequestId])
@@ -94,7 +94,7 @@ model PrayerGroup {
   updatedAt   DateTime          @updatedAt
   users       UserPrayerGroup[] @relation("UserToPrayerGroup")
   ownerId     String            @db.ObjectId
-  owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id])
+  owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id], onDelete: Cascade)
   groupType   GroupType         @default(PUBLIC)
 
   @@index([ownerId])
@@ -149,7 +149,7 @@ model Notification {
   userId      String                 @db.ObjectId
   link        String                 @default("/")
 
-  user      User                     @relation(fields: [userId], references: [id])
+  user      User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum PrayerRequestStatus {

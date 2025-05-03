@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 import { ProfilePageTemplate } from "@/components/custom/templates/helper/profile-page-template";
 import UserNotFound from "@/components/not-found/user";
-import { getUserById, getUserDevices } from "@/services/users";
+import { getUserById, getUserDevices } from "@/services/user";
 
 export default async function ProfilePage({
   params,

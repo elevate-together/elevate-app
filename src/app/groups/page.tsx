@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import { getUserById } from "@/services/users";
+import { getUserById } from "@/services/user";
 import {
   getPrayerGroupsForUser,
   getPrayerGroupsPendingForUser,

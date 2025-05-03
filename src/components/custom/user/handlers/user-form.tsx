@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createUser, updateUser } from "@/services/users";
+import { createUser, updateUser } from "@/services/user";
 import { toast } from "sonner";
 import type { User } from "@prisma/client";
 
@@ -29,7 +29,7 @@ const formSchema = z.object({
 type UserFormProps = {
   onSubmit: (user: User) => void;
   user?: User;
-  onCancel?: () => void; 
+  onCancel?: () => void;
 };
 
 export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {

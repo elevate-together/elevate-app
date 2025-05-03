@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { getInProgressPrayerRequestsForUser } from "@/services/prayer-request";
 import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share";
-import { getUserById } from "@/services/users";
+import { getUserById } from "@/services/user";
 import WelcomePage from "@/components/custom/templates/welcome-page";
 import { HomePagetemplate } from "@/components/custom/templates/home-page-template";
 import UserNotFound from "@/components/not-found/user";
