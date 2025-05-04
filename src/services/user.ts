@@ -2,37 +2,24 @@
 
 import db from "@/lib/db";
 import { ResponseMessage } from "@/lib/utils";
-import { Device, User } from "@prisma/client";
-
-// GET All Users
-export async function getAllUsers(): Promise<{
-  success: boolean;
-  message: string;
-  users?: User[];
-}> {
-  try {
-    const users = await db.user.findMany();
-    return {
-      success: true,
-      message: "Successfully fetched all users",
-      users,
-    };
-  } catch (error: unknown) {
-    console.error("Error fetching users:", error);
-    return {
-      success: false,
-      message: "Error fetching users",
-    };
-  }
-}
+import { User } from "@prisma/client";
+import { ObjectId } from "mongodb";
 
 // GET User by ID
-export async function getUserById(id: string): Promise<{
+export async function getUserById({ id }: { id: string }): Promise<{
   success: boolean;
   message: string;
-  user?: User;
+  user: User | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        user: null,
+      };
+    }
+
     const user = await db.user.findUnique({
       where: { id },
     });
@@ -41,6 +28,7 @@ export async function getUserById(id: string): Promise<{
       return {
         success: false,
         message: "User not found",
+        user: null,
       };
     }
 
@@ -49,53 +37,68 @@ export async function getUserById(id: string): Promise<{
       message: "User found",
       user,
     };
-  } catch (error) {
-    console.error(`Error fetching user with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error fetching user by ID",
+      user: null,
     };
   }
 }
 
 // CREATE a New User
-export async function createUser(userData: {
+export async function createUser({
+  name,
+  email,
+  image = null,
+}: {
   name: string;
   email: string;
   image?: string | null;
 }): Promise<{
   success: boolean;
   message: string;
-  user?: User;
+  user: User | null;
 }> {
   try {
     const newUser = await db.user.create({
-      data: userData,
+      data: { name, email, image },
     });
     return {
       success: true,
       message: "Successfully created user",
       user: newUser,
     };
-  } catch (error) {
-    console.error("Error creating user:", error);
+  } catch {
     return {
       success: false,
       message: "Error creating user, try again.",
+      user: null,
     };
   }
 }
 
 // UPDATE a User by ID
-export async function updateUser(
-  id: string,
-  userData: { name?: string; email?: string; image?: string | null }
-): Promise<{
+export async function updateUser({
+  id,
+  userData,
+}: {
+  id: string;
+  userData: { name?: string; email?: string; image?: string | null };
+}): Promise<{
   success: boolean;
   message: string;
-  user?: User;
+  user: User | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        user: null,
+      };
+    }
+
     const user = await db.user.findUnique({
       where: { id },
     });
@@ -104,6 +107,7 @@ export async function updateUser(
       return {
         success: false,
         message: "User not found",
+        user: null,
       };
     }
 
@@ -117,18 +121,29 @@ export async function updateUser(
       message: "User updated successfully",
       user: updatedUser,
     };
-  } catch (error) {
-    console.error(`Error updating user with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
-      message: "Error updating user",
+      message: "Error updating user, try again.",
+      user: null,
     };
   }
 }
 
 // DELETE a User by ID
-export async function deleteUser(id: string): Promise<ResponseMessage> {
+export async function deleteUser({
+  id,
+}: {
+  id: string;
+}): Promise<ResponseMessage> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
     const user = await db.user.findUnique({
       where: { id },
     });
@@ -148,37 +163,10 @@ export async function deleteUser(id: string): Promise<ResponseMessage> {
       success: true,
       message: "User deleted successfully",
     };
-  } catch (error) {
-    console.error(`Error deleting user with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
-      message: "Error deleting user",
+      message: "Error deleting user, try again.",
     };
-  }
-}
-
-// GET device info for a user
-export async function getUserDevices(userId: string): Promise<{
-  success: boolean;
-  message: string;
-  devices?: Device[];
-}> {
-  try {
-    const devices = await db.device.findMany({
-      where: { userId },
-    });
-
-    if (!devices || devices.length === 0) {
-      return { success: false, message: "No devices found for the user" };
-    }
-
-    return {
-      success: true,
-      message: "Devices retrieved successfully",
-      devices,
-    };
-  } catch (error) {
-    console.error("Error fetching user devices:", error);
-    return { success: false, message: "Failed to fetch devices" };
   }
 }

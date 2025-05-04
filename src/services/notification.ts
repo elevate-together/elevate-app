@@ -6,17 +6,26 @@ import {
   NotificationType,
   Notification,
 } from "@prisma/client";
+import { ObjectId } from "mongodb";
 
-export async function addNotification(
-  title: string,
-  text: string,
-  type: NotificationType,
-  link: string,
-  userId: string,
-  status?: NotificationStatusType
-): Promise<{
+export async function addNotification({
+  title,
+  text,
+  type,
+  link,
+  userId,
+  status = NotificationStatusType.UNREAD,
+}: {
+  title: string;
+  text: string;
+  type: NotificationType;
+  link: string;
+  userId: string;
+  status?: NotificationStatusType;
+}): Promise<{
   success: boolean;
   message: string;
+  notification: Notification | null;
 }> {
   try {
     const newNotification = await db.notification.create({
@@ -32,23 +41,31 @@ export async function addNotification(
 
     return {
       success: true,
-      message: `Notification added successfully with ID: ${newNotification.id}`,
+      message: "Notification added successfully",
+      notification: newNotification,
     };
-  } catch (error) {
-    console.error("Error adding notification:", error);
+  } catch {
     return {
       success: false,
       message: "Could not add notification",
+      notification: null,
     };
   }
 }
 
-export async function deleteNotification(id: string): Promise<{
+export async function deleteNotification({ id }: { id: string }): Promise<{
   success: boolean;
   message: string;
 }> {
   try {
-    const deletedNotification = await db.notification.delete({
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
+    await db.notification.delete({
       where: {
         id,
       },
@@ -56,10 +73,9 @@ export async function deleteNotification(id: string): Promise<{
 
     return {
       success: true,
-      message: `Notification with ID: ${deletedNotification.id} deleted successfully.`,
+      message: `Notification deleted successfully.`,
     };
-  } catch (error) {
-    console.error("Error deleting notification:", error);
+  } catch {
     return {
       success: false,
       message: "Could not delete notification",
@@ -67,12 +83,36 @@ export async function deleteNotification(id: string): Promise<{
   }
 }
 
-export async function getAllNotificationsForUser(userId: string): Promise<{
+export async function getAllNotificationsForUser({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  notifications?: Notification[];
+  notifications: Notification[] | null;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        notifications: null,
+      };
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+        notifications: null,
+      };
+    }
+
     const notifications = await db.notification.findMany({
       where: {
         userId,
@@ -84,24 +124,38 @@ export async function getAllNotificationsForUser(userId: string): Promise<{
 
     return {
       success: true,
-      message: "Notifications retrieved successfully.",
-      notifications,
+      message:
+        notifications.length > 0
+          ? "Notifications retrieved successfully."
+          : "No notifications found.",
+      notifications: notifications.length > 0 ? notifications : null,
     };
-  } catch (error) {
-    console.error("Error getting notifications:", error);
+  } catch {
     return {
       success: false,
       message: "Could not retrieve notifications.",
+      notifications: null,
     };
   }
 }
 
-export async function getNotificationCountForUser(userId: string): Promise<{
+export async function getNotificationCountForUser({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  count?: number;
+  count: number | null;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        count: null,
+      };
+    }
     const count = await db.notification.count({
       where: {
         userId,
@@ -114,20 +168,40 @@ export async function getNotificationCountForUser(userId: string): Promise<{
       message: "Notification count retrieved successfully.",
       count,
     };
-  } catch (error) {
-    console.error("Error getting notification count:", error);
+  } catch {
     return {
       success: false,
       message: "Could not retrieve notification count.",
+      count: null,
     };
   }
 }
 
-export async function markAllNotificationsAsRead(userId: string): Promise<{
+export async function markAllNotificationsAsRead({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
+    const user = await db.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
     const currentDate = new Date();
     await db.notification.deleteMany({
       where: {
@@ -147,8 +221,7 @@ export async function markAllNotificationsAsRead(userId: string): Promise<{
       success: true,
       message: "All notifications marked as read.",
     };
-  } catch (error) {
-    console.error("Error marking notifications as read:", error);
+  } catch {
     return {
       success: false,
       message: "Could not mark notifications as read.",
@@ -156,11 +229,31 @@ export async function markAllNotificationsAsRead(userId: string): Promise<{
   }
 }
 
-export async function deleteAllNotificationsForUser(userId: string): Promise<{
+export async function deleteAllNotificationsForUser({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
+    const user = await db.user.findUnique({ where: { id: userId } });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
+
     await db.notification.deleteMany({
       where: { userId },
     });
@@ -169,8 +262,7 @@ export async function deleteAllNotificationsForUser(userId: string): Promise<{
       success: true,
       message: "All notifications deleted.",
     };
-  } catch (error) {
-    console.error("Error deleting notifications:", error);
+  } catch {
     return {
       success: false,
       message: "Could not delete notifications.",

@@ -31,7 +31,7 @@ export default function ClientNavbarUser({
 
   useEffect(() => {
     async function fetchCount() {
-      const res = await getNotificationCountForUser(userId);
+      const res = await getNotificationCountForUser({ userId: userId });
       if (res.success) {
         setCount(res.count || 0);
       }

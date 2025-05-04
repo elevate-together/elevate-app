@@ -24,7 +24,7 @@ export default async function UserRequests({
   const isOwner = sessionUserId === pageUserId;
   if (isOwner) {
     const { prayerRequests } = await getPrayerRequestsByUserId(pageUserId);
-    const { user: currUser } = await getUserById(sessionUserId);
+    const { user: currUser } = await getUserById({ id: sessionUserId });
 
     if (!currUser) {
       return <UserNotFound />;
@@ -38,7 +38,7 @@ export default async function UserRequests({
     );
   }
 
-  const { user: pageUser } = await getUserById(pageUserId);
+  const { user: pageUser } = await getUserById({ id: pageUserId });
   const { prayerRequests } = await getUserPrayerRequestsVisibleUser(
     pageUserId,
     sessionUserId

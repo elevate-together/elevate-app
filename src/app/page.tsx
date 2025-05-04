@@ -22,7 +22,7 @@ export default async function Home() {
 
   const id = session.user.id;
 
-  const { user } = await getUserById(id);
+  const { user } = await getUserById({ id: id });
 
   if (!user) {
     return <UserNotFound />;

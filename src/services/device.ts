@@ -7,7 +7,7 @@ import { getDeviceInfo } from "@/services/get-device-info";
 import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
 import { getUserById } from "@/services/user";
 import { addNotification } from "@/services/notification";
-import { NotificationType } from "@prisma/client";
+import { Device, NotificationType } from "@prisma/client";
 
 if (
   !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -96,7 +96,7 @@ export async function sendNotificationToGroups(
     }
   }
 
-  const { user } = await getUserById(userId);
+  const { user } = await getUserById({ id: userId });
 
   await Promise.all(
     Array.from(usersToNotify).map((tempId) =>
@@ -163,13 +163,13 @@ export async function sendNotificationAllDevices(
   try {
     const devices = await db.device.findMany({ where: { userId } });
 
-    const notification = await addNotification(
+    const notification = await addNotification({
       title,
-      message,
-      notificationType,
-      notificationLink,
-      userId
-    );
+      text: message,
+      type: notificationType,
+      link: notificationLink,
+      userId,
+    });
 
     if (!notification.success) {
       return {
@@ -243,13 +243,13 @@ export async function sendTestNotificationToDevice(
     const message =
       "Your device has successfully been subscribed to receive notifications!";
 
-    const notification = await addNotification(
+    const notification = await addNotification({
       title,
-      message,
-      NotificationType.TESTPUSH,
+      text: message,
+      type: NotificationType.TESTPUSH,
       link,
-      userId
-    );
+      userId,
+    });
 
     if (!notification.success) {
       return {
@@ -276,5 +276,31 @@ export async function sendTestNotificationToDevice(
   } catch (error) {
     console.error("Error sending test push notification:", error);
     return { success: false, message: "Failed to send test notification" };
+  }
+}
+
+// GET device info for a user
+export async function getUserDevices(userId: string): Promise<{
+  success: boolean;
+  message: string;
+  devices?: Device[];
+}> {
+  try {
+    const devices = await db.device.findMany({
+      where: { userId },
+    });
+
+    if (!devices || devices.length === 0) {
+      return { success: false, message: "No devices found for the user" };
+    }
+
+    return {
+      success: true,
+      message: "Devices retrieved successfully",
+      devices,
+    };
+  } catch (error) {
+    console.error("Error fetching user devices:", error);
+    return { success: false, message: "Failed to fetch devices" };
   }
 }

@@ -8,7 +8,11 @@ export default async function Navbar() {
 
   if (!session || !session.user || !session.user.id) return null;
 
-  const data = await getNotificationCountForUser(session.user.id);
+  const data = await getNotificationCountForUser({ userId: session.user.id });
+
+  if (!data.count) {
+    return null;
+  }
 
   return (
     <div className="block shadow-sm z-10 md:hidden">

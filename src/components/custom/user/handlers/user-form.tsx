@@ -46,7 +46,7 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
     let result;
 
     if (user?.id) {
-      result = await updateUser(user.id, { name, email });
+      result = await updateUser({ id: user.id, userData: { name, email } });
     } else {
       result = await createUser({ name, email });
     }

@@ -13,9 +13,13 @@ export default async function ProfilePage() {
     return <div>You must be logged in to view this page.</div>;
   }
 
-  const markAsRead = await markAllNotificationsAsRead(session.user.id);
+  const markAsRead = await markAllNotificationsAsRead({
+    userId: session.user.id,
+  });
 
-  const allNotifications = await getAllNotificationsForUser(session.user.id);
+  const allNotifications = await getAllNotificationsForUser({
+    userId: session.user.id,
+  });
 
   if (!allNotifications.success || !markAsRead.success) {
     return <div>Error getting notifications</div>;

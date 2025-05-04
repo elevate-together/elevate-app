@@ -32,7 +32,7 @@ export default async function GroupPage({
     return <SessionNotFound />;
   }
 
-  const { user } = await getUserById(userId);
+  const { user } = await getUserById({ id: userId });
   if (!user) {
     return <UserNotFound />;
   }

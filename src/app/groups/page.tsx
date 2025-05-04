@@ -16,7 +16,7 @@ export default async function AllGroupsPage() {
     return <div>Error finding user</div>;
   }
 
-  const { user } = await getUserById(userId);
+  const { user } = await getUserById({ id: userId });
   if (!user) {
     return <UserNotFound />;
   }

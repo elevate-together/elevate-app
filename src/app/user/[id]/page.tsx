@@ -2,7 +2,8 @@ import { auth } from "@/auth";
 import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 import { ProfilePageTemplate } from "@/components/custom/templates/helper/profile-page-template";
 import UserNotFound from "@/components/not-found/user";
-import { getUserById, getUserDevices } from "@/services/user";
+import { getUserDevices } from "@/services/device";
+import { getUserById } from "@/services/user";
 
 export default async function ProfilePage({
   params,
@@ -10,7 +11,7 @@ export default async function ProfilePage({
   params: Promise<{ id: string }>;
 }) {
   const { id: pageId } = await params;
-  const { user: pageUser } = await getUserById(pageId);
+  const { user: pageUser } = await getUserById({ id: pageId });
   const { devices } = await getUserDevices(pageId);
   const session = await auth();
 

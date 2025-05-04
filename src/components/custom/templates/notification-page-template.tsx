@@ -30,7 +30,7 @@ export const NotificationPageTemplate = ({
 
   const handleDeleteAllNotifications = async () => {
     setDeleteLoading(true);
-    const res = await deleteAllNotificationsForUser(userId);
+    const res = await deleteAllNotificationsForUser({ userId: userId });
     if (res.success) {
       router.refresh();
     } else {
