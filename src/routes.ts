@@ -2,4 +2,4 @@ export const API_AUTH_PREFIX = "/api/auth";
 
 export const AUTH_ROUTES = ["/login"];
 
-export const PROTECTED_ROUTES = ["/groups", "/user", "/requests"];
+export const PROTECTED_ROUTES = ["/group", "/groups", "/user", "/requests"];

@@ -10,17 +10,13 @@ export default async function Navbar() {
 
   const data = await getNotificationCountForUser({ userId: session.user.id });
 
-  if (!data.count) {
-    return null;
-  }
-
   return (
     <div className="block shadow-sm z-10 md:hidden">
       <ClientNavbarUser
         userId={session.user.id}
         image={session.user.image}
         name={session.user.name}
-        notificationCount={data.count}
+        notificationCount={data.count || 0}
       />
       <Separator />
     </div>
