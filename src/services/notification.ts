@@ -166,7 +166,7 @@ export async function getNotificationCountForUser({
     return {
       success: true,
       message: "Notification count retrieved successfully.",
-      count,
+      count: count ?? 0,
     };
   } catch {
     return {
