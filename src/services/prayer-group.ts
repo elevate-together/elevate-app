@@ -4,17 +4,26 @@ import db from "@/lib/db";
 import {
   PrayerGroupWithOwner,
   PrayerGroupWithOwnerAndCount,
+  ResponseMessage,
 } from "@/lib/utils";
-import { GroupStatus, GroupType, PrayerGroup } from "@prisma/client";
-import type { User } from "@prisma/client";
+import { GroupStatus, GroupType } from "@prisma/client";
+import { ObjectId } from "mongodb";
 
 // GET PrayerGroup by ID
-export async function getPrayerGroupById(id: string): Promise<{
+export async function getPrayerGroupById({ id }: { id: string }): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroupWithOwner;
+  prayerGroup: PrayerGroupWithOwner | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerGroup: null,
+      };
+    }
+
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
       include: {
@@ -26,6 +35,7 @@ export async function getPrayerGroupById(id: string): Promise<{
       return {
         success: false,
         message: "Prayer group not found",
+        prayerGroup: null,
       };
     }
 
@@ -34,11 +44,11 @@ export async function getPrayerGroupById(id: string): Promise<{
       message: "Prayer group found",
       prayerGroup: prayerGroup,
     };
-  } catch (error) {
-    console.error(`Error fetching prayer group with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer group by ID",
+      prayerGroup: null,
     };
   }
 }
@@ -46,9 +56,17 @@ export async function getPrayerGroupById(id: string): Promise<{
 export async function getPrayerGroupWithCountById(id: string): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroupWithOwnerAndCount;
+  prayerGroup: PrayerGroupWithOwnerAndCount | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerGroup: null,
+      };
+    }
+
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
       include: {
@@ -63,6 +81,7 @@ export async function getPrayerGroupWithCountById(id: string): Promise<{
       return {
         success: false,
         message: "Prayer group not found",
+        prayerGroup: null,
       };
     }
 
@@ -71,17 +90,22 @@ export async function getPrayerGroupWithCountById(id: string): Promise<{
       message: "Prayer group found",
       prayerGroup: prayerGroup,
     };
-  } catch (error) {
-    console.error(`Error fetching prayer group with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer group by ID",
+      prayerGroup: null,
     };
   }
 }
 
 // CREATE prayer group
-export async function createPrayerGroup(groupData: {
+export async function createPrayerGroup({
+  name,
+  ownerId,
+  groupType,
+  description = "",
+}: {
   name: string;
   ownerId: string;
   groupType: GroupType;
@@ -89,10 +113,9 @@ export async function createPrayerGroup(groupData: {
 }): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User };
+  prayerGroup: PrayerGroupWithOwner | null;
 }> {
   try {
-    const { name, ownerId, groupType, description } = groupData;
     const newPrayerGroup = await db.prayerGroup.create({
       data: {
         name: name,
@@ -107,7 +130,7 @@ export async function createPrayerGroup(groupData: {
 
     await db.userPrayerGroup.create({
       data: {
-        userId: groupData.ownerId,
+        userId: ownerId,
         prayerGroupId: newPrayerGroup.id,
         groupStatus: GroupStatus.ACCEPTED,
       },
@@ -118,25 +141,36 @@ export async function createPrayerGroup(groupData: {
       message: "Successfully created prayer group.",
       prayerGroup: newPrayerGroup,
     };
-  } catch (error) {
-    console.error("Error creating prayer group:", error);
+  } catch {
     return {
       success: false,
       message: "Error creating prayer group, try again.",
+      prayerGroup: null,
     };
   }
 }
 
 // UPDATE prayer group
-export async function updatePrayerGroup(
-  id: string,
-  groupData: { name?: string; description?: string; groupType?: GroupType }
-): Promise<{
+export async function updatePrayerGroup({
+  id,
+  groupData,
+}: {
+  id: string;
+  groupData: { name?: string; description?: string; groupType?: GroupType };
+}): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User };
+  prayerGroup: PrayerGroupWithOwner | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerGroup: null,
+      };
+    }
+
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
     });
@@ -145,6 +179,7 @@ export async function updatePrayerGroup(
       return {
         success: false,
         message: "Prayer group not found",
+        prayerGroup: null,
       };
     }
 
@@ -161,20 +196,29 @@ export async function updatePrayerGroup(
       message: "Prayer group updated successfully",
       prayerGroup: updatedPrayerGroup,
     };
-  } catch (error) {
-    console.error(`Error updating prayer group with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error updating prayer group",
+      prayerGroup: null,
     };
   }
 }
 
 // DELETE a PrayerGroup by ID
-export async function deletePrayerGroup(
-  id: string
-): Promise<{ success: boolean; message: string }> {
+export async function deletePrayerGroup({
+  id,
+}: {
+  id: string;
+}): Promise<ResponseMessage> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
     const prayerGroup = await db.prayerGroup.findUnique({
       where: { id },
     });
@@ -194,8 +238,7 @@ export async function deletePrayerGroup(
       success: true,
       message: "Prayer group deleted successfully",
     };
-  } catch (error) {
-    console.error(`Error deleting prayer group with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error deleting prayer group",
@@ -204,15 +247,38 @@ export async function deletePrayerGroup(
 }
 
 // UPDATE a PrayerGroup owner
-export async function updatePrayerGroupOwner(
-  prayerGroupId: string,
-  newOwnerId: string
-): Promise<{
+export async function updatePrayerGroupOwner({
+  prayerGroupId,
+  newOwnerId,
+}: {
+  prayerGroupId: string;
+  newOwnerId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  prayerGroup?: PrayerGroup & { owner: User };
+  prayerGroup: PrayerGroupWithOwner | null;
 }> {
   try {
+    if (!ObjectId.isValid(prayerGroupId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerGroup: null,
+      };
+    }
+
+    const prayerGroup = await db.prayerGroup.findUnique({
+      where: { id: prayerGroupId },
+    });
+
+    if (!prayerGroup) {
+      return {
+        success: false,
+        message: "Prayer group not found",
+        prayerGroup: null,
+      };
+    }
+
     const updatedPrayerGroup = await db.prayerGroup.update({
       where: { id: prayerGroupId },
       data: {
@@ -247,11 +313,11 @@ export async function updatePrayerGroupOwner(
       message: "Prayer group owner updated successfully.",
       prayerGroup: updatedPrayerGroup,
     };
-  } catch (error) {
-    console.error("Error updating prayer group owner:", error);
+  } catch {
     return {
       success: false,
       message: "Failed to update prayer group owner.",
+      prayerGroup: null,
     };
   }
 }

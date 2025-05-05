@@ -46,7 +46,7 @@ export default function PrayerRequestDelete({
 
   const handleDeleteRequest = async () => {
     setLoading(true);
-    const result = await deletePrayerRequest(requestId);
+    const result = await deletePrayerRequest({ id: requestId });
     if (result.success) {
       setIsOpen(false);
       setTimeout(() => {
@@ -88,8 +88,7 @@ export default function PrayerRequestDelete({
       onClick={handleDeleteRequest}
       disabled={loading}
     >
-      loading ? (
-      <Loader className="h-4 w-4 animate-spin" />) : Confirm;
+      {loading ? <Loader className="h-4 w-4 animate-spin" /> : "Confirm"}
     </Button>
   );
 

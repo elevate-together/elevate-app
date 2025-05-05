@@ -18,21 +18,32 @@ import {
   deletePrayerRequestShare,
 } from "@/services/prayer-request-share";
 import { PrayerRequestWithUser, ResponseMessage } from "@/lib/utils";
+import { ObjectId } from "mongodb";
 
 // GET Prayer Request by ID
-export async function getPrayerRequestById(id: string): Promise<{
+export async function getPrayerRequestById({ id }: { id: string }): Promise<{
   success: boolean;
   message: string;
-  prayerRequest?: PrayerRequest;
+  prayerRequest: PrayerRequest | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerRequest: null,
+      };
+    }
+
     const prayerRequest = await db.prayerRequest.findUnique({
       where: { id },
     });
+
     if (!prayerRequest) {
       return {
         success: false,
         message: "Prayer request not found",
+        prayerRequest: null,
       };
     }
     return {
@@ -40,20 +51,26 @@ export async function getPrayerRequestById(id: string): Promise<{
       message: "Prayer request found",
       prayerRequest,
     };
-  } catch (error) {
-    console.error(`Error fetching prayer request with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer request by ID",
+      prayerRequest: null,
     };
   }
 }
 
 // CREATE Prayer Request
-export async function createPrayerRequest(requestData: {
+export async function createPrayerRequest({
+  request,
+  notify,
+  sharedWith,
+  userId,
+  status = PrayerRequestStatus.IN_PROGRESS,
+}: {
   request: string;
   notify: boolean;
-  sharedWith: { type: string; id: string }[];
+  sharedWith: { type: "public" | "private" | "group"; id: string }[];
   userId: string;
   status?: PrayerRequestStatus;
 }): Promise<{
@@ -62,9 +79,6 @@ export async function createPrayerRequest(requestData: {
   prayerRequest?: PrayerRequest;
 }> {
   try {
-    const { request, notify, sharedWith, userId, status } = requestData;
-    const requestStatus = status || PrayerRequestStatus.IN_PROGRESS;
-
     const hasPublicType = sharedWith.some((item) => item.type === "public");
     const hasPrivateType = sharedWith.some((item) => item.type === "private");
     const sharedWithGroups = sharedWith.filter((item) => item.type === "group");
@@ -75,7 +89,7 @@ export async function createPrayerRequest(requestData: {
       return await db.prayerRequest.create({
         data: {
           request,
-          status: requestStatus,
+          status,
           visibility,
           user: { connect: { id: userId } },
         },
@@ -107,6 +121,34 @@ export async function createPrayerRequest(requestData: {
         );
       }
     } else if (sharedWithGroups.length > 0) {
+      const groupIds = sharedWithGroups.map((group) => group.id);
+
+      const invalidGroupIds = groupIds.filter((id) => !ObjectId.isValid(id));
+
+      if (invalidGroupIds.length > 0) {
+        return {
+          success: false,
+          message: `Invalid group ID(s) type provided`,
+        };
+      }
+
+      // const groups = await db.prayerGroup.findMany({
+      //   where: {
+      //     id: { in: groupIds },
+      //   },
+      // });
+
+      // const invalidGroups = groupIds.filter(
+      //   (id) => !groups.some((group) => group.id === id)
+      // );
+
+      // if (invalidGroups.length > 0) {
+      //   return {
+      //     success: false,
+      //     message: "Some group(s) ID(s) not found",
+      //   };
+      // }
+
       newPrayerRequest = await createPrayerRequestEntry(
         PrayerVisibility.SHARED
       );
@@ -138,31 +180,41 @@ export async function createPrayerRequest(requestData: {
       message: "Successfully added prayer request",
       prayerRequest: newPrayerRequest,
     };
-  } catch (error: unknown) {
-    const errorMessage =
-      error instanceof Error ? error.message : "An unknown error occurred";
+  } catch {
     return {
       success: false,
-      message: `Error creating prayer request: ${errorMessage}`,
+      message: "Error creating prayer request",
     };
   }
 }
 
 // UPDATE a Prayer Request by ID
-export async function updatePrayerRequest(
-  id: string,
+export async function updatePrayerRequest({
+  id,
+  requestData,
+  userId,
+}: {
+  id: string;
   requestData: {
     request: string;
     status: PrayerRequestStatus;
     sharedWith: { type: string; id: string }[];
-  },
-  userId: string
-): Promise<{
+  };
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  prayerRequest?: PrayerRequest;
+  prayerRequest: PrayerRequest | null;
 }> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerRequest: null,
+      };
+    }
+
     const prayerRequest = await db.prayerRequest.findUnique({
       where: { id },
     });
@@ -171,6 +223,7 @@ export async function updatePrayerRequest(
       return {
         success: false,
         message: "Prayer request not found",
+        prayerRequest: null,
       };
     }
 
@@ -244,20 +297,29 @@ export async function updatePrayerRequest(
       message: "Prayer request updated successfully",
       prayerRequest: updatedPrayerRequest,
     };
-  } catch (error) {
-    console.error(`Error updating prayer request with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error updating prayer request",
+      prayerRequest: null,
     };
   }
 }
 
 // DELETE a Prayer Request by ID
-export async function deletePrayerRequest(
-  id: string
-): Promise<ResponseMessage> {
+export async function deletePrayerRequest({
+  id,
+}: {
+  id: string;
+}): Promise<ResponseMessage> {
   try {
+    if (!ObjectId.isValid(id)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
     const prayerRequest = await db.prayerRequest.findUnique({
       where: { id },
     });
@@ -277,8 +339,7 @@ export async function deletePrayerRequest(
       success: true,
       message: "Prayer request deleted successfully",
     };
-  } catch (error) {
-    console.error(`Error deleting prayer request with ID ${id}:`, error);
+  } catch {
     return {
       success: false,
       message: "Error deleting prayer request",
@@ -287,12 +348,36 @@ export async function deletePrayerRequest(
 }
 
 // GET All Prayer Requests for a User
-export async function getPrayerRequestsByUserId(userId: string): Promise<{
+export async function getAllPrayerRequestsByUserId({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequest[];
+  prayerRequests: PrayerRequest[] | null;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerRequests: null,
+      };
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+        prayerRequests: null,
+      };
+    }
+
     const prayerRequests = await db.prayerRequest.findMany({
       where: {
         userId: userId,
@@ -303,6 +388,7 @@ export async function getPrayerRequestsByUserId(userId: string): Promise<{
       return {
         success: false,
         message: "No prayer requests found for this user",
+        prayerRequests: null,
       };
     }
 
@@ -311,26 +397,45 @@ export async function getPrayerRequestsByUserId(userId: string): Promise<{
       message: "Successfully fetched prayer requests for this user",
       prayerRequests,
     };
-  } catch (error) {
-    console.error(
-      `Error fetching prayer requests for user with ID ${userId}:`,
-      error
-    );
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer requests for the user",
+      prayerRequests: null,
     };
   }
 }
 
-export async function getInProgressPrayerRequestsForUser(
-  userId: string
-): Promise<{
+export async function getInProgressPrayerRequestsForUser({
+  userId,
+}: {
+  userId: string;
+}): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequestWithUser[];
+  prayerRequests: PrayerRequestWithUser[] | null;
 }> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+        prayerRequests: null,
+      };
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+        prayerRequests: null,
+      };
+    }
+
     const prayerRequests = await db.prayerRequest.findMany({
       where: {
         userId: userId,
@@ -356,24 +461,42 @@ export async function getInProgressPrayerRequestsForUser(
       message: "Successfully fetched prayer requests for this user",
       prayerRequests: prayerRequests,
     };
-  } catch (error) {
-    console.error(
-      `Error fetching prayer requests for user with ID ${userId}:`,
-      error
-    );
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer requests for the user",
+      prayerRequests: null,
     };
   }
 }
 
 // UPDATE prayer request status
-export async function updatePrayerRequestStatus(
-  prayerRequestId: string,
-  newStatus: PrayerRequestStatus
-): Promise<ResponseMessage> {
+export async function updatePrayerRequestStatus({
+  prayerRequestId,
+  newStatus,
+}: {
+  prayerRequestId: string;
+  newStatus: PrayerRequestStatus;
+}): Promise<ResponseMessage> {
   try {
+    if (!ObjectId.isValid(prayerRequestId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
+
+    const prayerRequest = await db.prayerRequest.findUnique({
+      where: { id: prayerRequestId },
+    });
+
+    if (!prayerRequest) {
+      return {
+        success: false,
+        message: "Prayer Request not found",
+      };
+    }
+
     await db.prayerRequest.update({
       where: { id: prayerRequestId },
       data: { status: newStatus },
@@ -383,8 +506,7 @@ export async function updatePrayerRequestStatus(
       success: true,
       message: "Prayer request status updated successfully.",
     };
-  } catch (error) {
-    console.error("Error updating prayer request status:", error);
+  } catch {
     return {
       success: false,
       message: "Failed to update prayer request status.",
@@ -392,10 +514,13 @@ export async function updatePrayerRequestStatus(
   }
 }
 
-export async function getUserPrayerRequestsVisibleUser(
-  userId: string,
-  guestUserId: string
-): Promise<{
+export async function getUserPrayerRequestsVisibleUser({
+  userId,
+  guestUserId,
+}: {
+  userId: string;
+  guestUserId: string;
+}): Promise<{
   success: boolean;
   message: string;
   prayerRequests: PrayerRequestWithUser[];
@@ -435,11 +560,11 @@ export async function getUserPrayerRequestsVisibleUser(
     const groupSharedRequests = await db.prayerRequest.findMany({
       where: {
         userId,
-        status: "IN_PROGRESS",
+        status: PrayerRequestStatus.IN_PROGRESS,
         PrayerRequestShare: {
           some: {
             sharedWithId: { in: mutualGroupIds },
-            sharedWithType: "GROUP",
+            sharedWithType: ShareType.GROUP,
           },
         },
       },
@@ -453,11 +578,7 @@ export async function getUserPrayerRequestsVisibleUser(
       message: "Successfully fetched prayer requests for this user",
       prayerRequests: allVisibleRequests,
     };
-  } catch (error) {
-    console.error(
-      `Error fetching prayer requests for user with ID ${userId}:`,
-      error
-    );
+  } catch {
     return {
       success: false,
       message: "Error fetching prayer requests for the user",

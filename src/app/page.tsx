@@ -34,7 +34,7 @@ export default async function Home() {
   const {
     success: InProgressSuccess,
     prayerRequests: InProgressPrayerRequests,
-  } = await getInProgressPrayerRequestsForUser(id);
+  } = await getInProgressPrayerRequestsForUser({ userId: id });
 
   if (!FriendSuccess || !InProgressSuccess) {
     return <PrayerRequestNotFound />;

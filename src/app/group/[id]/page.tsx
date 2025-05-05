@@ -37,7 +37,7 @@ export default async function GroupPage({
     return <UserNotFound />;
   }
 
-  const { prayerGroup } = await getPrayerGroupById(groupId);
+  const { prayerGroup } = await getPrayerGroupById({ id: groupId });
   if (!prayerGroup) {
     return <PrayerGroupNotFound />;
   }

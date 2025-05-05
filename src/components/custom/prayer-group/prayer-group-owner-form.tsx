@@ -60,10 +60,10 @@ export default function PrayerGroupOwnerForm({
     setLoading(true);
 
     if (values.newOwnerId !== prayerGroup.ownerId) {
-      const result = await updatePrayerGroupOwner(
-        prayerGroup.id,
-        values.newOwnerId
-      );
+      const result = await updatePrayerGroupOwner({
+        prayerGroupId: prayerGroup.id,
+        newOwnerId: values.newOwnerId,
+      });
 
       if (result.success) {
         router.refresh();

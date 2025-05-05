@@ -30,10 +30,9 @@ export type MinimalUser = Pick<
   "id" | "name" | "email" | "image" | "createdAt"
 >;
 
-export type UserBasics = Pick<
-  User,
-  "id" | "name" | "email" | "image" 
->;
+export type UserBasics = Pick<User, "id" | "name" | "email" | "image">;
+
+export type ShareWithTypes = "public" | "private" | "group";
 
 export type PrayerRequestWithUser = PrayerRequest & { user: UserDef };
 

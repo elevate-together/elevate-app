@@ -8,6 +8,8 @@ import { getUsersInPrayerGroup } from "@/services/user-prayer-group";
 import { getUserById } from "@/services/user";
 import { addNotification } from "@/services/notification";
 import { Device, NotificationType } from "@prisma/client";
+import { ResponseMessage } from "@/lib/utils";
+import { ObjectId } from "mongodb";
 
 if (
   !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ||
@@ -22,17 +24,38 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-export async function subscribeDevice(
-  sub: { endpoint: string; keys: { p256dh: string; auth: string } },
-  userId: string,
-  name?: string
-): Promise<{ success: boolean; message: string }> {
+export async function subscribeDevice({
+  sub,
+  userId,
+  name,
+}: {
+  sub: { endpoint: string; keys: { p256dh: string; auth: string } };
+  userId: string;
+  name?: string;
+}): Promise<ResponseMessage> {
   try {
+    if (!ObjectId.isValid(userId)) {
+      return {
+        success: false,
+        message: "Invalid ID format",
+      };
+    }
     const { vendor, os } = await getDeviceInfo();
     const deviceName =
       vendor && os
         ? `${vendor} ${os}`
         : `Device Added: ${format(new Date(), "yyyy-MM-dd")}`;
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return {
+        success: false,
+        message: "User not found",
+      };
+    }
 
     await db.device.upsert({
       where: { userId_endpoint: { userId, endpoint: sub.endpoint } },
@@ -52,8 +75,7 @@ export async function subscribeDevice(
     });
 
     return { success: true, message: "Device subscribed successfully" };
-  } catch (error) {
-    console.error("Error subscribing device:", error);
+  } catch {
     return { success: false, message: "Failed to subscribe device" };
   }
 }
@@ -61,7 +83,7 @@ export async function subscribeDevice(
 export async function unsubscribeDevice(
   userId: string,
   endpoint: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<ResponseMessage> {
   if (!userId || !endpoint) {
     return { success: false, message: "User ID or Endpoint is missing" };
   }
@@ -116,7 +138,7 @@ export async function sendNotificationToDevice(
   endpoint: string,
   message: string,
   title = "Notification"
-): Promise<{ success: boolean; message: string }> {
+): Promise<ResponseMessage> {
   try {
     const device = await db.device.findUnique({
       where: { userId_endpoint: { userId, endpoint } },
@@ -159,7 +181,7 @@ export async function sendNotificationAllDevices(
   notificationType: NotificationType,
   notificationLink: string,
   title: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<ResponseMessage> {
   try {
     const devices = await db.device.findMany({ where: { userId } });
 
@@ -201,7 +223,7 @@ export async function sendNotificationAllDevices(
 export async function updateDeviceTitle(
   deviceId: string,
   title: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<ResponseMessage> {
   try {
     await db.device.update({
       where: { id: deviceId },
@@ -228,7 +250,7 @@ export async function checkIfDeviceExists(endpoint: string): Promise<boolean> {
 export async function sendTestNotificationToDevice(
   userId: string,
   endpoint: string
-): Promise<{ success: boolean; message: string }> {
+): Promise<ResponseMessage> {
   try {
     const device = await db.device.findUnique({
       where: { userId_endpoint: { userId, endpoint } },

@@ -130,10 +130,10 @@ export default function PushNotificationManager({
         throw new Error("Invalid subscription data");
       }
 
-      const { success, message } = await subscribeDevice(
-        subscriptionData,
-        userId
-      );
+      const { success, message } = await subscribeDevice({
+        sub: subscriptionData,
+        userId,
+      });
 
       if (success) {
         setIsSubscribed(true);

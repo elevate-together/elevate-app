@@ -30,12 +30,7 @@ import {
 } from "@/services/device";
 import { Device } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
-import {
-  Bell,
-  MoreVerticalIcon,
-  Pencil,
-  Trash,
-} from "lucide-react";
+import { Bell, MoreVerticalIcon, Pencil, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";

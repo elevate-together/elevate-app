@@ -31,6 +31,7 @@ import { useEffect, useState } from "react";
 import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import { getSharedGroupIds } from "@/services/prayer-request-share";
 import SessionNotFound from "@/components/not-found/session";
+import { ShareWithTypes } from "@/lib/utils";
 
 const formSchema = z.object({
   request: z.string().min(1, { message: "Request cannot be left blank" }),
@@ -49,6 +50,12 @@ type PrayerRequestFormProps = {
   defaultGroupId?: string; // only for create
 };
 
+type ShareWithTypeLabel = {
+  value: string;
+  label: string;
+  type: ShareWithTypes;
+};
+
 export default function PrayerRequestForm({
   onSubmit,
   prayer,
@@ -59,9 +66,7 @@ export default function PrayerRequestForm({
 }: PrayerRequestFormProps) {
   const router = useRouter();
 
-  const [options, setOptions] = useState<
-    { value: string; label: string; type: string }[]
-  >([]);
+  const [options, setOptions] = useState<ShareWithTypeLabel[]>([]);
 
   const [loadingPane, setLoadingPane] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
@@ -86,17 +91,19 @@ export default function PrayerRequestForm({
 
       if (!session?.user?.id) return <SessionNotFound />;
 
-      const constants = [
+      const constants: ShareWithTypeLabel[] = [
         { value: "1", label: "Everyone", type: "public" },
         { value: "2", label: "Just Myself", type: "private" },
       ];
 
       const { prayerGroups } = await getPrayerGroupsForUser(session.user.id);
-      const formattedGroups = (prayerGroups || []).map((group) => ({
-        value: group.id,
-        label: group.name,
-        type: "group",
-      }));
+      const formattedGroups: ShareWithTypeLabel[] = (prayerGroups || []).map(
+        (group) => ({
+          value: group.id,
+          label: group.name,
+          type: "group",
+        })
+      );
 
       setOptions([...constants, ...formattedGroups]);
 
@@ -135,7 +142,9 @@ export default function PrayerRequestForm({
         const match = options.find((option) => option.value === id);
         return match ? { id: match.value, type: match.type } : null;
       })
-      .filter((item): item is { id: string; type: string } => item !== null);
+      .filter(
+        (item): item is { id: string; type: ShareWithTypes } => item !== null
+      );
 
     let result;
     if (prayer?.id) {
@@ -144,7 +153,11 @@ export default function PrayerRequestForm({
         status: PrayerRequestStatus.IN_PROGRESS,
         sharedWith: sharedWithWithType,
       };
-      result = await updatePrayerRequest(prayer.id, requestData, userId);
+      result = await updatePrayerRequest({
+        id: prayer.id,
+        requestData,
+        userId,
+      });
     } else {
       result = await createPrayerRequest({
         request,

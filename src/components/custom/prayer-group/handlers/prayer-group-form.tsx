@@ -69,7 +69,7 @@ export default function PrayerGroupForm({
     setLoading(true);
 
     if (group?.id) {
-      result = await updatePrayerGroup(group.id, values);
+      result = await updatePrayerGroup({ id: group.id, groupData: values });
     } else {
       result = await createPrayerGroup({
         ...values,

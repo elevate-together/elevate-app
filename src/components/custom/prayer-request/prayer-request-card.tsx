@@ -93,7 +93,10 @@ export default function PrayerRequestCard({
   };
 
   const handleUpdateStatus = async (status: PrayerRequestStatus) => {
-    const result = await updatePrayerRequestStatus(prayer.id, status);
+    const result = await updatePrayerRequestStatus({
+      prayerRequestId: prayer.id,
+      newStatus: status,
+    });
 
     if (result.success) {
       router.refresh();

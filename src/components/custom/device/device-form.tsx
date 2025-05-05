@@ -38,7 +38,7 @@ export default function DeviceForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: device?.title || "",
+      title: device.title || "",
     },
   });
 
@@ -46,7 +46,7 @@ export default function DeviceForm({
     const { title } = values;
     let result;
 
-    if (device?.id) {
+    if (device.id) {
       result = await updateDeviceTitle(device.id, title);
     }
     if (result?.success) {

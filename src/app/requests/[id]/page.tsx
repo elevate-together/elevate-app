@@ -4,7 +4,7 @@ import PrayerRequestUserPageTemplate from "@/components/custom/templates/prayer-
 import SessionNotFound from "@/components/not-found/session";
 import UserNotFound from "@/components/not-found/user";
 import {
-  getPrayerRequestsByUserId,
+  getAllPrayerRequestsByUserId,
   getUserPrayerRequestsVisibleUser,
 } from "@/services/prayer-request";
 import { getUserById } from "@/services/user";
@@ -23,7 +23,9 @@ export default async function UserRequests({
 
   const isOwner = sessionUserId === pageUserId;
   if (isOwner) {
-    const { prayerRequests } = await getPrayerRequestsByUserId(pageUserId);
+    const { prayerRequests } = await getAllPrayerRequestsByUserId({
+      userId: pageUserId,
+    });
     const { user: currUser } = await getUserById({ id: sessionUserId });
 
     if (!currUser) {
@@ -39,10 +41,10 @@ export default async function UserRequests({
   }
 
   const { user: pageUser } = await getUserById({ id: pageUserId });
-  const { prayerRequests } = await getUserPrayerRequestsVisibleUser(
-    pageUserId,
-    sessionUserId
-  );
+  const { prayerRequests } = await getUserPrayerRequestsVisibleUser({
+    userId: pageUserId,
+    guestUserId: sessionUserId,
+  });
 
   if (!pageUser) {
     return <UserNotFound />;
