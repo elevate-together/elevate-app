@@ -514,11 +514,7 @@ export async function getUserGroupStatus(
     }
 
     return "none";
-  } catch (error) {
-    console.error(
-      `Error checking group status for user ${userId} in group ${groupId}:`,
-      error
-    );
+  } catch {
     return "none";
   }
 }

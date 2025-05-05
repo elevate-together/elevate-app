@@ -31,8 +31,7 @@ export default function UserJoinGroup({
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
-      console.error("An error occurred:", error);
+    } catch {
       toast.error("An unexpected error occurred while joining the group.");
     }
   };

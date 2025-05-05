@@ -66,8 +66,8 @@ export default function PushNotificationManager({
       }
 
       setIsSubscribed(exists);
-    } catch (err) {
-      console.error("Error checking subscription:", err);
+    } catch {
+      toast.error("Error checking subscription:");
       setIsSubscribed(false);
     }
   };
@@ -82,8 +82,8 @@ export default function PushNotificationManager({
         }
       }
       return true;
-    } catch (err) {
-      console.error("Error requesting permission for notifications:", err);
+    } catch {
+      toast.error("Error requesting permission for notifications:");
       toast.error("Error requesting notification permissions.");
       return false;
     }
@@ -139,17 +139,16 @@ export default function PushNotificationManager({
         setIsSubscribed(true);
         router.refresh();
       } else {
-        console.error(message);
+        toast.error(message);
       }
-    } catch (error) {
-      console.error("Error adding push subscription:", error);
+    } catch {
       toast.error("Error Adding Device to Account. Try Again");
 
       if (sub) {
         try {
           await sub.unsubscribe();
-        } catch (unsubscribeError) {
-          console.error("Error unsubscribing device:", unsubscribeError);
+        } catch {
+          toast.error("Error unsubscribing device:");
         }
       }
     } finally {
@@ -175,14 +174,14 @@ export default function PushNotificationManager({
             setIsSubscribed(false);
             router.refresh();
           } else {
-            console.error("Failed to unsubscribe from push notifications");
+            toast.error("Failed to unsubscribe from push notifications");
           }
         } else {
-          console.error("Failed to unsubscribe from push notifications");
+          toast.error("Failed to unsubscribe from push notifications");
         }
       }
-    } catch (error) {
-      console.error("Error unsubscribing:", error);
+    } catch {
+      toast.error("Error unsubscribing:");
     } finally {
       setIsLoading(false);
     }

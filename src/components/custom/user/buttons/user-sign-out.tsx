@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { handleSignOut } from "@/lib/signInOutActions";
 import { LogOut } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 export default function SignOut({ hideOnMobile = false, ...prop }) {
   const [isLoading, setLoading] = useState(false);
@@ -12,8 +13,8 @@ export default function SignOut({ hideOnMobile = false, ...prop }) {
     setLoading(true);
     try {
       await handleSignOut();
-    } catch (error) {
-      console.error("Sign-out failed:", error);
+    } catch {
+      toast.error("Sign-out failed:");
     } finally {
       setLoading(false);
     }

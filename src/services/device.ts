@@ -94,8 +94,7 @@ export async function unsubscribeDevice(
     });
 
     return { success: true, message: "Device unsubscribed successfully" };
-  } catch (error) {
-    console.error("Error unsubscribing device:", error);
+  } catch {
     return { success: false, message: "Failed to unsubscribe device" };
   }
 }

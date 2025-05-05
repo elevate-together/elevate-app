@@ -5,6 +5,7 @@ import { handleSignIn } from "@/lib/signInOutActions";
 import { Loader, LogIn } from "lucide-react";
 import { useState } from "react";
 import { ButtonProps } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type SignInProps = ButtonProps & {
   callback?: string;
@@ -21,8 +22,8 @@ export default function SignIn({
     setLoading(true);
     try {
       await handleSignIn(callback);
-    } catch (error) {
-      console.error("Sign-in failed:", error);
+    } catch {
+      toast.error("Sign-in failed");
     } finally {
       setLoading(false);
     }
