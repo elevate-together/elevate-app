@@ -166,10 +166,10 @@ export default function PushNotificationManager({
         const success = await subscription.unsubscribe();
 
         if (success) {
-          const { success: successUnsubscribe } = await unsubscribeDevice(
+          const { success: successUnsubscribe } = await unsubscribeDevice({
             userId,
-            subscription.endpoint
-          );
+            endpoint: subscription.endpoint,
+          });
           if (successUnsubscribe) {
             setIsSubscribed(false);
             router.refresh();

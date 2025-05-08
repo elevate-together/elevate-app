@@ -80,12 +80,29 @@ export async function subscribeDevice({
   }
 }
 
-export async function unsubscribeDevice(
-  userId: string,
-  endpoint: string
-): Promise<ResponseMessage> {
-  if (!userId || !endpoint) {
-    return { success: false, message: "User ID or Endpoint is missing" };
+export async function unsubscribeDevice({
+  userId,
+  endpoint,
+}: {
+  userId: string;
+  endpoint: string;
+}): Promise<ResponseMessage> {
+  if (!ObjectId.isValid(userId)) {
+    return {
+      success: false,
+      message: "Invalid ID format",
+    };
+  }
+
+  const user = await db.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    return {
+      success: false,
+      message: "User not found",
+    };
   }
 
   try {
@@ -99,11 +116,15 @@ export async function unsubscribeDevice(
   }
 }
 
-export async function sendNotificationToGroups(
-  sharedWithGroups: { id: string }[],
-  userId: string,
-  notificationLink: string
-) {
+export async function sendNotificationToGroups({
+  sharedWithGroups,
+  userId,
+  notificationLink,
+}: {
+  sharedWithGroups: { id: string }[];
+  userId: string;
+  notificationLink: string;
+}) {
   const usersToNotify = new Set<string>();
 
   for (const group of sharedWithGroups) {
@@ -165,8 +186,7 @@ export async function sendNotificationToDevice(
       success: true,
       message: "Notification sent successfully to the device",
     };
-  } catch (error) {
-    console.error("Error sending push notification:", error);
+  } catch {
     return {
       success: false,
       message: "Failed to send notification to the device",
@@ -213,8 +233,7 @@ export async function sendNotificationAllDevices(
     );
 
     return { success: true, message: "Notification sent successfully." };
-  } catch (error) {
-    console.error("Error sending push notifications:", error);
+  } catch {
     return { success: false, message: "Failed to send notification" };
   }
 }
@@ -230,8 +249,7 @@ export async function updateDeviceTitle(
     });
 
     return { success: true, message: "Device updated successfully" };
-  } catch (error) {
-    console.error("Error updating device:", error);
+  } catch {
     return { success: false, message: "Failed to update device" };
   }
 }
@@ -240,8 +258,7 @@ export async function checkIfDeviceExists(endpoint: string): Promise<boolean> {
   try {
     const device = await db.device.findUnique({ where: { endpoint } });
     return !!device;
-  } catch (error) {
-    console.error("Error checking device existence:", error);
+  } catch {
     return false;
   }
 }
@@ -294,8 +311,7 @@ export async function sendTestNotificationToDevice(
     );
 
     return { success: true, message: "Test notification sent successfully." };
-  } catch (error) {
-    console.error("Error sending test push notification:", error);
+  } catch {
     return { success: false, message: "Failed to send test notification" };
   }
 }
@@ -320,8 +336,7 @@ export async function getUserDevices(userId: string): Promise<{
       message: "Devices retrieved successfully",
       devices,
     };
-  } catch (error) {
-    console.error("Error fetching user devices:", error);
+  } catch {
     return { success: false, message: "Failed to fetch devices" };
   }
 }

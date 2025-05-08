@@ -104,7 +104,11 @@ export async function createPrayerRequest({
       if (notify) {
         const data = await getPrayerGroupsForUser(userId);
         if (data.prayerGroups) {
-          await sendNotificationToGroups(data.prayerGroups, userId, link);
+          await sendNotificationToGroups({
+            sharedWithGroups: data.prayerGroups,
+            userId,
+            notificationLink: link,
+          });
         }
       }
     } else if (hasPrivateType) {
@@ -166,7 +170,11 @@ export async function createPrayerRequest({
           })
         );
         if (notify) {
-          await sendNotificationToGroups(sharedWithGroups, userId, link);
+          await sendNotificationToGroups({
+            sharedWithGroups,
+            userId,
+            notificationLink: link,
+          });
         }
       }
     } else {

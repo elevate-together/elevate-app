@@ -62,7 +62,10 @@ export default function DeviceTable({
   };
 
   const handleRemoveDevice = async (endpoint: string) => {
-    const { success, message } = await unsubscribeDevice(userId, endpoint);
+    const { success, message } = await unsubscribeDevice({
+      userId: userId,
+      endpoint: endpoint,
+    });
 
     if (success) {
       router.refresh();
