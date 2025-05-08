@@ -116,13 +116,13 @@ export async function createPrayerRequest({
         PrayerVisibility.PRIVATE
       );
       if (notify) {
-        await sendNotificationAllDevices(
+        await sendNotificationAllDevices({
           userId,
-          "You just added a new private prayer request.",
-          NotificationType.PRAYER,
-          link,
-          "New Prayer Request"
-        );
+          message: "You just added a new private prayer request.",
+          notificationType: NotificationType.PRAYER,
+          notificationLink: link,
+          title: "New Prayer Request",
+        });
       }
     } else if (sharedWithGroups.length > 0) {
       const groupIds = sharedWithGroups.map((group) => group.id);

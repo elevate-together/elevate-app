@@ -72,13 +72,13 @@ export default function PrayerRequestCard({
         : "Someone prayed for you!";
     const message = `${currUserName} prayed for ${prayer.request} `;
     const link = `/requests/${user.id}`;
-    const result = await sendNotificationAllDevices(
-      user.id,
+    const result = await sendNotificationAllDevices({
+      userId: user.id,
       message,
-      NotificationType.PRAYER,
-      link,
-      title
-    );
+      notificationType: NotificationType.PRAYER,
+      notificationLink: link,
+      title,
+    });
 
     if (result.success) {
       router.refresh();

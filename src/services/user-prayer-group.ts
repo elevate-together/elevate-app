@@ -395,17 +395,17 @@ export async function acceptUserPrayerGroupStatus(
       },
     });
 
-    await sendNotificationAllDevices(
+    await sendNotificationAllDevices({
       userId,
-      groupName
+      message: groupName
         ? `You're now a part of the group ${groupName}. Start sharing prayer requests and praying for others in the group!`
         : `You're now a part of a new group! Start sharing prayer requests and praying for others as you grow together.`,
-      NotificationType.JOINEDGROUP,
-      `/group/${groupId}`,
-      groupName
+      notificationType: NotificationType.JOINEDGROUP,
+      notificationLink: `/group/${groupId}`,
+      title: groupName
         ? `You've been added to ${groupName}`
-        : "You've been added to a new group"
-    );
+        : "You've been added to a new group",
+    });
 
     return {
       success: true,

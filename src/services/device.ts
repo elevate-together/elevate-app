@@ -142,13 +142,13 @@ export async function sendNotificationToGroups({
 
   await Promise.all(
     Array.from(usersToNotify).map((tempId) =>
-      sendNotificationAllDevices(
-        tempId,
-        `${user?.name || "Someone"} shared a prayer request with you!`,
-        NotificationType.PRAYER,
+      sendNotificationAllDevices({
+        userId: tempId,
+        message: `${user?.name || "Someone"} shared a prayer request with you!`,
+        notificationType: NotificationType.PRAYER,
         notificationLink,
-        "New Prayer Request"
-      )
+        title: "New Prayer Request",
+      })
     )
   );
 }
@@ -194,13 +194,19 @@ export async function sendNotificationToDevice(
   }
 }
 
-export async function sendNotificationAllDevices(
-  userId: string,
-  message: string,
-  notificationType: NotificationType,
-  notificationLink: string,
-  title: string
-): Promise<ResponseMessage> {
+export async function sendNotificationAllDevices({
+  userId,
+  message,
+  notificationType,
+  notificationLink,
+  title,
+}: {
+  userId: string;
+  message: string;
+  notificationType: NotificationType;
+  notificationLink: string;
+  title: string;
+}): Promise<ResponseMessage> {
   try {
     const devices = await db.device.findMany({ where: { userId } });
 

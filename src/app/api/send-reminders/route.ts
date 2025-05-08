@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import webpush from "web-push";
 // import { format } from "date-fns";
 import db from "@/lib/db";
-import { addNotification } from "@/services/notification";
+import { sendNotificationAllDevices } from "@/services/device";
+import { NotificationType } from "@prisma/client";
 
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
@@ -58,45 +59,21 @@ export async function GET(req: Request) {
       },
     });
 
-    let notificationsSent = 0;
-
     for (const reminder of reminders) {
       const { user } = reminder;
 
-      await addNotification({
-        title: "reminder",
-        text: "test reminder",
-        link: "/",
+      sendNotificationAllDevices({
         userId: user.id,
-        type: "PRAYER",
+        message: "test reminder text",
+        notificationType: NotificationType.TESTPUSH,
+        notificationLink: `reminder/${user.id}`,
+        title: "Reminder",
       });
-
-      for (const device of user.devices) {
-        try {
-          await webpush.sendNotification(
-            {
-              endpoint: device.endpoint,
-              keys: {
-                p256dh: device.p256dh,
-                auth: device.auth,
-              },
-            },
-            JSON.stringify({
-              title: reminder.title,
-              body: reminder.message,
-            })
-          );
-
-          notificationsSent++;
-        } catch {
-          console.log("Failed to send notification to device ${device.id}:");
-        }
-      }
     }
 
     return NextResponse.json({
       success: true,
-      message: `Sent ${notificationsSent} notifications.`,
+      message: `Sent ${reminders.length} notifications.`,
     });
   } catch (error) {
     console.error("Error sending reminders:", error);
