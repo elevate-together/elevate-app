@@ -1,7 +1,7 @@
 // app/api/send-reminders/route.ts
 import { NextResponse } from "next/server";
 import webpush from "web-push";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import db from "@/lib/db";
 
 webpush.setVapidDetails(
@@ -17,18 +17,18 @@ export async function GET(req: Request) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  const now = new Date();
-  const timeStr = format(now, "HH:mm");
-  const dayOfWeek = now.getDay();
+  //   const now = new Date();
+  //   const timeStr = format(now, "HH:mm");
+  //   const dayOfWeek = now.getDay();
 
-  const startOfHour = new Date(now);
-  startOfHour.setMinutes(0, 0, 0);
+  //   const startOfHour = new Date(now);
+  //   startOfHour.setMinutes(0, 0, 0);
 
-  const endOfHour = new Date(now);
-  endOfHour.setMinutes(59, 59, 999);
+  //   const endOfHour = new Date(now);
+  //   endOfHour.setMinutes(59, 59, 999);
 
-  const startOfHourStr = format(startOfHour, "HH:mm");
-  const endOfHourStr = format(endOfHour, "HH:mm");
+  //   const startOfHourStr = format(startOfHour, "HH:mm");
+  //   const endOfHourStr = format(endOfHour, "HH:mm");
 
   try {
     const reminders = await db.reminder.findMany({
@@ -36,15 +36,15 @@ export async function GET(req: Request) {
         OR: [
           {
             frequency: "daily",
-            time: {
-              gte: startOfHourStr,
-              lte: endOfHourStr,
-            },
+            // time: {
+            //   gte: startOfHourStr,
+            //   lte: endOfHourStr,
+            // },
           },
           {
             frequency: "weekly",
-            time: timeStr,
-            dayOfWeek: dayOfWeek,
+            // time: timeStr,
+            // dayOfWeek: dayOfWeek,
           },
         ],
       },
