@@ -37,7 +37,7 @@ model Reminder {
   time       String
   dayOfWeek  Int?
   createdAt  DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedAt DateTime  @updatedAt
 
   user       User     @relation("UserReminder", fields: [userId], references: [id])
 
