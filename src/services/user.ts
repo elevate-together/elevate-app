@@ -140,7 +140,7 @@ export async function deleteUser({
     if (!ObjectId.isValid(id)) {
       return {
         success: false,
-        message: "Invalid Id format",
+        message: "Invalid ID format",
       };
     }
 
