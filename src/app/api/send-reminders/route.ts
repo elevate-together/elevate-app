@@ -21,13 +21,25 @@ export async function GET(req: Request) {
   const timeStr = format(now, "HH:mm");
   const dayOfWeek = now.getDay();
 
+  const startOfHour = new Date(now);
+  startOfHour.setMinutes(0, 0, 0);
+
+  const endOfHour = new Date(now);
+  endOfHour.setMinutes(59, 59, 999);
+
+  const startOfHourStr = format(startOfHour, "HH:mm");
+  const endOfHourStr = format(endOfHour, "HH:mm");
+
   try {
     const reminders = await db.reminder.findMany({
       where: {
         OR: [
           {
             frequency: "daily",
-            time: timeStr,
+            time: {
+              gte: startOfHourStr,
+              lte: endOfHourStr,
+            },
           },
           {
             frequency: "weekly",
