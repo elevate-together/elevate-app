@@ -8,23 +8,39 @@ generator client {
 }
 
 model User {
-  id                 String               @id @default(auto()) @map("_id") @db.ObjectId
-  name               String
-  email              String               @unique
-  emailVerified      DateTime?
-  image              String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  id                     String               @id @default(auto()) @map("_id") @db.ObjectId
+  name                   String
+  email                  String               @unique
+  emailVerified          DateTime?
+  image                  String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
 
-  prayerGroups       UserPrayerGroup[]    @relation("UserToPrayerGroup")
-  accounts           Account[]
-  ownedPrayerGroups  PrayerGroup[]        @relation("UserOwnedPrayerGroups")
-  prayerRequests     PrayerRequest[]
-  devices            Device[]
-  PrayerRequestShare PrayerRequestShare[]
-  sentFriendRequests UserFriend[]         @relation("SentFriendRequests")
-  receivedFriendRequests UserFriend[]     @relation("ReceivedFriendRequests")
-  notifications           Notification[]
+  prayerGroups           UserPrayerGroup[]    @relation("UserToPrayerGroup")
+  accounts               Account[]
+  ownedPrayerGroups      PrayerGroup[]        @relation("UserOwnedPrayerGroups")
+  prayerRequests         PrayerRequest[]
+  devices                Device[]
+  PrayerRequestShare     PrayerRequestShare[]
+  sentFriendRequests     UserFriend[]         @relation("SentFriendRequests")
+  receivedFriendRequests UserFriend[]         @relation("ReceivedFriendRequests")
+  notifications          Notification[]
+  reminders              Reminder[]           @relation("UserReminder")
+}
+
+model Reminder {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
+  title      String
+  message    String
+  frequency  String
+  time       String
+  dayOfWeek  Int?
+  createdAt  DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User     @relation("UserReminder", fields: [userId], references: [id])
+
 }
 
 model UserFriend {

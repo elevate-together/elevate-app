@@ -46,7 +46,7 @@ export default function SignIn({
           <>
             {children ?? (
               <>
-                <LogIn className="h-4 w-4" /> "Sign In"
+                <LogIn className="h-4 w-4" /> Sign In
               </>
             )}
           </>
