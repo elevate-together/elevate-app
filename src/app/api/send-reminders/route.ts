@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import webpush from "web-push";
 // import { format } from "date-fns";
 import db from "@/lib/db";
+import { addNotification } from "@/services/notification";
 
 webpush.setVapidDetails(
   "mailto:hebeforeme3@gmail.com",
@@ -62,6 +63,14 @@ export async function GET(req: Request) {
     for (const reminder of reminders) {
       const { user } = reminder;
 
+      await addNotification({
+        title: "reminder",
+        text: "test reminder",
+        link: "/",
+        userId: user.id,
+        type: "PRAYER",
+      });
+
       for (const device of user.devices) {
         try {
           await webpush.sendNotification(
@@ -84,6 +93,7 @@ export async function GET(req: Request) {
         }
       }
     }
+
     return NextResponse.json({
       success: true,
       message: `Sent ${notificationsSent} notifications.`,
