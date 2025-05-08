@@ -9,12 +9,13 @@ import { toast } from "sonner";
 
 type SignInProps = ButtonProps & {
   callback?: string;
+  children?: React.ReactNode;
 };
 
 export default function SignIn({
   callback = "/",
   children,
-  ...prop
+  ...props
 }: SignInProps) {
   const [isLoading, setLoading] = useState(false);
 
@@ -31,34 +32,26 @@ export default function SignIn({
 
   return (
     <div className="w-full">
-      {isLoading ? (
-        <Button
-          className="w-full"
-          onClick={handleClick}
-          {...prop}
-          disabled={isLoading}
-        >
-          <Loader className="animate-spin h-4 w-4 mr-2" />
-        </Button>
-      ) : children ? (
-        <Button
-          className="w-full"
-          onClick={handleClick}
-          {...prop}
-          disabled={isLoading}
-        >
-          {children}
-        </Button>
-      ) : (
-        <Button
-          className="w-full"
-          onClick={handleClick}
-          {...prop}
-          disabled={isLoading}
-        >
-          <LogIn /> Sign In
-        </Button>
-      )}
+      <Button
+        className="w-full flex items-center justify-center gap-2"
+        onClick={handleClick}
+        disabled={isLoading}
+        aria-busy={isLoading}
+        aria-disabled={isLoading}
+        {...props}
+      >
+        {isLoading ? (
+          <Loader className="animate-spin h-4 w-4" />
+        ) : (
+          <>
+            {children ?? (
+              <>
+                <LogIn className="h-4 w-4" /> "Sign In"
+              </>
+            )}
+          </>
+        )}
+      </Button>
     </div>
   );
 }
