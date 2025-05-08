@@ -68,11 +68,10 @@ export async function GET(req: Request) {
 
           notificationsSent++;
         } catch {
-          console.log(`Failed to send notification to device ${device.id}:`);
+          console.log("Failed to send notification to device ${device.id}:");
         }
       }
     }
-
     return NextResponse.json({
       success: true,
       message: `Sent ${notificationsSent} notifications.`,
