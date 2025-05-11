@@ -47,10 +47,10 @@ export async function GET(req: Request) {
         const { user } = reminder;
         return sendNotificationAllDevices({
           userId: user.id,
-          message: "test reminder text",
+          message: reminder.message,
           notificationType: NotificationType.TESTPUSH,
           notificationLink: `reminder/${user.id}`,
-          title: "Reminder",
+          title: reminder.title,
         });
       })
     );
