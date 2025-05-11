@@ -47,7 +47,7 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      message: `Sent ${reminders.length} notifications.`,
+      message: `Sent ${reminders.length} notifications at ${currentUtcTime}`,
     });
   } catch (error) {
     console.error("Error sending reminders:", error);
