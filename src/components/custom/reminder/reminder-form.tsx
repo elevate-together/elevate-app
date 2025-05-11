@@ -24,7 +24,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
-import db from "@/lib/db";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
