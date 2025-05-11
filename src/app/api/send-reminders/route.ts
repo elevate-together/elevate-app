@@ -1,20 +1,13 @@
 import { NextResponse } from "next/server";
-import webpush from "web-push";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import db from "@/lib/db";
 import { sendNotificationAllDevices } from "@/services/device";
 import { NotificationType } from "@prisma/client";
 
-webpush.setVapidDetails(
-  "mailto:hebeforeme3@gmail.com",
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
-  process.env.VAPID_PRIVATE_KEY!
-);
-
 export async function GET() {
-  const now = new Date();
-  const timeStr = format(now, "HH:mm");
-  const dayOfWeek = now.getDay();
+//   const now = new Date();
+//   const timeStr = format(now, "HH:mm");
+//   const dayOfWeek = now.getDay();
 
   try {
     const reminders = await db.reminder.findMany({
@@ -22,12 +15,12 @@ export async function GET() {
         OR: [
           {
             frequency: "daily",
-            time: timeStr,
+            // time: timeStr,
           },
           {
             frequency: "weekly",
-            time: timeStr,
-            dayOfWeek: dayOfWeek,
+            // time: timeStr,
+            // dayOfWeek: dayOfWeek,
           },
         ],
       },
