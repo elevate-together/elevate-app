@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-// import { format } from "date-fns";
+import { format } from "date-fns";
 import db from "@/lib/db";
 import { sendNotificationAllDevices } from "@/services/device";
 import { NotificationType } from "@prisma/client";
 
 export async function GET() {
-//   const now = new Date();
-//   const timeStr = format(now, "HH:mm");
-//   const dayOfWeek = now.getDay();
+  const now = new Date();
+  const currentUtcTime = format(now, "HH:mm");
+  const currentDayOfWeek = now.getUTCDay(); // Sunday = 0
 
   try {
     const reminders = await db.reminder.findMany({
@@ -15,12 +15,12 @@ export async function GET() {
         OR: [
           {
             frequency: "daily",
-            // time: timeStr,
+            time: currentUtcTime,
           },
           {
             frequency: "weekly",
-            // time: timeStr,
-            // dayOfWeek: dayOfWeek,
+            time: currentUtcTime,
+            dayOfWeek: currentDayOfWeek,
           },
         ],
       },
@@ -34,15 +34,15 @@ export async function GET() {
     });
 
     await Promise.all(
-      reminders.map((reminder) => {
-        return sendNotificationAllDevices({
+      reminders.map((reminder) =>
+        sendNotificationAllDevices({
           userId: reminder.user.id,
           message: reminder.message,
           notificationType: NotificationType.TESTPUSH,
           notificationLink: `reminder/${reminder.user.id}`,
           title: reminder.title,
-        });
-      })
+        })
+      )
     );
 
     return NextResponse.json({
