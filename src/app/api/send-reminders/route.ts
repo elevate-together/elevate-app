@@ -51,18 +51,13 @@ export async function GET(req: Request) {
         ],
       },
       include: {
-        user: {
-          include: {
-            devices: true,
-          },
-        },
+        user: true,
       },
     });
 
     for (const reminder of reminders) {
       const { user } = reminder;
-
-      sendNotificationAllDevices({
+      await sendNotificationAllDevices({
         userId: user.id,
         message: "test reminder text",
         notificationType: NotificationType.TESTPUSH,

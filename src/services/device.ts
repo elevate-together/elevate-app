@@ -153,12 +153,17 @@ export async function sendNotificationToGroups({
   );
 }
 
-export async function sendNotificationToDevice(
-  userId: string,
-  endpoint: string,
-  message: string,
-  title = "Notification"
-): Promise<ResponseMessage> {
+export async function sendNotificationToDevice({
+  userId,
+  endpoint,
+  message,
+  title = "Notification",
+}: {
+  userId: string;
+  endpoint: string;
+  message: string;
+  title?: string;
+}): Promise<ResponseMessage> {
   try {
     const device = await db.device.findUnique({
       where: { userId_endpoint: { userId, endpoint } },
@@ -234,7 +239,12 @@ export async function sendNotificationAllDevices({
 
     await Promise.allSettled(
       devices.map((device) =>
-        sendNotificationToDevice(userId, device.endpoint, message, title)
+        sendNotificationToDevice({
+          userId,
+          endpoint: device.endpoint,
+          message,
+          title,
+        })
       )
     );
 
