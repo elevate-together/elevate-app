@@ -24,6 +24,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import db from "@/lib/db";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -41,7 +42,7 @@ export default function ReminderForm({ userId }: { userId: string }) {
   const form = useForm<ReminderFormValues>({
     resolver: zodResolver(reminderSchema),
     defaultValues: {
-      title: "",
+      title: "Reminder",
       message: "",
       frequency: "daily",
       time: "",
@@ -72,20 +73,6 @@ export default function ReminderForm({ userId }: { userId: string }) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Reminder title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="message"

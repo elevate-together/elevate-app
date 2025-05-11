@@ -38,18 +38,21 @@ export async function GET(req: Request) {
         ],
       },
       include: {
-        user: true,
+        user: {
+          select: {
+            id: true,
+          },
+        },
       },
     });
 
     await Promise.all(
       reminders.map((reminder) => {
-        const { user } = reminder;
         return sendNotificationAllDevices({
-          userId: user.id,
+          userId: reminder.user.id,
           message: reminder.message,
           notificationType: NotificationType.TESTPUSH,
-          notificationLink: `reminder/${user.id}`,
+          notificationLink: `reminder/${reminder.user.id}`,
           title: reminder.title,
         });
       })
