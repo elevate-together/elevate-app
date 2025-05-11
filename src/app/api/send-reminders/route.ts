@@ -55,16 +55,18 @@ export async function GET(req: Request) {
       },
     });
 
-    for (const reminder of reminders) {
-      const { user } = reminder;
-      await sendNotificationAllDevices({
-        userId: user.id,
-        message: "test reminder text",
-        notificationType: NotificationType.TESTPUSH,
-        notificationLink: `reminder/${user.id}`,
-        title: "Reminder",
-      });
-    }
+    await Promise.all(
+      reminders.map((reminder) => {
+        const { user } = reminder;
+        return sendNotificationAllDevices({
+          userId: user.id,
+          message: "test reminder text",
+          notificationType: NotificationType.TESTPUSH,
+          notificationLink: `reminder/${user.id}`,
+          title: "Reminder",
+        });
+      })
+    );
 
     return NextResponse.json({
       success: true,
