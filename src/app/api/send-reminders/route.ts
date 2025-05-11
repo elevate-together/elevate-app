@@ -11,13 +11,7 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 );
 
-export async function GET(req: Request) {
-  const authHeader = req.headers.get("Authorization");
-
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-    return new NextResponse("Unauthorized", { status: 401 });
-  }
-
+export async function GET() {
   const now = new Date();
   const timeStr = format(now, "HH:mm");
   const dayOfWeek = now.getDay();
