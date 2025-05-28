@@ -97,7 +97,7 @@ export function TimePicker({
         <SelectTrigger className="min-w-[90px] max-w-[90px]">
           <SelectValue placeholder="Select time" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="max-h-[250px]">
           {Array.from({ length: 12 }, (_, h) => h + 1).map((h) =>
             [0, 15, 30, 45].map((m) => {
               const timeStr = `${h.toString().padStart(2, "0")}:${m
