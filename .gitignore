@@ -41,5 +41,4 @@ next-env.d.ts
 
 certificates
 
-# Ignore generated Prisma Client
 /prisma/generated 
