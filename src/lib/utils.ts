@@ -1,10 +1,12 @@
 import {
   PrayerGroup,
   PrayerRequest,
+  TimezoneType,
   User,
   User as UserDef,
 } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
+import { getTimezoneOffset } from "date-fns-tz";
 import { HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -108,3 +110,38 @@ export function getLocalTimeAndMeridiem(
   return { time, meridiem };
 }
 
+export function getLocalTimeAndMeridiemFromTimeZone({
+  utcTime,
+  timeZone,
+}: {
+  utcTime: string;
+  timeZone: string;
+}) {
+  const now = new Date();
+  const offset = getTimezoneOffset(timeZone, now) / 3600000;
+  const [utcHourStr, utcMinuteStr] = utcTime.split(":");
+  let hour = parseInt(utcHourStr, 10);
+  const minute = parseInt(utcMinuteStr, 10);
+
+  hour += offset;
+  if (hour >= 24) hour -= 24;
+  if (hour < 0) hour += 24;
+
+  const meridiem: "AM" | "PM" = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  const displayMinute = minute.toString().padStart(2, "0");
+
+  const time = `${displayHour.toString().padStart(2, "0")}:${displayMinute}`;
+  return { time, meridiem };
+}
+
+const timeZoneMap = {
+  America_Los_Angeles: "America/Los_Angeles",
+  America_Denver: "America/Denver",
+  America_Chicago: "America/Chicago",
+  America_New_York: "America/New_York",
+} as const;
+
+export function getMappedTimeZone(tz: TimezoneType): string {
+  return timeZoneMap[tz];
+}

@@ -2,7 +2,10 @@
 
 import { Reminder } from "@prisma/client";
 import ReminderAdd from "../reminder/handlers/reminder-add";
-import { getLocalTimeAndMeridiem } from "@/lib/utils";
+import {
+  getLocalTimeAndMeridiemFromTimeZone,
+  getMappedTimeZone,
+} from "@/lib/utils";
 
 type ReminderCreatePageTemplateProps = {
   userId: string;
@@ -24,13 +27,18 @@ export default function ReminderCreatePageTemplate({
         ) : (
           <ul>
             {reminders.map((reminder) => {
-              const initial = getLocalTimeAndMeridiem(reminder.time, -5);
+              const initial = getLocalTimeAndMeridiemFromTimeZone({
+                utcTime: reminder.time,
+                timeZone: getMappedTimeZone(reminder.timeZone),
+              });
 
               return (
                 <li key={reminder.id} style={{ marginBottom: "1rem" }}>
                   <strong>{reminder.title}</strong> — {reminder.message} <br />
                   Frequency: {reminder.frequency} <br />
                   Time: {initial.time} {initial.meridiem} <br />
+                  TimeZone: {reminder.timeZone}
+                  <br />
                   {reminder.frequency === "weekly" &&
                     reminder.dayOfWeek !== null && (
                       <>Day of week: {reminder.dayOfWeek}</>

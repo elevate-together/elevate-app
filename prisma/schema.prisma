@@ -5,7 +5,6 @@ datasource db {
 
 generator client {
   provider = "prisma-client-js"
-  output   = "./generated/client"
 }
 
 model User {
@@ -31,6 +30,7 @@ model User {
 
 model Reminder {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  timeZone   TimezoneType  @default(America_Chicago)
   userId     String   @db.ObjectId
   title      String
   message    String
@@ -210,4 +210,11 @@ enum NotificationStatusType {
 enum FriendStatus {
   PENDING
   ACCEPTED
+}
+
+enum TimezoneType {
+  America_Los_Angeles 
+  America_Denver   
+  America_Chicago    
+  America_New_York 
 }

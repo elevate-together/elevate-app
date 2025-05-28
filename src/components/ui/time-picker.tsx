@@ -10,11 +10,13 @@ import {
 } from "@/components/ui/select";
 import { getTimezoneOffset } from "date-fns-tz";
 import { getLocalTimeAndMeridiem } from "@/lib/utils";
+import { TimezoneType } from "@prisma/client";
 
 type TimePickerProps = {
   value: string; // UTC time "HH:mm"
   onChange: (time: string) => void;
-  initialTimeZone?: string;
+  initialTimeZone?: TimezoneType;
+  onTimeZoneChange?: (timeZone: TimezoneType) => void;
 };
 
 const now = new Date();
@@ -24,21 +26,18 @@ const offsetCentral = getTimezoneOffset("America/Chicago", now) / 3600000;
 const offsetEastern = getTimezoneOffset("America/New_York", now) / 3600000;
 
 const TIMEZONES = [
-  { label: "Pacific", value: "America/Los_Angeles", offset: offsetPacific },
-  { label: "Mountain", value: "America/Denver", offset: offsetMountain },
-  { label: "Central", value: "America/Chicago", offset: offsetCentral },
-  { label: "Eastern", value: "America/New_York", offset: offsetEastern },
+  { label: "Pacific", value: "America_Los_Angeles", offset: offsetPacific },
+  { label: "Mountain", value: "America_Denver", offset: offsetMountain },
+  { label: "Central", value: "America_Chicago", offset: offsetCentral },
+  { label: "Eastern", value: "America_New_York", offset: offsetEastern },
 ];
 
 export function TimePicker({
   value,
   onChange,
-  initialTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone,
+  initialTimeZone,
+  onTimeZoneChange,
 }: TimePickerProps) {
-  initialTimeZone = TIMEZONES.some((tz) => tz.value === initialTimeZone)
-    ? initialTimeZone
-    : "America/Chicago";
-
   const [timezone, setTimezone] = useState(initialTimeZone);
   const [offset, setOffset] = useState(
     TIMEZONES.find((tz) => tz.value === initialTimeZone)?.offset ?? -5
@@ -84,8 +83,11 @@ export function TimePicker({
     onChange(newUtc);
   };
 
-  const handleZoneChange = (newTimezone: string) => {
+  const handleZoneChange = (newTimezone: TimezoneType) => {
     setTimezone(newTimezone);
+    if (onTimeZoneChange) {
+      onTimeZoneChange(newTimezone);
+    }
   };
 
   return (

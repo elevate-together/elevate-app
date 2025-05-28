@@ -1,7 +1,7 @@
 "use server";
 
 import db from "@/lib/db";
-import { Reminder } from "@prisma/client";
+import { Reminder, TimezoneType } from "@prisma/client";
 
 export async function addReminder({
   userId,
@@ -9,6 +9,7 @@ export async function addReminder({
   message,
   frequency,
   time,
+  timeZone,
   dayOfWeek,
 }: {
   userId: string;
@@ -16,6 +17,7 @@ export async function addReminder({
   message: string;
   frequency: string;
   time: string;
+  timeZone: TimezoneType;
   dayOfWeek?: string;
 }): Promise<{
   success: boolean;
@@ -30,6 +32,7 @@ export async function addReminder({
         message,
         frequency,
         time,
+        timeZone,
         dayOfWeek:
           frequency === "weekly" && dayOfWeek ? parseInt(dayOfWeek) : null,
       },

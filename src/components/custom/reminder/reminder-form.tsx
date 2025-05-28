@@ -26,6 +26,7 @@ import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TimePicker } from "@/components/ui/time-picker";
 import { Textarea } from "@/components/ui/textarea";
+import { TimezoneType } from "@prisma/client";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -35,6 +36,12 @@ const reminderSchema = z.object({
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Time must be in HH:mm format"),
   dayOfWeek: z.string().optional(),
+  timeZone: z.enum([
+    "America_Los_Angeles",
+    "America_Denver",
+    "America_Chicago",
+    "America_New_York",
+  ]),
 });
 
 type ReminderFormValues = z.infer<typeof reminderSchema>;
@@ -61,6 +68,7 @@ export default function ReminderForm({
       frequency: "daily",
       reminderTime: "13:00",
       dayOfWeek: "",
+      timeZone: "America_Chicago",
     },
   });
 
@@ -116,6 +124,8 @@ export default function ReminderForm({
           )}
         />
 
+        <input type="hidden" {...form.register("timeZone")} />
+
         {/* {frequency === "weekly" && (
           <FormField
             control={form.control}
@@ -152,7 +162,14 @@ export default function ReminderForm({
             <FormItem>
               <FormLabel>Time</FormLabel>
               <FormControl>
-                <TimePicker value={field.value} onChange={field.onChange} />
+                <TimePicker
+                  value={field.value}
+                  onChange={field.onChange}
+                  initialTimeZone="America_Chicago"
+                  onTimeZoneChange={(tz: TimezoneType) => {
+                    form.setValue("timeZone", tz);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
