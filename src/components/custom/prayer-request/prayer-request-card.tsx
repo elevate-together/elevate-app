@@ -18,7 +18,6 @@ import {
 } from "@prisma/client";
 import { format, isSameSecond } from "date-fns";
 import {
-  Bell,
   Hand,
   HandHelpingIcon,
   Package,
@@ -26,6 +25,7 @@ import {
   EllipsisVertical,
   Loader,
   Check,
+  BellRing,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -41,6 +41,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
+import ReminderAdd from "../reminder/handlers/reminder-add";
 
 type PrayerRequestCardProps = {
   prayer: PrayerRequest;
@@ -121,7 +122,12 @@ export default function PrayerRequestCard({
               }
               boldName
             />
-            <div className="flex flex-row justify-between items-start gap-3">
+            <div className="flex flex-row justify-between items-start gap-0">
+              <ReminderAdd
+                userId={user.id}
+                reminderText={`Take a moment to pray for ${prayer.request}`}
+                icon
+              />
               {!isOwner ? (
                 <Button
                   size="icon"
@@ -133,7 +139,7 @@ export default function PrayerRequestCard({
                   ) : notificationSuccess ? (
                     <Check />
                   ) : (
-                    <Bell />
+                    <BellRing />
                   )}
                 </Button>
               ) : (

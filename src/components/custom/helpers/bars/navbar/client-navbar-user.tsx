@@ -49,6 +49,9 @@ export default function ClientNavbarUser({
   const isNotifications = pathname === "/notifications";
   const isJoinGroup =
     pathname.startsWith("/group/join/") && pathname.split("/").length === 4;
+  const isReminder =
+    pathname.startsWith("/reminder/create/") &&
+    pathname.split("/").length === 4;
 
   return (
     <div className="relative flex items-center justify-between bg-card w-full py-1 px-3 shadow-none md:flex">
@@ -80,6 +83,8 @@ export default function ClientNavbarUser({
           ? "Notifications"
           : isJoinGroup
           ? "Join Group"
+          : isReminder
+          ? "Reminders"
           : "Hello"}
       </div>
 

@@ -13,7 +13,6 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -24,43 +23,66 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Loader } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { TimePicker } from "@/components/ui/time-picker";
+import { Textarea } from "@/components/ui/textarea";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
   message: z.string().min(1, "Message is required"),
   frequency: z.enum(["daily", "weekly"]),
-  time: z
+  reminderTime: z
     .string()
-    .regex(/^([0-1]\d|2[0-3]):([0-5]\d)$/, "Time must be in HH:mm format"),
+    .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Time must be in HH:mm format"),
   dayOfWeek: z.string().optional(),
 });
 
 type ReminderFormValues = z.infer<typeof reminderSchema>;
 
-export default function ReminderForm({ userId }: { userId: string }) {
+type ReminderFormProps = {
+  userId: string;
+  reminderText?: string;
+  onSubmit?: () => void;
+  onCancel?: () => void;
+};
+
+export default function ReminderForm({
+  userId,
+  reminderText = "",
+  onSubmit,
+  onCancel,
+}: ReminderFormProps) {
+  const router = useRouter();
   const form = useForm<ReminderFormValues>({
     resolver: zodResolver(reminderSchema),
     defaultValues: {
       title: "Reminder",
-      message: "",
+      message: reminderText,
       frequency: "daily",
-      time: "",
+      reminderTime: "13:00",
       dayOfWeek: "",
     },
   });
 
   const [loading, setLoading] = useState(false);
-  const frequency = form.watch("frequency");
+  // const frequency = form.watch("frequency");
 
   const handleSubmit = async (values: ReminderFormValues) => {
     setLoading(true);
+
+    console.log(values);
+
     const result = await addReminder({
       userId,
       ...values,
+      time: values.reminderTime,
     });
 
     if (result.success) {
-      toast.success("Reminder added!");
+      router.refresh();
+      if (onSubmit) {
+        onSubmit();
+      }
       form.reset();
     } else {
       toast.error(result.message || "Failed to create reminder.");
@@ -71,35 +93,7 @@ export default function ReminderForm({ userId }: { userId: string }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="message"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Message</FormLabel>
-              <FormControl>
-                <Input placeholder="Reminder message" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="time"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Time (HH:mm)</FormLabel>
-              <FormControl>
-                <Input placeholder="e.g. 08:00" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
         <FormField
           control={form.control}
           name="frequency"
@@ -113,7 +107,7 @@ export default function ReminderForm({ userId }: { userId: string }) {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="daily">Daily</SelectItem>
-                    <SelectItem value="weekly">Weekly</SelectItem>
+                    {/* <SelectItem value="weekly">Weekly</SelectItem> */}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -122,7 +116,7 @@ export default function ReminderForm({ userId }: { userId: string }) {
           )}
         />
 
-        {frequency === "weekly" && (
+        {/* {frequency === "weekly" && (
           <FormField
             control={form.control}
             name="dayOfWeek"
@@ -149,11 +143,48 @@ export default function ReminderForm({ userId }: { userId: string }) {
               </FormItem>
             )}
           />
-        )}
+        )} */}
 
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? <Loader className="animate-spin" /> : "Create Reminder"}
-        </Button>
+        <FormField
+          control={form.control}
+          name="reminderTime"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Time</FormLabel>
+              <FormControl>
+                <TimePicker value={field.value} onChange={field.onChange} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="message"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Reminder</FormLabel>
+              <FormControl>
+                <Textarea
+                  className="bg-transparent min-h-[200px]"
+                  placeholder="Reminder message"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <div className="flex flex-row gap-4">
+          <Button variant="outline" className="w-full" onClick={onCancel}>
+            {loading ? <Loader className="animate-spin" /> : "Cancel"}
+          </Button>
+          <Button type="submit" className="w-full" disabled={loading}>
+            {loading ? <Loader className="animate-spin" /> : "Create Reminder"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

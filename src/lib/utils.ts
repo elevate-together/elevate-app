@@ -87,3 +87,24 @@ export function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
   const uint8Array = new Uint8Array(buffer);
   return btoa(String.fromCharCode(...uint8Array));
 }
+
+export function getLocalTimeAndMeridiem(
+  utcTime: string,
+  offset: number
+): { time: string; meridiem: "AM" | "PM" } {
+  const [utcHourStr, utcMinuteStr] = utcTime.split(":");
+  let hour = parseInt(utcHourStr, 10);
+  const minute = parseInt(utcMinuteStr, 10);
+
+  hour += offset;
+  if (hour >= 24) hour -= 24;
+  if (hour < 0) hour += 24;
+
+  const meridiem = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  const displayMinute = minute.toString().padStart(2, "0");
+
+  const time = `${displayHour.toString().padStart(2, "0")}:${displayMinute}`;
+  return { time, meridiem };
+}
+

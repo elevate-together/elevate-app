@@ -34,7 +34,7 @@ export default function ClientMobileFooter({ userId }: { userId: string }) {
         <User className={iconClass} />
         <span className="text-xs">Profile</span>
       </Link>
-      <Link href={`/reminder/${userId}`} className={linkClass("/user")}>
+      <Link href={`/reminder/create/${userId}`} className={linkClass("/user")}>
         <CalendarSync className={iconClass} />
         <span className="text-xs">Reminders</span>
       </Link>

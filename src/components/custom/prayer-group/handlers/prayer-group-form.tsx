@@ -180,10 +180,9 @@ export default function PrayerGroupForm({
               )}
             />
 
-            <div className="flex flex-row gap-4 ">
+            <div className="flex flex-row gap-4">
               <Button
                 variant="outline"
-                type="button"
                 onClick={handleCancel}
                 className="flex-1"
                 disabled={loading}
