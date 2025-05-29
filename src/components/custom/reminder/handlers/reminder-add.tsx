@@ -63,8 +63,7 @@ export default function ReminderAdd({
 
   const FormContent = (
     <ReminderForm
-      userId={user.id}
-      timeZone={user.timeZone || "CHICAGO"}
+      user={user}
       reminderText={reminderText}
       onCancel={handleCancel}
       onSubmit={handleSubmit}

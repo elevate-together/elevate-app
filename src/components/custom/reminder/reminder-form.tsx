@@ -26,8 +26,12 @@ import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TimePicker } from "@/components/ui/time-picker";
 import { Textarea } from "@/components/ui/textarea";
-import { ZoneType } from "@prisma/client";
-import { convertUTCToZoneTime, convertZoneTimeToUTC } from "@/lib/utils";
+import { User } from "@prisma/client";
+import {
+  convertUTCToZoneTime,
+  convertZoneTimeToUTC,
+  getIanafromEnumKey,
+} from "@/lib/utils";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -42,16 +46,14 @@ const reminderSchema = z.object({
 type ReminderFormValues = z.infer<typeof reminderSchema>;
 
 type ReminderFormProps = {
-  userId: string;
-  timeZone: ZoneType;
+  user: User;
   reminderText?: string;
   onSubmit?: () => void;
   onCancel?: () => void;
 };
 
 export default function ReminderForm({
-  userId,
-  timeZone,
+  user,
   reminderText = "",
   onSubmit,
   onCancel,
@@ -63,7 +65,7 @@ export default function ReminderForm({
       title: "Reminder",
       message: reminderText,
       frequency: "daily",
-      reminderTime: convertUTCToZoneTime("13:00", timeZone),
+      reminderTime: convertUTCToZoneTime("13:00", user.timeZone),
       dayOfWeek: "",
     },
   });
@@ -74,10 +76,10 @@ export default function ReminderForm({
     setLoading(true);
 
     const result = await addReminder({
-      userId,
+      userId: user.id,
       ...values,
-      time: convertZoneTimeToUTC(values.reminderTime, timeZone),
-      timeZone,
+      time: convertZoneTimeToUTC(values.reminderTime, user.timeZone),
+      timeZone: user.timeZone,
     });
 
     if (result.success) {
@@ -160,6 +162,11 @@ export default function ReminderForm({
             </FormItem>
           )}
         />
+
+        <p className="text-xs text-muted-foreground leading-sm">
+          Your time zone is set to {getIanafromEnumKey(user.timeZone)}. If
+          that’s not right, you can change it in your profile.
+        </p>
 
         <FormField
           control={form.control}

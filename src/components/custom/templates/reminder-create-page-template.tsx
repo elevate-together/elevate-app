@@ -26,7 +26,7 @@ export default function ReminderCreatePageTemplate({
             {reminders.map((reminder) => {
               const time = convertUTCToZoneTime12hr(
                 reminder.time,
-                user.timeZone || "CHICAGO"
+                user.timeZone
               );
 
               return (
