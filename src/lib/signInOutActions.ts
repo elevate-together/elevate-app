@@ -1,21 +1,22 @@
-"use server";
+// app/components/auth/clientSignIn.tsx
+"use client";
 
-import { signIn, signOut } from "@/auth";
+import { signIn } from "next-auth/react";
+import { signOut } from "next-auth/react";
 
 export const handleSignIn = async (callbackUrl?: string) => {
-  try {
-    await signIn("google", {
-      callbackUrl: callbackUrl || "/",
-    });
-  } catch (error) {
-    throw error;
-  }
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  document.cookie = `tz=${timeZone}; path=/`;
+
+  await signIn("google", {
+    callbackUrl: callbackUrl || "/",
+  });
 };
 
 export const handleSignOut = async () => {
   try {
-    await signOut({ redirect: false });
+    await signOut({ redirect: true }); // or false if you want to handle redirect manually
   } catch (error) {
-    throw error;
+    console.error("Error signing out:", error);
   }
 };

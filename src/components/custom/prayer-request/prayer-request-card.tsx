@@ -124,7 +124,7 @@ export default function PrayerRequestCard({
             />
             <div className="flex flex-row justify-between items-start gap-0">
               <ReminderAdd
-                userId={user.id}
+                user={user}
                 reminderText={`Take a moment to pray for ${prayer.request}`}
                 icon
               />

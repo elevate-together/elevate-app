@@ -26,7 +26,8 @@ import { Loader } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { TimePicker } from "@/components/ui/time-picker";
 import { Textarea } from "@/components/ui/textarea";
-import { TimezoneType } from "@prisma/client";
+import { ZoneType } from "@prisma/client";
+import { convertUTCToZoneTime, convertZoneTimeToUTC } from "@/lib/utils";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -36,18 +37,13 @@ const reminderSchema = z.object({
     .string()
     .regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Time must be in HH:mm format"),
   dayOfWeek: z.string().optional(),
-  timeZone: z.enum([
-    "America_Los_Angeles",
-    "America_Denver",
-    "America_Chicago",
-    "America_New_York",
-  ]),
 });
 
 type ReminderFormValues = z.infer<typeof reminderSchema>;
 
 type ReminderFormProps = {
   userId: string;
+  timeZone: ZoneType;
   reminderText?: string;
   onSubmit?: () => void;
   onCancel?: () => void;
@@ -55,6 +51,7 @@ type ReminderFormProps = {
 
 export default function ReminderForm({
   userId,
+  timeZone,
   reminderText = "",
   onSubmit,
   onCancel,
@@ -66,24 +63,21 @@ export default function ReminderForm({
       title: "Reminder",
       message: reminderText,
       frequency: "daily",
-      reminderTime: "13:00",
+      reminderTime: convertUTCToZoneTime("13:00", timeZone),
       dayOfWeek: "",
-      timeZone: "America_Chicago",
     },
   });
 
   const [loading, setLoading] = useState(false);
-  // const frequency = form.watch("frequency");
 
   const handleSubmit = async (values: ReminderFormValues) => {
     setLoading(true);
 
-    console.log(values);
-
     const result = await addReminder({
       userId,
       ...values,
-      time: values.reminderTime,
+      time: convertZoneTimeToUTC(values.reminderTime, timeZone),
+      timeZone,
     });
 
     if (result.success) {
@@ -124,8 +118,6 @@ export default function ReminderForm({
           )}
         />
 
-        <input type="hidden" {...form.register("timeZone")} />
-
         {/* {frequency === "weekly" && (
           <FormField
             control={form.control}
@@ -162,14 +154,7 @@ export default function ReminderForm({
             <FormItem>
               <FormLabel>Time</FormLabel>
               <FormControl>
-                <TimePicker
-                  value={field.value}
-                  onChange={field.onChange}
-                  initialTimeZone="America_Chicago"
-                  onTimeZoneChange={(tz: TimezoneType) => {
-                    form.setValue("timeZone", tz);
-                  }}
-                />
+                <TimePicker value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

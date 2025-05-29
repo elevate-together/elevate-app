@@ -5,6 +5,7 @@ import PushNotificationManager from "@/components/custom/helpers/push-notificati
 import { Separator } from "@/components/ui/separator";
 import DeviceTable from "@/components/custom/device/device-table";
 import { useState } from "react";
+import { getIanafromEnumKey } from "@/lib/utils";
 
 type UserProfileDevicesProps = {
   devices: Device[] | undefined;
@@ -38,6 +39,12 @@ export default function UserProfileDevices({
             <div className="text-sm font-semibold">Email:</div>
             <div>{user.email}</div>
           </div>
+          {user.timeZone && (
+            <div className="flex flex-col gap-1">
+              <div className="text-sm font-semibold">TimeZone:</div>
+              <div>{getIanafromEnumKey(user.timeZone)}</div>
+            </div>
+          )}
         </div>
       </div>
       {devices && (

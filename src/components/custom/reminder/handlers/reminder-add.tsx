@@ -22,15 +22,16 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import ReminderForm from "../reminder-form";
+import { User } from "@prisma/client";
 
 type ReminderAddProps = {
-  userId: string;
+  user: User;
   icon?: boolean;
   reminderText?: string;
 };
 
 export default function ReminderAdd({
-  userId,
+  user,
   icon = false,
   reminderText = "",
 }: ReminderAddProps) {
@@ -62,7 +63,8 @@ export default function ReminderAdd({
 
   const FormContent = (
     <ReminderForm
-      userId={userId}
+      userId={user.id}
+      timeZone={user.timeZone || "CHICAGO"}
       reminderText={reminderText}
       onCancel={handleCancel}
       onSubmit={handleSubmit}

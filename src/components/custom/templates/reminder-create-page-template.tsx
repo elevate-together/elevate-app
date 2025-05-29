@@ -1,24 +1,21 @@
 "use client";
 
-import { Reminder } from "@prisma/client";
+import { Reminder, User } from "@prisma/client";
 import ReminderAdd from "../reminder/handlers/reminder-add";
-import {
-  getLocalTimeAndMeridiemFromTimeZone,
-  getMappedTimeZone,
-} from "@/lib/utils";
+import { convertUTCToZoneTime12hr } from "@/lib/utils";
 
 type ReminderCreatePageTemplateProps = {
-  userId: string;
+  user: User;
   reminders: Reminder[];
 };
 
 export default function ReminderCreatePageTemplate({
-  userId,
+  user,
   reminders,
 }: ReminderCreatePageTemplateProps) {
   return (
     <>
-      <ReminderAdd userId={userId} />
+      <ReminderAdd user={user} />
 
       <div style={{ marginTop: "2rem" }}>
         <h2>Your Reminders</h2>
@@ -27,17 +24,17 @@ export default function ReminderCreatePageTemplate({
         ) : (
           <ul>
             {reminders.map((reminder) => {
-              const initial = getLocalTimeAndMeridiemFromTimeZone({
-                utcTime: reminder.time,
-                timeZone: getMappedTimeZone(reminder.timeZone),
-              });
+              const time = convertUTCToZoneTime12hr(
+                reminder.time,
+                user.timeZone || "CHICAGO"
+              );
 
               return (
                 <li key={reminder.id} style={{ marginBottom: "1rem" }}>
                   <strong>{reminder.title}</strong> — {reminder.message} <br />
                   Frequency: {reminder.frequency} <br />
-                  Time: {initial.time} {initial.meridiem} <br />
-                  TimeZone: {reminder.timeZone}
+                  Time: {time} <br />
+                  TimeZone: {user.timeZone}
                   <br />
                   {reminder.frequency === "weekly" &&
                     reminder.dayOfWeek !== null && (

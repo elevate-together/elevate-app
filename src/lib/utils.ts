@@ -1,12 +1,13 @@
 import {
   PrayerGroup,
   PrayerRequest,
-  TimezoneType,
   User,
   User as UserDef,
+  ZoneType,
 } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
-import { getTimezoneOffset } from "date-fns-tz";
+import moment from "moment-timezone";
+
 import { HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
@@ -90,58 +91,71 @@ export function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
   return btoa(String.fromCharCode(...uint8Array));
 }
 
-export function getLocalTimeAndMeridiem(
-  utcTime: string,
-  offset: number
-): { time: string; meridiem: "AM" | "PM" } {
-  const [utcHourStr, utcMinuteStr] = utcTime.split(":");
-  let hour = parseInt(utcHourStr, 10);
-  const minute = parseInt(utcMinuteStr, 10);
+const timezoneMap: Record<string, string> = {
+  LOSANGELES: "America/Los_Angeles",
+  DENVER: "America/Denver",
+  CHICAGO: "America/Chicago",
+  NEWYORK: "America/New_York",
+};
 
-  hour += offset;
-  if (hour >= 24) hour -= 24;
-  if (hour < 0) hour += 24;
+export const getIanafromEnumKey = (tzEnumValue: ZoneType) => {
+  return timezoneMap[tzEnumValue] || tzEnumValue;
+};
 
-  const meridiem = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 || 12;
-  const displayMinute = minute.toString().padStart(2, "0");
+const reverseTimezoneMap = Object.fromEntries(
+  Object.entries(timezoneMap).map(([key, value]) => [value, key])
+);
 
-  const time = `${displayHour.toString().padStart(2, "0")}:${displayMinute}`;
-  return { time, meridiem };
+export const getEnumKeyFromIana = (iana: string) => {
+  return reverseTimezoneMap[iana] as ZoneType;
+};
+
+export function convertUTCToZoneTime(
+  time24: string,
+  zoneType: ZoneType
+): string {
+  const timeZone = getIanafromEnumKey(zoneType);
+
+  const todayUtc = moment().utc().format("YYYY-MM-DD");
+
+  const utcMoment = moment.tz(
+    `${todayUtc} ${time24}`,
+    "YYYY-MM-DD HH:mm",
+    "UTC"
+  );
+
+  const zoneTime = utcMoment.clone().tz(timeZone);
+
+  return zoneTime.format("HH:mm");
 }
 
-export function getLocalTimeAndMeridiemFromTimeZone({
-  utcTime,
-  timeZone,
-}: {
-  utcTime: string;
-  timeZone: string;
-}) {
-  const now = new Date();
-  const offset = getTimezoneOffset(timeZone, now) / 3600000;
-  const [utcHourStr, utcMinuteStr] = utcTime.split(":");
-  let hour = parseInt(utcHourStr, 10);
-  const minute = parseInt(utcMinuteStr, 10);
+export function convertUTCToZoneTime12hr(
+  time24: string,
+  zoneType: ZoneType
+): string {
+  const time24Converted = convertUTCToZoneTime(time24, zoneType);
 
-  hour += offset;
-  if (hour >= 24) hour -= 24;
-  if (hour < 0) hour += 24;
+  const today = moment().format("YYYY-MM-DD");
+  const timeMoment = moment(`${today} ${time24Converted}`, "YYYY-MM-DD HH:mm");
 
-  const meridiem: "AM" | "PM" = hour >= 12 ? "PM" : "AM";
-  const displayHour = hour % 12 || 12;
-  const displayMinute = minute.toString().padStart(2, "0");
-
-  const time = `${displayHour.toString().padStart(2, "0")}:${displayMinute}`;
-  return { time, meridiem };
+  return timeMoment.format("h:mm A"); // e.g., "1:45 PM"
 }
 
-const timeZoneMap = {
-  America_Los_Angeles: "America/Los_Angeles",
-  America_Denver: "America/Denver",
-  America_Chicago: "America/Chicago",
-  America_New_York: "America/New_York",
-} as const;
+export function convertZoneTimeToUTC(
+  time24: string,
+  zoneType: ZoneType
+): string {
+  const timeZone = getIanafromEnumKey(zoneType);
 
-export function getMappedTimeZone(tz: TimezoneType): string {
-  return timeZoneMap[tz];
+  const todayLocal = moment().tz(timeZone).format("YYYY-MM-DD");
+
+  const localMoment = moment.tz(
+    `${todayLocal} ${time24}`,
+    "YYYY-MM-DD HH:mm",
+    timeZone
+  );
+
+  const utcMoment = localMoment.clone().utc();
+
+  return utcMoment.format("HH:mm");
 }
