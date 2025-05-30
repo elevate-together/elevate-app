@@ -91,7 +91,7 @@ export function arrayBufferToBase64(buffer: ArrayBuffer | null): string {
   return btoa(String.fromCharCode(...uint8Array));
 }
 
-const timezoneMap: Record<string, string> = {
+export const timezoneMap: Record<string, string> = {
   LOSANGELES: "America/Los_Angeles",
   DENVER: "America/Denver",
   CHICAGO: "America/Chicago",

@@ -2,7 +2,7 @@
 
 import db from "@/lib/db";
 import { ResponseMessage } from "@/lib/utils";
-import { User } from "@prisma/client";
+import { User, ZoneType } from "@prisma/client";
 import { ObjectId } from "mongodb";
 
 // GET User by ID
@@ -84,7 +84,7 @@ export async function updateUser({
   userData,
 }: {
   id: string;
-  userData: { name?: string; email?: string; image?: string | null };
+  userData: { name?: string; email?: string; timeZone?: ZoneType };
 }): Promise<{
   success: boolean;
   message: string;

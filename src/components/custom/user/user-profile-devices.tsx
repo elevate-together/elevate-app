@@ -5,7 +5,11 @@ import PushNotificationManager from "@/components/custom/helpers/push-notificati
 import { Separator } from "@/components/ui/separator";
 import DeviceTable from "@/components/custom/device/device-table";
 import { useState } from "react";
-import { getIanafromEnumKey } from "@/lib/utils";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import UserForm from "./handlers/user-form";
+import { Edit } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import SignOut from "./buttons/user-sign-out";
 
 type UserProfileDevicesProps = {
   devices: Device[] | undefined;
@@ -16,44 +20,54 @@ export default function UserProfileDevices({
   user,
 }: UserProfileDevicesProps) {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleDeviceChange = () => {
     setRefreshTrigger((prev) => prev + 1);
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <PushNotificationManager
         userId={user.id}
         refreshTrigger={refreshTrigger}
       />
-      <div>
-        <h2 className="text-xl font-semibold mb-2">Your Info</h2>
-        <Separator className="my-4" />
-        <div className="flex flex-col gap-4 md:flex-row md:gap-8 mx-4">
-          <div className="flex flex-col gap-1">
-            <div className="text-sm font-semibold">Name:</div>
-            <div>{user.name}</div>
+      <Tabs defaultValue="profile" className="w-full">
+        <TabsList>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="devices">Devices</TabsTrigger>
+        </TabsList>
+        <TabsContent value="profile" className="p-4">
+          <div className="flex justify-between items-center ">
+            <h2 className="text-xl font-semibold">Your Info</h2>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => setIsEdit(!isEdit)}
+            >
+              <Edit />
+            </Button>
           </div>
-          <div className="flex flex-col gap-1">
-            <div className="text-sm font-semibold">Email:</div>
-            <div>{user.email}</div>
-          </div>
-          {user.timeZone && (
-            <div className="flex flex-col gap-1">
-              <div className="text-sm font-semibold">TimeZone:</div>
-              <div>{getIanafromEnumKey(user.timeZone)}</div>
-            </div>
+          <Separator className="my-4" />
+          <UserForm
+            user={user}
+            isEdit={isEdit}
+            onCancel={() => setIsEdit(false)}
+            onSubmit={() => setIsEdit(false)}
+          />
+
+          <SignOut variant="secondary" className="mt-8 w-full" />
+        </TabsContent>
+        <TabsContent value="devices" className="p-4">
+          {devices && (
+            <DeviceTable
+              devices={devices}
+              userId={user.id}
+              onDeviceChange={handleDeviceChange}
+            />
           )}
-        </div>
-      </div>
-      {devices && (
-        <DeviceTable
-          devices={devices}
-          userId={user.id}
-          onDeviceChange={handleDeviceChange}
-        />
-      )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -12,47 +12,65 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { createUser, updateUser } from "@/services/user";
+import { updateUser } from "@/services/user";
 import { toast } from "sonner";
-import type { User } from "@prisma/client";
+import { ZoneType, type User } from "@prisma/client";
+import { getIanafromEnumKey, timezoneMap } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+
+const allowedTimezones = Object.keys(timezoneMap);
 
 const formSchema = z.object({
   name: z.string().min(1, {
     message: "Name cannot be left blank",
   }),
-  email: z.string().email({
-    message: "Please enter a valid email address",
-  }),
+  email: z.string(),
+  timeZone: z.enum(allowedTimezones as [string, ...string[]]),
 });
 
 type UserFormProps = {
-  onSubmit: (user: User) => void;
-  user?: User;
+  user: User;
+  isEdit: boolean;
   onCancel?: () => void;
+  onSubmit?: (user: User) => void;
 };
 
-export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
+export default function UserForm({
+  user,
+  isEdit,
+  onCancel,
+  onSubmit,
+}: UserFormProps) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
+      name: user.name,
+      email: user.email,
+      timeZone: user.timeZone,
     },
   });
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    const { name, email } = values;
-    let result;
-
-    if (user?.id) {
-      result = await updateUser({ id: user.id, userData: { name, email } });
-    } else {
-      result = await createUser({ name, email });
-    }
+    const { name, timeZone } = values;
+    const result = await updateUser({
+      id: user.id,
+      userData: { name, timeZone: timeZone as ZoneType },
+    });
 
     if (result.success && result.user) {
-      onSubmit(result.user);
+      router.refresh();
+      if (onSubmit) {
+        onSubmit(result.user);
+      }
     } else {
       toast.error(result.message || "An error occurred.");
     }
@@ -62,8 +80,8 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
 
   const handleCancel = () => {
     form.reset({
-      name: user?.name || "",
-      email: user?.email || "",
+      name: user.name,
+      timeZone: user.timeZone,
     });
 
     if (onCancel) {
@@ -76,15 +94,17 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
           <div className="flex flex-col gap-4">
-            <div className="flex flex-row gap-8 items-end">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel className="text-sm font-semibold">
+                      Name:
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input readOnly={!isEdit} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -96,9 +116,52 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel className="text-sm font-semibold">
+                      Email:
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="email@example.com" {...field} />
+                      <Input readOnly {...field} />
+                    </FormControl>
+                    {isEdit && (
+                      <p className="text-xs text-muted-foreground leading-sm">
+                        Email cannot be changed.
+                      </p>
+                    )}
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="timeZone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-semibold">
+                      Time Zone:
+                    </FormLabel>
+                    <FormControl>
+                      {isEdit ? (
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <SelectTrigger className="w-full bg-card">
+                            <SelectValue placeholder="Select time zone" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {allowedTimezones.map((tz) => (
+                              <SelectItem key={tz} value={tz}>
+                                {getIanafromEnumKey(tz as ZoneType)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Input
+                          readOnly
+                          value={getIanafromEnumKey(user.timeZone)}
+                        />
+                      )}
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -106,15 +169,14 @@ export default function UserForm({ onSubmit, user, onCancel }: UserFormProps) {
               />
             </div>
 
-            {user?.id ? (
-              <div className="flex flex-row gap-4 items-center">
+            {/* Action Buttons */}
+            {isEdit && (
+              <div className="flex flex-row gap-4 items-center justify-end">
                 <Button variant="outline" onClick={handleCancel}>
                   Cancel
                 </Button>
                 <Button type="submit">Save</Button>
               </div>
-            ) : (
-              <Button type="submit">Submit</Button>
             )}
           </div>
         </form>
