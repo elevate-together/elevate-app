@@ -54,7 +54,7 @@ export const NotificationPageTemplate = ({
             ))}
           </div>
 
-          <div className="flex flex-1 flex-col items-center space-y-2">
+          <div className="flex flex-1 flex-col items-center space-y-2 mb-4">
             <div className="text-sm text-primary font-bold">
               Read notifications will be deleted after seven days.
             </div>
