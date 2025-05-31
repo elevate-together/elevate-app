@@ -390,6 +390,9 @@ export async function getAllPrayerRequestsByUserId({
       where: {
         userId: userId,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     if (!prayerRequests.length) {

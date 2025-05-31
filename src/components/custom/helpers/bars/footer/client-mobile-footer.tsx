@@ -1,7 +1,13 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Users, HelpingHandIcon, Hand, User, CalendarSync } from "lucide-react";
+import {
+  Users,
+  HelpingHandIcon,
+  Hand,
+  User,
+  ClipboardList,
+} from "lucide-react";
 import Link from "next/link";
 
 export default function ClientMobileFooter({ userId }: { userId: string }) {
@@ -34,8 +40,11 @@ export default function ClientMobileFooter({ userId }: { userId: string }) {
         <User className={iconClass} />
         <span className="text-xs">Profile</span>
       </Link>
-      <Link href={`/reminder/create/${userId}`} className={linkClass("/user")}>
-        <CalendarSync className={iconClass} />
+      <Link
+        href={`/reminder/create/${userId}`}
+        className={linkClass("/reminder/create")}
+      >
+        <ClipboardList className={iconClass} />
         <span className="text-xs">Reminders</span>
       </Link>
     </footer>

@@ -55,7 +55,7 @@ export default function ReminderAdd({
       <CalendarDays />
     </Button>
   ) : (
-    <Button aria-label="Create a new reminder" variant="secondary">
+    <Button aria-label="Schedule a new reminder" variant="secondary">
       <Plus />
       {isMobile ? buttonLabelShort : buttonLabel}
     </Button>
