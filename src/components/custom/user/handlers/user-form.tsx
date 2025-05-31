@@ -68,6 +68,10 @@ export default function UserForm({
 
     if (result.success && result.user) {
       router.refresh();
+      form.reset({
+        name: user.name,
+        timeZone: user.timeZone,
+      });
       if (onSubmit) {
         onSubmit(result.user);
       }

@@ -255,6 +255,7 @@ export default function PrayerRequestForm({
                   : " Notifications are disabled. Toggle to enable and notify selected recipients of your request."}
               </p>
             </div>
+
             <FormField
               control={form.control}
               name="request"
@@ -263,7 +264,7 @@ export default function PrayerRequestForm({
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="min-h-[280px] md:min-h-[150px]"
+                      className="bg-transparent min-h-[200px]"
                       placeholder="Enter your prayer request here"
                       {...field}
                     />
