@@ -37,7 +37,7 @@ export default function UserProfileDevices({
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="devices">Devices</TabsTrigger>
         </TabsList>
-        <TabsContent value="profile" className="p-4">
+        <TabsContent value="profile" className="py-4 px-2">
           <div className="flex justify-between items-center ">
             <h2 className="text-xl font-semibold">Your Info</h2>
             <Button
@@ -58,7 +58,7 @@ export default function UserProfileDevices({
 
           <SignOut variant="secondary" className="mt-8 w-full" />
         </TabsContent>
-        <TabsContent value="devices" className="p-4">
+        <TabsContent value="devices" className="py-4 px-2">
           {devices && (
             <DeviceTable
               devices={devices}

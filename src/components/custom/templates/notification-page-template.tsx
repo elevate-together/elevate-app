@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import PushNotificationManager from "@/components/custom/helpers/push-notification-manager";
 import NoDataDisplay from "@/components/custom/templates/helper/no-data-display";
+import { Separator } from "@/components/ui/separator";
 
 interface NotificationPageTemplateProps {
   notifications: Notification[];
@@ -40,8 +41,9 @@ export const NotificationPageTemplate = ({
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-full">
+    <div className="flex flex-col flex-1 min-h-full bg-card">
       <PushNotificationManager userId={userId} className="p-4" hideSubscribed />
+      <Separator />
 
       {notifications.length > 0 ? (
         <div className="space-y-4">
