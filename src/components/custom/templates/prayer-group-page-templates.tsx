@@ -38,34 +38,34 @@ export default function PrayerGroupPageTemplate({
 }: Props) {
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-bold">{prayerGroup.name}</h1>
+      <div>
+        <div className="flex items-center justify-between">
           <Badge variant="outline">
             {prayerGroup.groupType === GroupType.PRIVATE ? "Private" : "Public"}
           </Badge>
-        </div>
-        <div className="space-x-2">
-          <PrayerRequestAdd
-            userId={currentUser.id}
-            defaultGroupId={prayerGroup.id}
-          />
 
-          {isOwner && (
-            <PrayerGroupEdit ownerId={currentUser.id} group={prayerGroup} />
-          )}
-          {isOwner && (
-            <PrayerGroupOwnerSwitch
-              prayerGroup={prayerGroup}
-              members={members}
+          <div className="space-x-2">
+            <PrayerRequestAdd
+              userId={currentUser.id}
+              defaultGroupId={prayerGroup.id}
             />
-          )}
-          <PrayerGroupJoinLink prayerGroup={prayerGroup} />
+            {isOwner && (
+              <PrayerGroupEdit ownerId={currentUser.id} group={prayerGroup} />
+            )}
+            {isOwner && (
+              <PrayerGroupOwnerSwitch
+                prayerGroup={prayerGroup}
+                members={members}
+              />
+            )}
+            <PrayerGroupJoinLink prayerGroup={prayerGroup} />
+          </div>
         </div>
+        <h1 className="text-xl font-bold">{prayerGroup.name}</h1>
+        {/* <p className="text-md text-muted-foreground">
+          {prayerGroup.description}
+        </p> */}
       </div>
-
-      <p className="text-md text-muted-foreground">{prayerGroup.description}</p>
-
       <Tabs defaultValue="requests">
         <TabsList className="p-0">
           <TabsTrigger value="requests">Prayer Requests</TabsTrigger>

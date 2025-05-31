@@ -170,7 +170,7 @@ export default function PrayerGroupForm({
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="w-full min-h-64 md:min-h-32"
+                      className="w-full min-h-[200px]"
                       placeholder="Description (optional)"
                       {...field}
                     />
