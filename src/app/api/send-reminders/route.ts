@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { format } from "date-fns";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { sendNotificationAllDevices } from "@/services/device";
 import { NotificationType } from "@prisma/client";
 
@@ -10,7 +10,7 @@ export async function GET() {
   const currentDayOfWeek = now.getUTCDay(); // Sunday = 0
 
   try {
-    const reminders = await db.reminder.findMany({
+    const reminders = await prisma.reminder.findMany({
       where: {
         OR: [
           {

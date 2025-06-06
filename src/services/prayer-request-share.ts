@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { PrayerRequestWithUser, ResponseMessage } from "@/lib/utils";
 import {
   PrayerRequestShare,
@@ -22,7 +22,7 @@ export async function createPrayerRequestShare(
   prayerRequestShare?: PrayerRequestShare;
 }> {
   try {
-    const newShare = await db.prayerRequestShare.create({
+    const newShare = await prisma.prayerRequestShare.create({
       data: {
         prayerRequestId,
         sharedWithId,
@@ -50,7 +50,7 @@ export async function deletePrayerRequestShare(
   shareId: string
 ): Promise<ResponseMessage> {
   try {
-    await db.prayerRequestShare.delete({
+    await prisma.prayerRequestShare.delete({
       where: { id: shareId },
     });
 
@@ -84,18 +84,19 @@ export async function getPrayerRequestsSharedWithUser(
       ? userIdsInGroups
       : userIdsInGroups.filter((id) => id !== userId);
 
-    const publicPrayerRequestsFromGroupUsers = await db.prayerRequest.findMany({
-      where: {
-        userId: { in: filteredUserIds },
-        status: PrayerRequestStatus.IN_PROGRESS,
-        visibility: PrayerVisibility.PUBLIC,
-      },
-      include: {
-        user: true,
-      },
-    });
+    const publicPrayerRequestsFromGroupUsers =
+      await prisma.prayerRequest.findMany({
+        where: {
+          userId: { in: filteredUserIds },
+          status: PrayerRequestStatus.IN_PROGRESS,
+          visibility: PrayerVisibility.PUBLIC,
+        },
+        include: {
+          user: true,
+        },
+      });
 
-    const sharedPrayerRequestIds = await db.prayerRequestShare.findMany({
+    const sharedPrayerRequestIds = await prisma.prayerRequestShare.findMany({
       where: {
         OR: [
           { sharedWithId: userId, sharedWithType: "USER" },
@@ -114,7 +115,7 @@ export async function getPrayerRequestsSharedWithUser(
       (share) => share.prayerRequestId
     );
 
-    const sharedPrayerRequests = await db.prayerRequest.findMany({
+    const sharedPrayerRequests = await prisma.prayerRequest.findMany({
       where: {
         id: { in: sharedRequestIds },
         visibility: PrayerVisibility.SHARED,
@@ -158,10 +159,10 @@ export async function getPublicPrayerRequestsForGroup(
 ): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequestWithUser[];
+  prayerRequests: PrayerRequestWithUser[];
 }> {
   try {
-    const groupUsers = await db.userPrayerGroup.findMany({
+    const groupUsers = await prisma.userPrayerGroup.findMany({
       where: {
         prayerGroupId: groupId,
         groupStatus: GroupStatus.ACCEPTED,
@@ -173,7 +174,7 @@ export async function getPublicPrayerRequestsForGroup(
 
     const userIds = groupUsers.map((userGroup) => userGroup.user.id);
 
-    const prayerRequests = await db.prayerRequest.findMany({
+    const prayerRequests = (await prisma.prayerRequest.findMany({
       where: {
         userId: {
           in: userIds,
@@ -187,18 +188,18 @@ export async function getPublicPrayerRequestsForGroup(
       include: {
         user: true,
       },
-    });
+    })) as PrayerRequestWithUser[];
 
     return {
       success: true,
       message: "Public prayer requests fetched successfully.",
       prayerRequests: prayerRequests,
     };
-  } catch (error) {
-    console.error("Error fetching public prayer requests:", error);
+  } catch {
     return {
       success: false,
       message: "Failed to fetch public prayer requests.",
+      prayerRequests: [],
     };
   }
 }
@@ -207,10 +208,10 @@ export async function getPublicPrayerRequestsForGroup(
 export async function getPrayerRequestsForGroup(groupId: string): Promise<{
   success: boolean;
   message: string;
-  prayerRequests?: PrayerRequestWithUser[];
+  prayerRequests: PrayerRequestWithUser[];
 }> {
   try {
-    const groupRequests = await db.prayerRequest.findMany({
+    const groupRequests = (await prisma.prayerRequest.findMany({
       where: {
         visibility: PrayerVisibility.SHARED,
         status: PrayerRequestStatus.IN_PROGRESS,
@@ -227,12 +228,13 @@ export async function getPrayerRequestsForGroup(groupId: string): Promise<{
       orderBy: {
         createdAt: "desc",
       },
-    });
+    })) as PrayerRequestWithUser[];
 
     if (groupRequests.length === 0) {
       return {
         success: false,
         message: "No prayer requests found for this group.",
+        prayerRequests: [],
       };
     }
 
@@ -241,11 +243,11 @@ export async function getPrayerRequestsForGroup(groupId: string): Promise<{
       message: "Prayer requests retrieved successfully.",
       prayerRequests: groupRequests,
     };
-  } catch (error) {
-    console.error("Error retrieving prayer requests for group:", error);
+  } catch {
     return {
       success: false,
       message: "Failed to retrieve prayer requests.",
+      prayerRequests: [],
     };
   }
 }
@@ -257,7 +259,7 @@ export async function getSharedGroupIds(userId: string): Promise<{
   sharedWith?: string[];
 }> {
   try {
-    const sharedWithGroupIds = await db.prayerRequestShare.findMany({
+    const sharedWithGroupIds = await prisma.prayerRequestShare.findMany({
       where: { ownerId: userId },
       select: {
         sharedWithId: true,
@@ -288,7 +290,7 @@ export async function getSharedGroupIds(userId: string): Promise<{
 
 // GET prayer requests for a group
 async function getAcceptedGroupIdsForUser(userId: string): Promise<string[]> {
-  const userGroups = await db.userPrayerGroup.findMany({
+  const userGroups = await prisma.userPrayerGroup.findMany({
     where: {
       userId,
       groupStatus: GroupStatus.ACCEPTED,
@@ -301,7 +303,7 @@ async function getAcceptedGroupIdsForUser(userId: string): Promise<string[]> {
   return userGroups.map((group) => group.prayerGroupId);
 }
 async function getUserIdsInGroups(groupIds: string[]): Promise<string[]> {
-  const users = await db.userPrayerGroup.findMany({
+  const users = await prisma.userPrayerGroup.findMany({
     where: {
       prayerGroupId: { in: groupIds },
       groupStatus: GroupStatus.ACCEPTED,

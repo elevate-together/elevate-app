@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { format } from "date-fns";
 import webpush from "web-push";
 import { getDeviceInfo } from "@/services/get-device-info";
@@ -46,7 +46,7 @@ export async function subscribeDevice({
         ? `${vendor} ${os}`
         : `Device Added: ${format(new Date(), "yyyy-MM-dd")}`;
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
@@ -57,7 +57,7 @@ export async function subscribeDevice({
       };
     }
 
-    await db.device.upsert({
+    await prisma.device.upsert({
       where: { userId_endpoint: { userId, endpoint: sub.endpoint } },
       update: {
         endpoint: sub.endpoint,
@@ -94,7 +94,7 @@ export async function unsubscribeDevice({
     };
   }
 
-  const user = await db.user.findUnique({
+  const user = await prisma.user.findUnique({
     where: { id: userId },
   });
 
@@ -106,7 +106,7 @@ export async function unsubscribeDevice({
   }
 
   try {
-    await db.device.delete({
+    await prisma.device.delete({
       where: { userId_endpoint: { userId, endpoint } },
     });
 
@@ -165,7 +165,7 @@ export async function sendNotificationToDevice({
   title?: string;
 }): Promise<ResponseMessage> {
   try {
-    const device = await db.device.findUnique({
+    const device = await prisma.device.findUnique({
       where: { userId_endpoint: { userId, endpoint } },
     });
 
@@ -213,7 +213,7 @@ export async function sendNotificationAllDevices({
   title: string;
 }): Promise<ResponseMessage> {
   try {
-    const devices = await db.device.findMany({ where: { userId } });
+    const devices = await prisma.device.findMany({ where: { userId } });
 
     const notification = await addNotification({
       title,
@@ -259,7 +259,7 @@ export async function updateDeviceTitle(
   title: string
 ): Promise<ResponseMessage> {
   try {
-    await db.device.update({
+    await prisma.device.update({
       where: { id: deviceId },
       data: { title },
     });
@@ -272,7 +272,7 @@ export async function updateDeviceTitle(
 
 export async function checkIfDeviceExists(endpoint: string): Promise<boolean> {
   try {
-    const device = await db.device.findUnique({ where: { endpoint } });
+    const device = await prisma.device.findUnique({ where: { endpoint } });
     return !!device;
   } catch {
     return false;
@@ -284,7 +284,7 @@ export async function sendTestNotificationToDevice(
   endpoint: string
 ): Promise<ResponseMessage> {
   try {
-    const device = await db.device.findUnique({
+    const device = await prisma.device.findUnique({
       where: { userId_endpoint: { userId, endpoint } },
     });
 
@@ -339,7 +339,7 @@ export async function getUserDevices(userId: string): Promise<{
   devices?: Device[];
 }> {
   try {
-    const devices = await db.device.findMany({
+    const devices = await prisma.device.findMany({
       where: { userId },
     });
 

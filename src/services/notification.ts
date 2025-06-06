@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   NotificationStatusType,
   NotificationType,
@@ -28,7 +28,7 @@ export async function addNotification({
   notification: Notification | null;
 }> {
   try {
-    const newNotification = await db.notification.create({
+    const newNotification = await prisma.notification.create({
       data: {
         title,
         text,
@@ -65,7 +65,7 @@ export async function deleteNotification({ id }: { id: string }): Promise<{
       };
     }
 
-    await db.notification.delete({
+    await prisma.notification.delete({
       where: {
         id,
       },
@@ -101,7 +101,7 @@ export async function getAllNotificationsForUser({
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
@@ -113,7 +113,7 @@ export async function getAllNotificationsForUser({
       };
     }
 
-    const notifications = await db.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: {
         userId,
       },
@@ -156,7 +156,7 @@ export async function getNotificationCountForUser({
         count: null,
       };
     }
-    const count = await db.notification.count({
+    const count = await prisma.notification.count({
       where: {
         userId,
         status: NotificationStatusType.UNREAD,
@@ -193,7 +193,7 @@ export async function markAllNotificationsAsRead({
       };
     }
 
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
       return {
@@ -203,7 +203,7 @@ export async function markAllNotificationsAsRead({
     }
 
     const currentDate = new Date();
-    await db.notification.deleteMany({
+    await prisma.notification.deleteMany({
       where: {
         userId,
         status: NotificationStatusType.READ,
@@ -212,7 +212,7 @@ export async function markAllNotificationsAsRead({
         },
       },
     });
-    await db.notification.updateMany({
+    await prisma.notification.updateMany({
       where: { userId, status: NotificationStatusType.UNREAD },
       data: { status: NotificationStatusType.READ },
     });
@@ -245,7 +245,7 @@ export async function deleteAllNotificationsForUser({
       };
     }
 
-    const user = await db.user.findUnique({ where: { id: userId } });
+    const user = await prisma.user.findUnique({ where: { id: userId } });
 
     if (!user) {
       return {
@@ -254,7 +254,7 @@ export async function deleteAllNotificationsForUser({
       };
     }
 
-    await db.notification.deleteMany({
+    await prisma.notification.deleteMany({
       where: { userId },
     });
 

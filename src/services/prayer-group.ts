@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   PrayerGroupWithOwner,
   PrayerGroupWithOwnerAndCount,
@@ -24,7 +24,7 @@ export async function getPrayerGroupById({ id }: { id: string }): Promise<{
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: { id },
       include: {
         owner: true,
@@ -67,7 +67,7 @@ export async function getPrayerGroupWithCountById(id: string): Promise<{
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: { id },
       include: {
         owner: true,
@@ -116,7 +116,7 @@ export async function createPrayerGroup({
   prayerGroup: PrayerGroupWithOwner | null;
 }> {
   try {
-    const newPrayerGroup = await db.prayerGroup.create({
+    const newPrayerGroup = await prisma.prayerGroup.create({
       data: {
         name: name,
         description: description,
@@ -128,7 +128,7 @@ export async function createPrayerGroup({
       },
     });
 
-    await db.userPrayerGroup.create({
+    await prisma.userPrayerGroup.create({
       data: {
         userId: ownerId,
         prayerGroupId: newPrayerGroup.id,
@@ -171,7 +171,7 @@ export async function updatePrayerGroup({
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: { id },
     });
 
@@ -183,7 +183,7 @@ export async function updatePrayerGroup({
       };
     }
 
-    const updatedPrayerGroup = await db.prayerGroup.update({
+    const updatedPrayerGroup = await prisma.prayerGroup.update({
       where: { id },
       data: groupData,
       include: {
@@ -219,7 +219,7 @@ export async function deletePrayerGroup({
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: { id },
     });
 
@@ -230,7 +230,7 @@ export async function deletePrayerGroup({
       };
     }
 
-    await db.prayerGroup.delete({
+    await prisma.prayerGroup.delete({
       where: { id },
     });
 
@@ -267,7 +267,7 @@ export async function updatePrayerGroupOwner({
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: { id: prayerGroupId },
     });
 
@@ -279,7 +279,7 @@ export async function updatePrayerGroupOwner({
       };
     }
 
-    const updatedPrayerGroup = await db.prayerGroup.update({
+    const updatedPrayerGroup = await prisma.prayerGroup.update({
       where: { id: prayerGroupId },
       data: {
         owner: {
@@ -291,7 +291,7 @@ export async function updatePrayerGroupOwner({
       },
     });
 
-    const existingMembership = await db.userPrayerGroup.findFirst({
+    const existingMembership = await prisma.userPrayerGroup.findFirst({
       where: {
         userId: newOwnerId,
         prayerGroupId: prayerGroupId,
@@ -299,7 +299,7 @@ export async function updatePrayerGroupOwner({
     });
 
     if (!existingMembership) {
-      await db.userPrayerGroup.create({
+      await prisma.userPrayerGroup.create({
         data: {
           userId: newOwnerId,
           prayerGroupId: prayerGroupId,

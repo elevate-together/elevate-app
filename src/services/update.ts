@@ -2,7 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 
-const db = new PrismaClient();
+const prisma = new PrismaClient();
 
 export async function updateEmptyTimezones(): Promise<{
   success: boolean;
@@ -10,7 +10,7 @@ export async function updateEmptyTimezones(): Promise<{
   updatedCount: number;
 }> {
   try {
-    const result = await db.user.updateMany({
+    const result = await prisma.user.updateMany({
       where: {
         OR: [{ timeZone: undefined }],
       },

@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   createUser,
   deleteUser,
@@ -155,7 +155,7 @@ describe("deleteUser", () => {
     expect(result.success).toBe(true);
     expect(result.message).toBe("User deleted successfully");
 
-    const deleted = await db.user.findUnique({ where: { id: user.id } });
+    const deleted = await prisma.user.findUnique({ where: { id: user.id } });
     expect(deleted).toBeNull();
   });
 

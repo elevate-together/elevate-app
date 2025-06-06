@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { MinimalUser, ResponseMessage } from "@/lib/utils";
 import {
   GroupStatus,
@@ -20,7 +20,7 @@ export async function addUserToPrayerGroup(
   groupId: string
 ): Promise<ResponseMessage> {
   try {
-    const existingMembership = await db.userPrayerGroup.findUnique({
+    const existingMembership = await prisma.userPrayerGroup.findUnique({
       where: {
         userId_prayerGroupId: {
           userId,
@@ -36,7 +36,7 @@ export async function addUserToPrayerGroup(
       };
     }
 
-    const prayerGroup = await db.prayerGroup.findUnique({
+    const prayerGroup = await prisma.prayerGroup.findUnique({
       where: {
         id: groupId,
       },
@@ -48,7 +48,7 @@ export async function addUserToPrayerGroup(
         : GroupStatus.PENDING;
 
     // Add user to prayer group
-    await db.userPrayerGroup.create({
+    await prisma.userPrayerGroup.create({
       data: {
         userId,
         prayerGroupId: groupId,
@@ -85,7 +85,7 @@ export async function removeUserFromPrayerGroup(
       };
     }
 
-    const userPrayerGroup = await db.userPrayerGroup.findUnique({
+    const userPrayerGroup = await prisma.userPrayerGroup.findUnique({
       where: {
         userId_prayerGroupId: {
           userId,
@@ -101,7 +101,7 @@ export async function removeUserFromPrayerGroup(
       };
     }
 
-    const prayerRequestsToArchive = await db.prayerRequestShare.findMany({
+    const prayerRequestsToArchive = await prisma.prayerRequestShare.findMany({
       where: {
         sharedWithId: groupId,
         sharedWithType: ShareType.GROUP,
@@ -113,7 +113,7 @@ export async function removeUserFromPrayerGroup(
       (prayerRequestShare) => prayerRequestShare.prayerRequestId
     );
 
-    await db.prayerRequest.updateMany({
+    await prisma.prayerRequest.updateMany({
       where: {
         id: {
           in: prayerRequestIds,
@@ -125,7 +125,7 @@ export async function removeUserFromPrayerGroup(
       },
     });
 
-    await db.prayerRequestShare.deleteMany({
+    await prisma.prayerRequestShare.deleteMany({
       where: {
         sharedWithId: groupId,
         sharedWithType: ShareType.GROUP,
@@ -133,7 +133,7 @@ export async function removeUserFromPrayerGroup(
       },
     });
 
-    await db.userPrayerGroup.delete({
+    await prisma.userPrayerGroup.delete({
       where: {
         userId_prayerGroupId: {
           userId,
@@ -163,7 +163,7 @@ export async function getUsersInPrayerGroup(groupId: string): Promise<{
   users?: User[];
 }> {
   try {
-    const usersInGroup = await db.userPrayerGroup.findMany({
+    const usersInGroup = await prisma.userPrayerGroup.findMany({
       where: {
         prayerGroupId: groupId,
         groupStatus: GroupStatus.ACCEPTED,
@@ -205,14 +205,14 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
   })[];
 }> {
   try {
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
+    const userPrayerGroups = await prisma.userPrayerGroup.findMany({
       where: { userId },
       select: { prayerGroupId: true },
     });
 
     const joinedGroupIds = userPrayerGroups.map((upg) => upg.prayerGroupId);
 
-    const prayerGroups = await db.prayerGroup.findMany({
+    const prayerGroups = await prisma.prayerGroup.findMany({
       where: {
         id: { notIn: joinedGroupIds },
       },
@@ -263,7 +263,7 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
   users?: MinimalUser[];
 }> {
   try {
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
+    const userPrayerGroups = await prisma.userPrayerGroup.findMany({
       where: { prayerGroupId: groupId, groupStatus: GroupStatus.ACCEPTED },
       include: {
         user: {
@@ -305,7 +305,7 @@ export async function getPendingUsersByPrayerGroup(groupId: string): Promise<{
   users?: User[];
 }> {
   try {
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
+    const userPrayerGroups = await prisma.userPrayerGroup.findMany({
       where: { prayerGroupId: groupId, groupStatus: GroupStatus.PENDING },
       include: {
         user: true,
@@ -339,7 +339,7 @@ export async function getPrayerGroupsForUser(userId: string): Promise<{
   prayerGroups?: PrayerGroup[];
 }> {
   try {
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
+    const userPrayerGroups = await prisma.userPrayerGroup.findMany({
       where: {
         userId: userId,
         groupStatus: GroupStatus.ACCEPTED,
@@ -383,7 +383,7 @@ export async function acceptUserPrayerGroupStatus(
   groupName?: string
 ): Promise<ResponseMessage> {
   try {
-    await db.userPrayerGroup.update({
+    await prisma.userPrayerGroup.update({
       where: {
         userId_prayerGroupId: {
           userId,
@@ -427,7 +427,7 @@ export async function getPrayerGroupsPendingForUser(userId: string): Promise<{
   prayerGroups?: PrayerGroup[];
 }> {
   try {
-    const userPrayerGroups = await db.userPrayerGroup.findMany({
+    const userPrayerGroups = await prisma.userPrayerGroup.findMany({
       where: {
         userId: userId,
         groupStatus: GroupStatus.PENDING,
@@ -468,7 +468,7 @@ export async function isUserInGroup(
   userId: string
 ): Promise<boolean> {
   try {
-    const membership = await db.userPrayerGroup.findFirst({
+    const membership = await prisma.userPrayerGroup.findFirst({
       where: {
         prayerGroupId: groupId,
         userId: userId,
@@ -491,7 +491,7 @@ export async function getUserGroupStatus(
   userId: string
 ): Promise<"accepted" | "pending" | "none"> {
   try {
-    const membership = await db.userPrayerGroup.findFirst({
+    const membership = await prisma.userPrayerGroup.findFirst({
       where: {
         prayerGroupId: groupId,
         userId: userId,

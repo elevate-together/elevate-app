@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { ResponseMessage } from "@/lib/utils";
 import { User, ZoneType } from "@prisma/client";
 import { ObjectId } from "mongodb";
@@ -20,7 +20,7 @@ export async function getUserById({ id }: { id: string }): Promise<{
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     });
 
@@ -61,7 +61,7 @@ export async function createUser({
   user: User | null;
 }> {
   try {
-    const newUser = await db.user.create({
+    const newUser = await prisma.user.create({
       data: { name, email, image },
     });
     return {
@@ -99,7 +99,7 @@ export async function updateUser({
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     });
 
@@ -111,7 +111,7 @@ export async function updateUser({
       };
     }
 
-    const updatedUser = await db.user.update({
+    const updatedUser = await prisma.user.update({
       where: { id },
       data: userData,
     });
@@ -144,7 +144,7 @@ export async function deleteUser({
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id },
     });
 
@@ -155,7 +155,7 @@ export async function deleteUser({
       };
     }
 
-    await db.user.delete({
+    await prisma.user.delete({
       where: { id },
     });
 

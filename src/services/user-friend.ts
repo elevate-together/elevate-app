@@ -1,5 +1,5 @@
 import { FriendStatus } from "@prisma/client";
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 
 export async function sendFriendRequest(
   senderId: string,
@@ -10,7 +10,7 @@ export async function sendFriendRequest(
   friendRequestId?: string;
 }> {
   try {
-    const existingRequest = await db.userFriend.findFirst({
+    const existingRequest = await prisma.userFriend.findFirst({
       where: {
         OR: [
           { senderId, receiverId },
@@ -26,7 +26,7 @@ export async function sendFriendRequest(
       };
     }
 
-    const newFriendRequest = await db.userFriend.create({
+    const newFriendRequest = await prisma.userFriend.create({
       data: {
         senderId,
         receiverId,
@@ -59,7 +59,7 @@ export async function acceptFriendRequest(
   message: string;
 }> {
   try {
-    const friendRequest = await db.userFriend.findFirst({
+    const friendRequest = await prisma.userFriend.findFirst({
       where: {
         senderId,
         receiverId,
@@ -74,7 +74,7 @@ export async function acceptFriendRequest(
       };
     }
 
-    await db.userFriend.update({
+    await prisma.userFriend.update({
       where: {
         id: friendRequest.id,
       },
@@ -107,7 +107,7 @@ export async function rejectFriendRequest(
   message: string;
 }> {
   try {
-    const friendRequest = await db.userFriend.findFirst({
+    const friendRequest = await prisma.userFriend.findFirst({
       where: {
         senderId,
         receiverId,
@@ -122,7 +122,7 @@ export async function rejectFriendRequest(
       };
     }
 
-    await db.userFriend.delete({
+    await prisma.userFriend.delete({
       where: {
         id: friendRequest.id,
       },
@@ -153,7 +153,7 @@ export async function getFriendStatus(
   status?: FriendStatus;
 }> {
   try {
-    const friendStatus = await db.userFriend.findFirst({
+    const friendStatus = await prisma.userFriend.findFirst({
       where: {
         OR: [
           { senderId: userId1, receiverId: userId2 },
@@ -192,7 +192,7 @@ export async function getUserFriends(userId: string): Promise<{
   friends?: { senderId: string; receiverId: string }[];
 }> {
   try {
-    const friends = await db.userFriend.findMany({
+    const friends = await prisma.userFriend.findMany({
       where: {
         OR: [
           { senderId: userId, status: FriendStatus.ACCEPTED },
@@ -226,7 +226,7 @@ export async function removeFriend(
   message: string;
 }> {
   try {
-    const friendStatus = await db.userFriend.findFirst({
+    const friendStatus = await prisma.userFriend.findFirst({
       where: {
         OR: [
           { senderId: userId1, receiverId: userId2 },
@@ -243,7 +243,7 @@ export async function removeFriend(
       };
     }
 
-    await db.userFriend.delete({
+    await prisma.userFriend.delete({
       where: {
         id: friendStatus.id,
       },

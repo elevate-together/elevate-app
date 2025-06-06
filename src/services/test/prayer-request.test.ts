@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   GroupStatus,
   NotificationType,
@@ -142,7 +142,7 @@ describe("createPrayerRequest", () => {
 
     const result = await createPrayerRequest(prayerData);
 
-    const shares = await db.prayerRequestShare.findMany({
+    const shares = await prisma.prayerRequestShare.findMany({
       where: {
         ownerId: user.id,
         sharedWithId: prayerGroup.id,
@@ -338,7 +338,7 @@ describe("createPrayerRequest", () => {
 
     const result = await createPrayerRequest(prayerData);
 
-    const shares = await db.prayerRequestShare.findMany({
+    const shares = await prisma.prayerRequestShare.findMany({
       where: {
         ownerId: user.id,
         sharedWithType: ShareType.GROUP,
@@ -448,7 +448,7 @@ describe("updatePrayerRequest", () => {
       "Updated prayer request with new group"
     );
 
-    const shares = await db.prayerRequestShare.findMany({
+    const shares = await prisma.prayerRequestShare.findMany({
       where: { prayerRequestId: updatedPrayerRequest?.id },
     });
 
@@ -489,7 +489,7 @@ describe("updatePrayerRequest", () => {
       "Updated prayer request without group"
     );
 
-    const shares = await db.prayerRequestShare.findMany({
+    const shares = await prisma.prayerRequestShare.findMany({
       where: { prayerRequestId: updatedPrayerRequest?.id },
     });
 
@@ -562,7 +562,7 @@ describe("deletePrayerRequest", () => {
     expect(result.success).toBe(true);
     expect(result.message).toBe("Prayer request deleted successfully");
 
-    const deleted = await db.prayerRequest.findUnique({
+    const deleted = await prisma.prayerRequest.findUnique({
       where: { id: prayerRequest.id },
     });
     expect(deleted).toBeNull();
@@ -834,7 +834,7 @@ describe("updatePrayerRequestStatus", () => {
     expect(result.success).toBe(true);
     expect(result.message).toBe("Prayer request status updated successfully.");
 
-    const updated = await db.prayerRequest.findUnique({
+    const updated = await prisma.prayerRequest.findUnique({
       where: { id: prayerRequest.id },
     });
 
@@ -887,7 +887,7 @@ describe("getUserPrayerRequestsVisibleUser", () => {
     group = await createPrayerGroup(user.id);
 
     // Add both users to the same group with "ACCEPTED" status
-    await db.userPrayerGroup.createMany({
+    await prisma.userPrayerGroup.createMany({
       data: [
         { userId: user.id, prayerGroupId: group.id, groupStatus: "ACCEPTED" },
         { userId: guest.id, prayerGroupId: group.id, groupStatus: "ACCEPTED" },

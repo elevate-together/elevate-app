@@ -1,7 +1,7 @@
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  directUrl =  env("DIRECT_DATABASE_URL")
 }
 
 generator client {
@@ -43,7 +43,6 @@ model Reminder {
   updatedAt  DateTime  @updatedAt
 
   user       User     @relation("UserReminder", fields: [userId], references: [id])
-
 }
 
 model UserFriend {
@@ -71,7 +70,6 @@ model Device {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, endpoint])
-  @@index([userId])
 }
 
 model PrayerRequest {
@@ -85,9 +83,6 @@ model PrayerRequest {
   userId             String               @db.ObjectId
   user               User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
   PrayerRequestShare PrayerRequestShare[]
-
-  @@index([userId])
-  @@index([visibility])
 }
 
 model PrayerRequestShare {
@@ -100,6 +95,8 @@ model PrayerRequestShare {
 
   prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  @@unique([prayerRequestId, sharedWithId])
 }
 
 model PrayerGroup {
@@ -125,6 +122,8 @@ model UserPrayerGroup {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([userId, prayerGroupId])
 }
 
 model Account {
@@ -143,6 +142,8 @@ model Account {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
 
 model Notification {
@@ -155,7 +156,6 @@ model Notification {
   updatedAt   DateTime               @updatedAt
   userId      String                 @db.ObjectId
   link        String                 @default("/")
-
   user      User                     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 

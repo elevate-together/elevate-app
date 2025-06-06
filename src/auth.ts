@@ -1,14 +1,14 @@
 import NextAuth from "next-auth";
 import { authConfig } from "@/lib/auth.config";
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import db from "@/lib/db";
 import { cookies } from "next/headers";
 import { ZoneType } from "@prisma/client";
 import { getEnumKeyFromIana } from "./lib/utils";
+import prisma from "./lib/prisma";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   ...authConfig,
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(prisma),
   session: {
     strategy: "jwt",
   },
@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         rawTz || "America/New_York"
       );
 
-      await db.user.update({
+      await prisma.user.update({
         where: { id: user.id },
         data: { timeZone: timeZone },
       });

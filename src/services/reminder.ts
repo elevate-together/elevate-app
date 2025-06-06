@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { Reminder, ZoneType } from "@prisma/client";
 
 export async function addReminder({
@@ -27,7 +27,7 @@ export async function addReminder({
   try {
     console.log(time);
 
-    const reminder = await db.reminder.create({
+    const reminder = await prisma.reminder.create({
       data: {
         userId,
         title,
@@ -65,7 +65,7 @@ export async function getRemindersByUserId({
   reminders: Reminder[];
 }> {
   try {
-    const reminders = await db.reminder.findMany({
+    const reminders = await prisma.reminder.findMany({
       where: {
         userId,
       },

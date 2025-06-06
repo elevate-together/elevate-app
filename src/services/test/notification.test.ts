@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import { NotificationStatusType, NotificationType } from "@prisma/client";
 import {
   addNotification,
@@ -22,12 +22,12 @@ async function createTestUser(data = userData) {
 }
 
 beforeAll(async () => {
-  await db.$connect();
+  await prisma.$connect();
 });
 
 beforeEach(async () => {
-  await db.notification.deleteMany();
-  await db.user.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.user.deleteMany();
 });
 
 afterEach(() => {
@@ -35,7 +35,7 @@ afterEach(() => {
 });
 
 afterAll(async () => {
-  await db.$disconnect();
+  await prisma.$disconnect();
 });
 
 /* addNotification */
@@ -122,7 +122,7 @@ describe("addNotification", () => {
 
 describe("deleteNotification", () => {
   test("successfully deletes existing notification", async () => {
-    const notification = await db.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         title: "To Delete",
         text: "Text",
@@ -136,7 +136,7 @@ describe("deleteNotification", () => {
 
     expect(result.success).toBe(true);
     expect(
-      await db.notification.findUnique({ where: { id: notification.id } })
+      await prisma.notification.findUnique({ where: { id: notification.id } })
     ).toBeNull();
   });
 
@@ -153,7 +153,7 @@ describe("deleteNotification", () => {
   });
 
   test("returns error on DB failure", async () => {
-    const notification = await db.notification.create({
+    const notification = await prisma.notification.create({
       data: {
         title: "To Fail",
         text: "Text",
@@ -178,7 +178,7 @@ describe("deleteNotification", () => {
 describe("getAllNotificationsForUser", () => {
   test("retrieves notifications for existing user", async () => {
     const user = await createTestUser();
-    const created = await db.notification.createMany({
+    const created = await prisma.notification.createMany({
       data: [
         {
           title: "One",
@@ -232,7 +232,7 @@ describe("getAllNotificationsForUser", () => {
   test("returns notifications in descending order", async () => {
     const user = await createTestUser();
 
-    await db.notification.createMany({
+    await prisma.notification.createMany({
       data: [
         {
           title: "Old",
@@ -276,7 +276,7 @@ describe("getNotificationCountForUser", () => {
   test("returns correct unread count", async () => {
     const user = await createTestUser();
 
-    await db.notification.createMany({
+    await prisma.notification.createMany({
       data: [
         {
           title: "1",
@@ -341,7 +341,7 @@ describe("markAllNotificationsAsRead", () => {
   test("marks all unread as read", async () => {
     const user = await createTestUser();
 
-    await db.notification.createMany({
+    await prisma.notification.createMany({
       data: [
         {
           title: "Unread 1",
@@ -366,7 +366,7 @@ describe("markAllNotificationsAsRead", () => {
 
     expect(result.success).toBe(true);
 
-    const unread = await db.notification.findMany({
+    const unread = await prisma.notification.findMany({
       where: { userId: user.id, status: NotificationStatusType.UNREAD },
     });
 
@@ -379,7 +379,7 @@ describe("markAllNotificationsAsRead", () => {
     const old = new Date(Date.now() - 8 * 24 * 60 * 60 * 1000);
     const now = new Date();
 
-    await db.notification.createMany({
+    await prisma.notification.createMany({
       data: [
         {
           title: "Old",
@@ -407,7 +407,7 @@ describe("markAllNotificationsAsRead", () => {
     const result = await markAllNotificationsAsRead({ userId: user.id });
 
     expect(result.success).toBe(true);
-    const notifications = await db.notification.findMany({
+    const notifications = await prisma.notification.findMany({
       where: { userId: user.id },
     });
     expect(notifications.length).toBe(1);
@@ -457,7 +457,7 @@ describe("deleteAllNotificationsForUser", () => {
   test("deletes all user notifications", async () => {
     const user = await createTestUser();
 
-    await db.notification.createMany({
+    await prisma.notification.createMany({
       data: [
         {
           title: "1",
@@ -482,7 +482,7 @@ describe("deleteAllNotificationsForUser", () => {
 
     expect(result.success).toBe(true);
 
-    const remaining = await db.notification.findMany({
+    const remaining = await prisma.notification.findMany({
       where: { userId: user.id },
     });
 

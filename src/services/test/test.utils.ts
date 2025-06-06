@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   GroupStatus,
   GroupType,
@@ -69,13 +69,13 @@ export const createPrayerGroup = (ownerId: string, overrides = {}) =>
   });
 
 export const clearDatabase = async () => {
-  await db.userPrayerGroup.deleteMany();
-  await db.prayerGroup.deleteMany();
-  await db.prayerRequest.deleteMany();
-  await db.prayerRequestShare.deleteMany();
-  await db.notification.deleteMany();
-  await db.device.deleteMany();
-  await db.user.deleteMany();
+  await prisma.userPrayerGroup.deleteMany();
+  await prisma.prayerGroup.deleteMany();
+  await prisma.prayerRequest.deleteMany();
+  await prisma.prayerRequestShare.deleteMany();
+  await prisma.notification.deleteMany();
+  await prisma.device.deleteMany();
+  await prisma.user.deleteMany();
 };
 
 export const linkUserToGroup = ({

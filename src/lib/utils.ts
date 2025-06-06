@@ -1,8 +1,7 @@
 import {
   PrayerGroup,
-  PrayerRequest,
+  Prisma,
   User,
-  User as UserDef,
   ZoneType,
 } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
@@ -16,7 +15,7 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export type PrayerGroupWithOwner = PrayerGroup & {
-  owner: UserDef;
+  owner: User;
 };
 
 export type PrayerGroupWithOwnerAndCount = PrayerGroupWithOwner & {
@@ -24,8 +23,8 @@ export type PrayerGroupWithOwnerAndCount = PrayerGroupWithOwner & {
 };
 
 export type PrayerGroupWithOwnerAndUsers = PrayerGroup & {
-  owner: UserDef;
-  users: Pick<UserDef, "name">[];
+  owner: User;
+  users: Pick<User, "name">[];
 };
 
 export type MinimalUser = Pick<
@@ -37,7 +36,9 @@ export type UserBasics = Pick<User, "id" | "name" | "email" | "image">;
 
 export type ShareWithTypes = "public" | "private" | "group";
 
-export type PrayerRequestWithUser = PrayerRequest & { user: UserDef };
+export type PrayerRequestWithUser = Prisma.PrayerRequestGetPayload<{
+  include: { user: true };
+}>;
 
 export type ResponseMessage = {
   success: boolean;

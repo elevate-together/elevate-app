@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   createPrayerGroup,
   deletePrayerGroup,
@@ -118,7 +118,7 @@ describe("createPrayerGroup", () => {
     expect(result.success).toBe(true);
     expect(result.prayerGroup?.name).toBe("New Test Group");
 
-    const membership = await db.userPrayerGroup.findFirst({
+    const membership = await prisma.userPrayerGroup.findFirst({
       where: {
         userId: user.id,
         prayerGroupId: result.prayerGroup?.id,
@@ -212,7 +212,9 @@ describe("deletePrayerGroup", () => {
     const result = await deletePrayerGroup({ id: group.id });
 
     expect(result.success).toBe(true);
-    const check = await db.prayerGroup.findUnique({ where: { id: group.id } });
+    const check = await prisma.prayerGroup.findUnique({
+      where: { id: group.id },
+    });
     expect(check).toBeNull();
   });
 
@@ -262,7 +264,7 @@ describe("updatePrayerGroupOwner", () => {
     expect(result.success).toBe(true);
     expect(result.prayerGroup?.owner.id).toBe(newOwner.id);
 
-    const membership = await db.userPrayerGroup.findFirst({
+    const membership = await prisma.userPrayerGroup.findFirst({
       where: {
         userId: newOwner.id,
         prayerGroupId: group.id,

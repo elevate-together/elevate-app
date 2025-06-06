@@ -1,6 +1,6 @@
 "use server";
 
-import db from "@/lib/db";
+import prisma from "@/lib/prisma";
 import {
   NotificationType,
   PrayerRequest,
@@ -35,7 +35,7 @@ export async function getPrayerRequestById({ id }: { id: string }): Promise<{
       };
     }
 
-    const prayerRequest = await db.prayerRequest.findUnique({
+    const prayerRequest = await prisma.prayerRequest.findUnique({
       where: { id },
     });
 
@@ -86,7 +86,7 @@ export async function createPrayerRequest({
     const link = `requests/${userId}`;
 
     const createPrayerRequestEntry = async (visibility: PrayerVisibility) => {
-      return await db.prayerRequest.create({
+      return await prisma.prayerRequest.create({
         data: {
           request,
           status,
@@ -136,7 +136,7 @@ export async function createPrayerRequest({
         };
       }
 
-      // const groups = await db.prayerGroup.findMany({
+      // const groups = await prisma.prayerGroup.findMany({
       //   where: {
       //     id: { in: groupIds },
       //   },
@@ -159,7 +159,7 @@ export async function createPrayerRequest({
       if (newPrayerRequest != undefined && newPrayerRequest.id) {
         await Promise.all(
           sharedWithGroups.map(async (share) => {
-            await db.prayerRequestShare.create({
+            await prisma.prayerRequestShare.create({
               data: {
                 prayerRequestId: newPrayerRequest?.id || "-1",
                 sharedWithId: share.id,
@@ -223,7 +223,7 @@ export async function updatePrayerRequest({
       };
     }
 
-    const prayerRequest = await db.prayerRequest.findUnique({
+    const prayerRequest = await prisma.prayerRequest.findUnique({
       where: { id },
     });
 
@@ -239,7 +239,7 @@ export async function updatePrayerRequest({
     const hasPublicType = sharedWith.some((item) => item.type === "public");
     const hasPrivateType = sharedWith.some((item) => item.type === "private");
     const sharedWithGroups = sharedWith.filter((item) => item.type === "group");
-    const existingShares = await db.prayerRequestShare.findMany({
+    const existingShares = await prisma.prayerRequestShare.findMany({
       where: { prayerRequestId: id },
     });
     const visibility: PrayerVisibility = hasPublicType
@@ -257,7 +257,7 @@ export async function updatePrayerRequest({
     if (hasPrivateType || hasPublicType) {
       await Promise.all(
         existingShares.map(async (share) => {
-          await db.prayerRequestShare.delete({
+          await prisma.prayerRequestShare.delete({
             where: { id: share.id },
           });
         })
@@ -295,7 +295,7 @@ export async function updatePrayerRequest({
       );
     }
 
-    const updatedPrayerRequest = await db.prayerRequest.update({
+    const updatedPrayerRequest = await prisma.prayerRequest.update({
       where: { id },
       data: updatedData,
     });
@@ -328,7 +328,7 @@ export async function deletePrayerRequest({
       };
     }
 
-    const prayerRequest = await db.prayerRequest.findUnique({
+    const prayerRequest = await prisma.prayerRequest.findUnique({
       where: { id },
     });
 
@@ -339,7 +339,7 @@ export async function deletePrayerRequest({
       };
     }
 
-    await db.prayerRequest.delete({
+    await prisma.prayerRequest.delete({
       where: { id },
     });
 
@@ -374,7 +374,7 @@ export async function getAllPrayerRequestsByUserId({
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
@@ -386,7 +386,7 @@ export async function getAllPrayerRequestsByUserId({
       };
     }
 
-    const prayerRequests = await db.prayerRequest.findMany({
+    const prayerRequests = await prisma.prayerRequest.findMany({
       where: {
         userId: userId,
       },
@@ -435,7 +435,7 @@ export async function getInProgressPrayerRequestsForUser({
       };
     }
 
-    const user = await db.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
     });
 
@@ -447,7 +447,7 @@ export async function getInProgressPrayerRequestsForUser({
       };
     }
 
-    const prayerRequests = await db.prayerRequest.findMany({
+    const prayerRequests = (await prisma.prayerRequest.findMany({
       where: {
         userId: userId,
         status: PrayerRequestStatus.IN_PROGRESS,
@@ -458,7 +458,7 @@ export async function getInProgressPrayerRequestsForUser({
       orderBy: {
         updatedAt: "desc",
       },
-    });
+    })) as PrayerRequestWithUser[];
 
     if (!prayerRequests.length) {
       return {
@@ -497,7 +497,7 @@ export async function updatePrayerRequestStatus({
       };
     }
 
-    const prayerRequest = await db.prayerRequest.findUnique({
+    const prayerRequest = await prisma.prayerRequest.findUnique({
       where: { id: prayerRequestId },
     });
 
@@ -508,7 +508,7 @@ export async function updatePrayerRequestStatus({
       };
     }
 
-    await db.prayerRequest.update({
+    await prisma.prayerRequest.update({
       where: { id: prayerRequestId },
       data: { status: newStatus },
     });
@@ -525,6 +525,13 @@ export async function updatePrayerRequestStatus({
   }
 }
 
+type GroupByResult = {
+  prayerGroupId: string;
+  _count: {
+    prayerGroupId: number;
+  };
+};
+
 export async function getUserPrayerRequestsVisibleUser({
   userId,
   guestUserId,
@@ -537,7 +544,7 @@ export async function getUserPrayerRequestsVisibleUser({
   prayerRequests: PrayerRequestWithUser[];
 }> {
   try {
-    const publicRequests = await db.prayerRequest.findMany({
+    const publicRequests = (await prisma.prayerRequest.findMany({
       where: {
         userId: userId,
         visibility: PrayerVisibility.PUBLIC,
@@ -549,9 +556,9 @@ export async function getUserPrayerRequestsVisibleUser({
       orderBy: {
         updatedAt: "desc",
       },
-    });
+    })) as PrayerRequestWithUser[];
 
-    const mutualGroupIdsResult = await db.userPrayerGroup.groupBy({
+    const mutualGroupIdsResult = await prisma.userPrayerGroup.groupBy({
       by: ["prayerGroupId"],
       where: {
         userId: { in: [userId, guestUserId] },
@@ -566,9 +573,11 @@ export async function getUserPrayerRequestsVisibleUser({
       },
     });
 
-    const mutualGroupIds = mutualGroupIdsResult.map((g) => g.prayerGroupId);
+    const mutualGroupIds = (mutualGroupIdsResult as GroupByResult[]).map(
+      (g) => g.prayerGroupId
+    );
 
-    const groupSharedRequests = await db.prayerRequest.findMany({
+    const groupSharedRequests = (await prisma.prayerRequest.findMany({
       where: {
         userId,
         status: PrayerRequestStatus.IN_PROGRESS,
@@ -580,7 +589,7 @@ export async function getUserPrayerRequestsVisibleUser({
         },
       },
       include: { user: true },
-    });
+    })) as PrayerRequestWithUser[];
 
     const allVisibleRequests = [...publicRequests, ...groupSharedRequests];
 

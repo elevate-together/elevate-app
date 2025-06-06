@@ -1,4 +1,4 @@
-// import db from "@/lib/db";
+// import prisma from "@/lib/prisma";
 // import {
 //   createUser,
 //   clearDatabase,
@@ -62,7 +62,7 @@
 //     expect(result.success).toBe(true);
 //     expect(result.message).toBe("Device subscribed successfully");
 
-//     const device = await db.device.findFirst({
+//     const device = await prisma.device.findFirst({
 //       where: { userId: user.id, endpoint: mockSub.endpoint },
 //     });
 
@@ -123,7 +123,7 @@
 //   beforeEach(async () => {
 //     user = await createUser();
 
-//     await db.device.create({
+//     await prisma.device.create({
 //       data: {
 //         userId: user.id,
 //         ...mockDevice,
@@ -140,7 +140,7 @@
 //     expect(result.success).toBe(true);
 //     expect(result.message).toBe("Device unsubscribed successfully");
 
-//     const device = await db.device.findFirst({
+//     const device = await prisma.device.findFirst({
 //       where: { userId: user.id, endpoint: mockEndpoint },
 //     });
 
