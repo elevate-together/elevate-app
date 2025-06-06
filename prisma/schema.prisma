@@ -1,6 +1,7 @@
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
 generator client {
@@ -99,9 +100,6 @@ model PrayerRequestShare {
 
   prayerRequest PrayerRequest @relation(fields: [prayerRequestId], references: [id], onDelete: Cascade)
   owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-
-  @@index([sharedWithId])
-  @@index([prayerRequestId])
 }
 
 model PrayerGroup {
@@ -114,8 +112,6 @@ model PrayerGroup {
   ownerId     String            @db.ObjectId
   owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id], onDelete: Cascade)
   groupType   GroupType         @default(PUBLIC)
-
-  @@index([ownerId])
 }
 
 model UserPrayerGroup {
@@ -129,10 +125,6 @@ model UserPrayerGroup {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([userId, prayerGroupId])
-  @@index([userId])
-  @@index([prayerGroupId])
 }
 
 model Account {
@@ -151,9 +143,6 @@ model Account {
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
-  @@index([userId])
 }
 
 model Notification {
