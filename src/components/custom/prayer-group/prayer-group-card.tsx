@@ -28,7 +28,7 @@ export default function PrayerGroupCard({
                 : "https://kpfusvtzlmxikzmu.public.blob.vercel-storage.com/apple-icon.png"
             }
             alt={prayerGroup.name || "Prayer Group Image"}
-            className="min-w-20"
+            className="min-w-30"
           />
           <div className="flex flex-col items-start gap-1">
             <div className="flex items-center justify-between gap-2">
