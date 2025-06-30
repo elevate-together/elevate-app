@@ -26,7 +26,6 @@ export default function RoundedImage({
         className="object-cover"
         sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 160px"
         priority={priority}
-        unoptimized
       />
     </div>
   );
