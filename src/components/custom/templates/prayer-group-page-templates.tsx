@@ -58,7 +58,7 @@ export default function PrayerGroupPageTemplate({
             <h1 className=" text-xl md:text-3xl font-bold">
               {prayerGroup.name}
             </h1>
-            <p className="text-md text-muted-foreground leading-tight">
+            <p className="text-sm md:text-md text-muted-foreground leading-tight">
               {prayerGroup.description}
             </p>
             <div className="flex gap-1 items-center">
