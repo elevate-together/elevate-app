@@ -35,7 +35,6 @@ export const HomePagetemplate = ({
           prayer={prayer}
           isOwner={user.id === prayer.user.id}
           currUserName={user.name}
-          hideActions
         />
       ))}
     </PullToRefreshWrapper>

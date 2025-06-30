@@ -1,9 +1,4 @@
-import {
-  PrayerGroup,
-  Prisma,
-  User,
-  ZoneType,
-} from "@prisma/client";
+import { PrayerGroup, Prisma, User, ZoneType } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import moment from "moment-timezone";
 
@@ -31,6 +26,9 @@ export type MinimalUser = Pick<
   User,
   "id" | "name" | "email" | "image" | "createdAt"
 >;
+
+export const DEFAULT_IMAGE_URL =
+  "https://kpfusvtzlmxikzmu.public.blob.vercel-storage.com/apple-icon.png";
 
 export type UserBasics = Pick<User, "id" | "name" | "email" | "image">;
 

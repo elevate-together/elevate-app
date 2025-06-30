@@ -1,7 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/components/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -28,13 +28,14 @@ type PrayerGroupEditProps = {
   group: PrayerGroup;
   isMenu?: boolean;
   hideOnMobile?: boolean;
-};
+} & ButtonProps;
 
 export default function PrayerGroupEdit({
   ownerId,
   group,
   isMenu = false,
   hideOnMobile = false,
+  ...props
 }: PrayerGroupEditProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -65,6 +66,7 @@ export default function PrayerGroupEdit({
       aria-label={dialogDescription}
       size="icon"
       variant={isMenu ? "ghost" : "secondary"}
+      {...props}
     >
       <Edit2 />
     </Button>
@@ -73,7 +75,7 @@ export default function PrayerGroupEdit({
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{buttonTrigger}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent fullHeight>
         <DrawerHeader>
           <DrawerTitle>{dialogTitle}</DrawerTitle>
         </DrawerHeader>

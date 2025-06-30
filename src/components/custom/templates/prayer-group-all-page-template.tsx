@@ -17,6 +17,7 @@ export default function PrayerGroupAllPageTemplate({
 }: Props) {
   return (
     <div className="flex flex-col gap-4">
+
       <div className="flex flex-row items-center justify-between">
         <div className="text-xl font-semibold">Your Groups</div>
         <PrayerGroupCreate groupId={user.id} />

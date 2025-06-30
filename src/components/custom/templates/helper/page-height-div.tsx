@@ -19,7 +19,7 @@ export default function PageHeightDiv({
 
   return (
     <div
-      className={`overflow-y-auto ${heightClass} md:min-h-[calc(100vh_-_44px)] md:max-h-[calc(100vh_-_44px)] flex flex-col flex-1 h-full ${className}`}
+      className={`overflow-y-auto ${heightClass} md:min-h-[calc(100vh_-_44px)] md:max-h-[calc(100vh_-_44px)] flex flex-col flex-1 h-full w-full ${className}`}
     >
       {children}
     </div>

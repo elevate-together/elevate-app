@@ -67,14 +67,14 @@ export default function UserForm({
     });
 
     if (result.success && result.user) {
-      router.refresh();
       form.reset({
-        name: user.name,
-        timeZone: user.timeZone,
+        name: name,
+        timeZone: timeZone,
       });
       if (onSubmit) {
         onSubmit(result.user);
       }
+      router.refresh();
     } else {
       toast.error(result.message || "An error occurred.");
     }

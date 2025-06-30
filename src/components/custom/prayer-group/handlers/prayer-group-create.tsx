@@ -66,7 +66,7 @@ export default function PrayerGroupCreate({
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent fullHeight>
         <DrawerHeader>
           <DrawerTitle>{dialogTitle}</DrawerTitle>
         </DrawerHeader>

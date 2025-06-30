@@ -22,10 +22,11 @@ import {
   HandHelpingIcon,
   Package,
   Star,
-  EllipsisVertical,
   Loader,
   Check,
-  BellRing,
+  Ellipsis,
+  HelpingHand,
+  User as UserIco,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -38,8 +39,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { Separator } from "@/components/ui/separator";
 import { useState } from "react";
 import ReminderAdd from "../reminder/handlers/reminder-add";
 
@@ -108,12 +109,12 @@ export default function PrayerRequestCard({
 
   return (
     <Card className="rounded-none mb-1 shadow border-none">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-0">
         <CardTitle>
           <div className="flex justify-between items-start">
             <UserAvatar
               user={user}
-              size="medium"
+              size="small"
               secondLine={
                 <span className="flex items-center gap-1">
                   <HandHelpingIcon className="w-4 h-4" />
@@ -123,14 +124,18 @@ export default function PrayerRequestCard({
               boldName
             />
             <div className="flex flex-row justify-between items-start gap-0">
-              <ReminderAdd
-                user={user}
-                reminderText={`Take a moment to pray for ${prayer.request}`}
-                icon
-              />
-              {!isOwner ? (
+              {isOwner ? (
+                !hideActions &&
+                prayer.status === PrayerRequestStatus.IN_PROGRESS && (
+                  <PrayerRequestEdit
+                    prayer={prayer}
+                    userId={user.id}
+                    includeText
+                  />
+                )
+              ) : (
                 <Button
-                  size="icon"
+                  size="sm"
                   variant="ghost"
                   onClick={handleSendNotification}
                 >
@@ -139,33 +144,91 @@ export default function PrayerRequestCard({
                   ) : notificationSuccess ? (
                     <Check />
                   ) : (
-                    <BellRing />
+                    <HelpingHand />
                   )}
+                  {notificationSuccess ? "Prayed" : "Pray"}
                 </Button>
-              ) : (
+              )}
+
+              {!isOwner ? (
                 <div>
-                  {!hideActions &&
-                    prayer.status === PrayerRequestStatus.IN_PROGRESS && (
-                      <PrayerRequestEdit prayer={prayer} userId={user.id} />
-                    )}
-                  {!hideActions &&
-                    prayer.status !== PrayerRequestStatus.ANSWERED && (
-                      <PrayerRequestDelete requestId={prayer.id} />
-                    )}
                   <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="ghost">
-                        <EllipsisVertical />
+                        <Ellipsis />
                       </Button>
                     </DropdownMenuTrigger>
 
                     <DropdownMenuContent
-                      className="w-[130px] bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
+                      className="bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
                       side="bottom"
                       align="end"
                     >
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                      <DropdownMenuItem asChild>
+                        <Button
+                          variant="ghost"
+                          size="default"
+                          className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                        >
+                          <UserIco />
+                          View Profile
+                        </Button>
+                      </DropdownMenuItem>
+
+                      {prayer.status !== PrayerRequestStatus.ANSWERED && (
+                        <DropdownMenuItem asChild>
+                          <ReminderAdd
+                            user={user}
+                            reminderText={`Take a moment to pray for ${prayer.request}`}
+                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                          />
+                        </DropdownMenuItem>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              ) : (
+                <div>
+                  <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
+                    <DropdownMenuTrigger asChild>
+                      <Button size="icon" variant="ghost">
+                        <Ellipsis />
+                      </Button>
+                    </DropdownMenuTrigger>
+
+                    <DropdownMenuContent
+                      className="bg-white shadow-[0px_1px_5px_rgba(0,0,0,0.25)] rounded-md"
+                      side="bottom"
+                      align="end"
+                    >
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                      {!hideActions &&
+                        prayer.status !== PrayerRequestStatus.ANSWERED && (
+                          <DropdownMenuItem asChild>
+                            <PrayerRequestDelete
+                              requestId={prayer.id}
+                              includeText
+                              className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            />
+                          </DropdownMenuItem>
+                        )}
+
+                      {!hideActions &&
+                        prayer.status !== PrayerRequestStatus.ANSWERED && (
+                          <DropdownMenuItem asChild>
+                            <ReminderAdd
+                              user={user}
+                              reminderText={`Take a moment to pray for ${prayer.request}`}
+                              className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            />
+                          </DropdownMenuItem>
+                        )}
+
+                      <DropdownMenuSeparator />
                       <DropdownMenuLabel>Mark As</DropdownMenuLabel>
-                      <Separator />
 
                       {prayer.status !== PrayerRequestStatus.ANSWERED && (
                         <DropdownMenuItem asChild>
@@ -188,7 +251,7 @@ export default function PrayerRequestCard({
                           <Button
                             size="default"
                             variant="ghost"
-                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            // className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
                             onClick={() =>
                               handleUpdateStatus(
                                 PrayerRequestStatus.IN_PROGRESS
@@ -224,14 +287,12 @@ export default function PrayerRequestCard({
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className=" pb-0">
-        <div>{prayer.request}</div>
-      </CardContent>
-      <CardFooter>
-        <div className="flex flex-row items-center justify-between mt-2">
+      <CardContent className="py-2 px-6 mt-2">
+        <div className="flex flex-col gap-1">
+          <div>{prayer.request}</div>
           <div className="flex flex-col ">
             {prayer.status === PrayerRequestStatus.ANSWERED ? (
-              <div className="text-sm font-semibold">
+              <div className="text-xs font-semibold">
                 Answered: {format(new Date(prayer.updatedAt), "MM/dd/yy")}
               </div>
             ) : (
@@ -247,7 +308,8 @@ export default function PrayerRequestCard({
             )}
           </div>
         </div>
-      </CardFooter>
+      </CardContent>
+      <CardFooter></CardFooter>
     </Card>
   );
 }

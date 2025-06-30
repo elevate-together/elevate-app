@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import PrayerGroupEdit from "@/components/custom/prayer-group/handlers/prayer-group-edit";
 import PrayerGroupMemberTable from "@/components/custom/prayer-group/prayer-group-member-table";
 import {
+  DEFAULT_IMAGE_URL,
   MinimalUser,
   PrayerGroupWithOwner,
   PrayerRequestWithUser,
@@ -16,6 +17,9 @@ import PrayerGroupPendingTable from "@/components/custom/prayer-group/prayer-gro
 import PrayerGroupOwnerSwitch from "@/components/custom/prayer-group/prayer-group-switch-user";
 import PrayerGroupJoinLink from "@/components/custom/prayer-group/join/prayer-group-join-link";
 import PrayerRequestAdd from "../prayer-request/handlers/prayer-request-add";
+import RoundedImage from "@/components/ui/rounded-image";
+import UserAvatar from "../user/user-avatar";
+import UserLeaveGroup from "../user/buttons/user-leave-group";
 
 type Props = {
   prayerGroup: PrayerGroupWithOwner;
@@ -37,34 +41,56 @@ export default function PrayerGroupPageTemplate({
   isOwner,
 }: Props) {
   return (
-    <div className="flex flex-col gap-3">
-      <div>
-        <div className="flex items-center justify-between">
-          <Badge variant="outline">
-            {prayerGroup.groupType === GroupType.PRIVATE ? "Private" : "Public"}
-          </Badge>
+    <div className="flex flex-col gap-3 w-full">
+      <div className="w-full">
+        <div className="flex items-center justify-start gap-4 w-full">
+          <RoundedImage
+            src={prayerGroup.imageUrl ?? DEFAULT_IMAGE_URL}
+            alt={prayerGroup.name || "Prayer Group Image"}
+          />
 
-          <div className="space-x-2">
-            <PrayerRequestAdd
-              userId={currentUser.id}
-              defaultGroupId={prayerGroup.id}
-            />
-            {isOwner && (
-              <PrayerGroupEdit ownerId={currentUser.id} group={prayerGroup} />
-            )}
-            {isOwner && (
-              <PrayerGroupOwnerSwitch
-                prayerGroup={prayerGroup}
-                members={members}
-              />
-            )}
-            <PrayerGroupJoinLink prayerGroup={prayerGroup} />
+          <div className="flex flex-col justify-start gap-1">
+            <Badge variant="outline">
+              {prayerGroup.groupType === GroupType.PRIVATE
+                ? "Private Group"
+                : "Public Group"}
+            </Badge>
+            <h1 className=" text-xl md:text-3xl font-bold">
+              {prayerGroup.name}
+            </h1>
+            <p className="text-md text-muted-foreground ">
+              {prayerGroup.description}
+            </p>
+            <div className="flex gap-1 items-center">
+              <UserAvatar user={prayerGroup.owner} size="xsmall" />
+              <p className="text-xs text-muted-foreground">(owner)</p>
+            </div>
           </div>
         </div>
-        <h1 className="text-xl font-bold">{prayerGroup.name}</h1>
-        {/* <p className="text-md text-muted-foreground">
-          {prayerGroup.description}
-        </p> */}
+      </div>
+
+      <div className="space-x-2">
+        <PrayerRequestAdd
+          userId={currentUser.id}
+          defaultGroupId={prayerGroup.id}
+          variant="ghost"
+        />
+        {isOwner && (
+          <PrayerGroupEdit
+            ownerId={currentUser.id}
+            group={prayerGroup}
+            variant="ghost"
+          />
+        )}
+        {isOwner && (
+          <PrayerGroupOwnerSwitch
+            prayerGroup={prayerGroup}
+            members={members}
+            variant="ghost"
+          />
+        )}
+        <UserLeaveGroup group={prayerGroup} userId={currentUser.id} />
+        <PrayerGroupJoinLink prayerGroup={prayerGroup} variant="ghost" />
       </div>
       <Tabs defaultValue="requests">
         <TabsList className="p-0">

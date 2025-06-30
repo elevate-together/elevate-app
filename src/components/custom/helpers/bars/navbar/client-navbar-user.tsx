@@ -89,7 +89,7 @@ export default function ClientNavbarUser({
       </div>
 
       <div className="flex gap-1 items-center mr-1">
-        <PrayerRequestAdd userId={userId} variant="ghost" className="h-9 w-9" />
+        <PrayerRequestAdd userId={userId} variant="ghost" className="h-9 w-9" isLargeIcon/>
         <Button
           variant="ghost"
           size="largeIcon"

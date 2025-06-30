@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CalendarDays, Plus } from "lucide-react";
+import { CalendarDays } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -28,12 +28,14 @@ type ReminderAddProps = {
   user: User;
   icon?: boolean;
   reminderText?: string;
+  className?: string;
 };
 
 export default function ReminderAdd({
   user,
   icon = false,
   reminderText = "",
+  className = "",
 }: ReminderAddProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -41,7 +43,6 @@ export default function ReminderAdd({
   const dialogTitle = "Schedule a new reminder";
   const dialogDescription = "Customize a New Reminder";
   const buttonLabel = "Add Reminder";
-  const buttonLabelShort = "Add";
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -51,13 +52,18 @@ export default function ReminderAdd({
   };
 
   const ButtonTrigger = icon ? (
-    <Button size="icon" variant="ghost">
+    <Button size="icon" variant="ghost" className={className}>
       <CalendarDays />
     </Button>
   ) : (
-    <Button aria-label="Schedule a new reminder" variant="secondary">
-      <Plus />
-      {isMobile ? buttonLabelShort : buttonLabel}
+    <Button
+      aria-label="Schedule a new reminder"
+      variant="ghost"
+      size="sm"
+      className={className}
+    >
+      <CalendarDays />
+      {buttonLabel}
     </Button>
   );
 
@@ -73,7 +79,7 @@ export default function ReminderAdd({
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{ButtonTrigger}</DrawerTrigger>
-      <DrawerContent className="gap-0">
+      <DrawerContent fullHeight>
         <DrawerHeader className="mb-1 gap-1">
           <DrawerTitle>{dialogTitle}</DrawerTitle>
           <DrawerDescription hidden aria-hidden>

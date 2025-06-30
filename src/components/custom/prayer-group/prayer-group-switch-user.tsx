@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useIsMobile } from "@/components/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -27,11 +27,12 @@ import { MinimalUser } from "@/lib/utils";
 type PrayerGroupOwnerChangeProps = {
   prayerGroup: PrayerGroup;
   members: MinimalUser[];
-};
+} & ButtonProps;
 
 export default function PrayerGroupOwnerChange({
   prayerGroup,
   members,
+  ...props
 }: PrayerGroupOwnerChangeProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -42,7 +43,7 @@ export default function PrayerGroupOwnerChange({
   const title = "Change Prayer Group Owner";
 
   const triggerButton = (
-    <Button aria-label="{title}" variant="secondary" size="icon">
+    <Button aria-label="{title}" variant="secondary" size="icon" {...props}>
       <ArrowLeftRight />
     </Button>
   );

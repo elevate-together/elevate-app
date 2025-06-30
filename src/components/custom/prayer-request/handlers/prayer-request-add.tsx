@@ -26,12 +26,14 @@ import { ButtonProps } from "@/components/ui/button";
 type PrayerRequestAddProps = {
   userId: string;
   isMenu?: boolean;
+  isLargeIcon?: boolean;
   defaultGroupId?: string; // only for create
 } & ButtonProps;
 
 export default function PrayerRequestAdd({
   userId,
   isMenu = false,
+  isLargeIcon = false,
   defaultGroupId = "",
   ...props
 }: PrayerRequestAddProps) {
@@ -50,7 +52,7 @@ export default function PrayerRequestAdd({
 
   const renderButton = (
     <Button
-      size={isMenu ? "default" : "icon"}
+      size={isMenu ? "default" : isLargeIcon ? "largeIcon" : "icon"}
       variant={isMenu ? "ghost" : "secondary"}
       className={`${
         isMenu ? "flex justify-start items-center w-full p-2" : ""
@@ -65,7 +67,7 @@ export default function PrayerRequestAdd({
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{renderButton}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent fullHeight>
         <DrawerHeader>
           <DrawerTitle>{drawerTitle}</DrawerTitle>
           <DrawerDescription>{drawerDescription}</DrawerDescription>

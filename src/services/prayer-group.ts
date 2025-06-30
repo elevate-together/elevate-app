@@ -100,27 +100,26 @@ export async function getPrayerGroupWithCountById(id: string): Promise<{
 }
 
 // CREATE prayer group
-export async function createPrayerGroup({
-  name,
-  ownerId,
-  groupType,
-  description = "",
-}: {
+export async function createPrayerGroup(input: {
   name: string;
   ownerId: string;
   groupType: GroupType;
+  imageUrl?: string;
   description?: string;
 }): Promise<{
   success: boolean;
   message: string;
   prayerGroup: PrayerGroupWithOwner | null;
 }> {
+  const { name, ownerId, groupType, imageUrl, description = "" } = input;
+
   try {
     const newPrayerGroup = await prisma.prayerGroup.create({
       data: {
         name: name,
         description: description,
         owner: { connect: { id: ownerId } },
+        imageUrl,
         groupType: groupType,
       },
       include: {
@@ -156,7 +155,11 @@ export async function updatePrayerGroup({
   groupData,
 }: {
   id: string;
-  groupData: { name?: string; description?: string; groupType?: GroupType };
+  groupData: {
+    name?: string;
+    description?: string;
+    imageUrl?: string;
+  };
 }): Promise<{
   success: boolean;
   message: string;

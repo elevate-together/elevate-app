@@ -1,7 +1,7 @@
 "use client";
 
 import { useIsMobile } from "@/components/hooks/use-mobile";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonProps } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -27,10 +27,11 @@ import { CopyButton } from "@/components/custom/helpers/buttons/copy-button";
 
 type PrayerGroupJoinLinkProps = {
   prayerGroup: PrayerGroupWithOwner;
-};
+} & ButtonProps;
 
 export default function PrayerGroupJoinLink({
   prayerGroup,
+  ...props
 }: PrayerGroupJoinLinkProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
@@ -56,6 +57,7 @@ export default function PrayerGroupJoinLink({
       aria-label="Invite friends to your prayer group"
       size="icon"
       variant="secondary"
+      {...props}
     >
       <Share />
     </Button>

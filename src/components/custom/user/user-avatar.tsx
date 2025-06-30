@@ -8,7 +8,7 @@ import { UserBasics } from "@/lib/utils";
 type AvatarProps = {
   user: UserBasics;
   icon?: boolean;
-  size?: "small" | "medium" | "large";
+  size?: "xsmall" | "small" | "medium" | "large";
   includeEmail?: boolean;
   boldName?: boolean;
   secondLine?: React.ReactNode;
@@ -25,6 +25,7 @@ export default function UserAvatar({
   excludeLink = false,
 }: AvatarProps) {
   const sizeClasses = {
+    xsmall: "w-5 h-5 text-xs",
     small: "w-8 h-8 text-xs",
     medium: "w-9 h-9 text-sm",
     large: "w-11 h-11 text-xl",

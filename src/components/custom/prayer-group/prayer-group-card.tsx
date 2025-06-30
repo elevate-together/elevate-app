@@ -2,8 +2,9 @@
 
 import { PrayerGroup } from "@prisma/client";
 import UserLeaveGroup from "@/components/custom/user/buttons/user-leave-group";
-import PrayerGroupView from "./buttons/prayer-group-view";
 import { Badge } from "@/components/ui/badge";
+import RoundedImage from "@/components/ui/rounded-image";
+import Link from "next/link";
 
 type PrayerGroupCardProps = {
   userId: string;
@@ -17,27 +18,36 @@ export default function PrayerGroupCard({
   pending = false,
 }: PrayerGroupCardProps) {
   return (
-    <div className="flex flex-row items-center justify-between gap-2 py-4 border-b">
-      <div className="flex flex-col items-start gap-1">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="text-lg font-bold">{prayerGroup.name}</h3>
-          {pending && <Badge variant="outline">Pending Approval</Badge>}
+    <div className="flex items-center justify-between border-b gap-4">
+      <Link href={`/group/${prayerGroup.id}`} className="flex-1">
+        <div className="flex items-center justify-start gap-2 py-4">
+          <RoundedImage
+            src={
+              prayerGroup.imageUrl
+                ? prayerGroup.imageUrl
+                : "https://kpfusvtzlmxikzmu.public.blob.vercel-storage.com/apple-icon.png"
+            }
+            alt={prayerGroup.name || "Prayer Group Image"}
+            className="min-w-12"
+          />
+          <div className="flex flex-col items-start gap-1">
+            <div className="flex items-center justify-between gap-2">
+              <h3 className="text-lg font-bold">{prayerGroup.name}</h3>
+              {pending && <Badge variant="outline">Pending Approval</Badge>}
+            </div>
+            {prayerGroup.description && (
+              <p className="text-sm text-muted-foreground">
+                {prayerGroup.description}
+              </p>
+            )}
+          </div>
         </div>
-        {prayerGroup.description && (
-          <p className="text-sm text-muted-foreground">
-            {prayerGroup.description}
-          </p>
-        )}
-      </div>
-
-      <div className="min-w-[72px]">
-        <PrayerGroupView groupId={prayerGroup.id} />
-        <UserLeaveGroup
-          group={prayerGroup}
-          userId={userId}
-          isRequested={pending}
-        />
-      </div>
+      </Link>
+      <UserLeaveGroup
+        group={prayerGroup}
+        userId={userId}
+        isRequested={pending}
+      />
     </div>
   );
 }

@@ -25,8 +25,14 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { useState } from "react";
-import { Loader } from "lucide-react";
+import { useRef, useState } from "react";
+import { ImageUp, Loader, X } from "lucide-react";
+import { deleteGroupImage, uploadGroupImage } from "@/services/image";
+import RoundedImage from "@/components/ui/rounded-image";
+import { DEFAULT_IMAGE_URL } from "@/lib/utils";
+
+const MAX_FILE_SIZE = 1_000_000;
+const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be left blank" }),
@@ -35,6 +41,18 @@ const formSchema = z.object({
     .max(250, { message: "Description must be less than 250 characters" })
     .optional(),
   groupType: z.enum([GroupType.PUBLIC, GroupType.PRIVATE]),
+  image: z
+    .instanceof(File)
+    .optional()
+    .refine((file) => !file || file.size > 0, "File cannot be empty")
+    .refine(
+      (file) => !file || file.size <= MAX_FILE_SIZE,
+      `Max file size is ${MAX_FILE_SIZE / 1_000_000}MB`
+    )
+    .refine(
+      (file) => !file || ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, and .png formats are supported"
+    ),
 });
 
 type PrayerGroupFormProps = {
@@ -50,41 +68,109 @@ export default function PrayerGroupForm({
   group,
   onCancel,
 }: PrayerGroupFormProps) {
-  const router = useRouter();
-
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: group?.name || "",
       description: group?.description || "",
       groupType: group?.groupType || GroupType.PUBLIC,
+      image: undefined,
     },
   });
 
+  const router = useRouter();
   const isPublic = form.watch("groupType") === GroupType.PUBLIC;
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue("image", file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    form.reset({
+      image: undefined,
+    });
+    setPreviewUrl(null);
+  };
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    let result;
     setLoading(true);
+    try {
+      let result;
+      let imageResult;
 
-    if (group?.id) {
-      result = await updatePrayerGroup({ id: group.id, groupData: values });
-    } else {
-      result = await createPrayerGroup({
-        ...values,
-        ownerId,
-      });
-    }
+      if (group && group.id) {
+        if (group.imageUrl) {
+          await deleteGroupImage(group.imageUrl);
+        }
 
-    if (result.success && result.prayerGroup) {
-      router.refresh();
-      onSubmit();
-    } else {
-      toast.error(result.message || "An error occurred.");
+        if (values.image) {
+          imageResult = await uploadGroupImage(group.id, values.image);
+          if (!imageResult.success) {
+            toast.error(imageResult.message || "Image upload failed.");
+            return;
+          }
+        }
+
+        result = await updatePrayerGroup({
+          id: group.id,
+          groupData: {
+            name: values.name,
+            description: values.description,
+            imageUrl: imageResult?.url,
+          },
+        });
+      } else {
+        result = await createPrayerGroup({
+          name: values.name,
+          ownerId,
+          groupType: values.groupType,
+          description: values.description,
+        });
+
+        if (result.success && result.prayerGroup) {
+          if (values.image) {
+            imageResult = await uploadGroupImage(
+              result.prayerGroup.id,
+              values.image
+            );
+
+            if (!imageResult.success) {
+              toast.error(imageResult.message || "Image upload failed.");
+              return;
+            }
+
+            result = await updatePrayerGroup({
+              id: result.prayerGroup.id,
+              groupData: { imageUrl: imageResult.url },
+            });
+          }
+        }
+      }
+
+      if (result && result.success && result.prayerGroup) {
+        router.refresh();
+        onSubmit();
+      } else {
+        toast.error(result?.message || "An error occurred.");
+      }
+    } catch (error) {
+      toast.error("Something went wrong.");
+      console.error(error);
+    } finally {
+      setLoading(false);
+      form.reset();
     }
-    setLoading(false);
-    form.reset();
   };
 
   const handleCancel = () => {
@@ -152,7 +238,7 @@ export default function PrayerGroupForm({
             </div>
             {group?.name ? (
               <p className="text-xs text-muted-foreground leading-sm">
-                You cannot change the group type after it’s created.{" "}
+                You cannot change the group type after it’s created.
               </p>
             ) : (
               <p className="text-xs text-muted-foreground leading-sm">
@@ -160,6 +246,101 @@ export default function PrayerGroupForm({
                   ? "This is a public group—anyone can join without approval. Prayer requests shared here are visible to all members. Note: You won't be able to change the group type after creating it."
                   : "This is a private group—new members must be approved to join. This helps protect the privacy of any prayer requests shared within the group. Note: You won't be able to change the group type after creating it."}
               </p>
+            )}
+
+            <FormField
+              control={form.control}
+              name="image"
+              render={() => (
+                <FormItem>
+                  <FormLabel>
+                    {group ? "Upload New Group Image" : "Upload Image"}
+                  </FormLabel>
+                  <FormControl>
+                    <div>
+                      <input
+                        ref={inputRef}
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg"
+                        className="hidden"
+                        onChange={handleImageChange}
+                      />
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="w-full"
+                        onClick={() => inputRef.current?.click()}
+                      >
+                        <ImageUp className="w-4 h-4 mr-2" />
+                        {previewUrl ? "Upload New Image" : "Upload Group Image"}
+                      </Button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <p className="text-xs text-muted-foreground leading-sm">
+              Help members recognize your group. Supported image formats: PNG,
+              JPG, JPEG. For best results, use a 1:1 aspect ratio.
+            </p>
+
+            {group ? (
+              <div>
+                <div className="p-4 flex justify-center gap-4">
+                  <div className="flex flex-col gap-2">
+                    <div className="text-xs text-muted-foreground leading-sm">
+                      Current Image {group.imageUrl === null && "(default)"}
+                    </div>
+                    <RoundedImage
+                      src={group.imageUrl ?? DEFAULT_IMAGE_URL}
+                      alt={group.name || "Prayer Group Image"}
+                      className="min-w-32 md:min-w-40"
+                    />
+                  </div>
+
+                  {previewUrl && (
+                    <div className="flex flex-col gap-2">
+                      <div className="text-xs text-muted-foreground leading-sm">
+                        New Image
+                      </div>
+                      <img
+                        src={previewUrl}
+                        alt="Image preview"
+                        className="relative rounded-md max-w-32 md:min-w-40 aspect-square"
+                      />
+                    </div>
+                  )}
+                </div>
+                {previewUrl && (
+                  <div className="flex justify-center w-full">
+                    <Button variant="destructive" onClick={handleRemoveImage}>
+                      <X /> Remove Image
+                    </Button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div>
+                {previewUrl && (
+                  <div className="space-y-4">
+                    <img
+                      src={previewUrl}
+                      alt="Image preview"
+                      className=" relative rounded-md border max-h-[350px] object-cover"
+                    />
+                    <Button
+                      variant="destructive"
+                      onClick={handleRemoveImage}
+                      className="w-full"
+                    >
+                      <X /> Remove Image
+                    </Button>
+                  </div>
+                )}
+              </div>
             )}
 
             <FormField

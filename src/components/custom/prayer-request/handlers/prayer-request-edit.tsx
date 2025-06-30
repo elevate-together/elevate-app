@@ -31,7 +31,8 @@ type PrayerRequestEditProps = {
   className?: string;
 };
 
-export default function PrayerRequestEdit({
+export default function
+ PrayerRequestEdit({
   prayer,
   userId,
   includeText = false,
@@ -67,7 +68,7 @@ export default function PrayerRequestEdit({
   return isMobile ? (
     <Drawer open={isOpen && isMobile} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent fullHeight>
         <DrawerHeader>
           <DrawerTitle className="mb-2">{title}</DrawerTitle>
         </DrawerHeader>

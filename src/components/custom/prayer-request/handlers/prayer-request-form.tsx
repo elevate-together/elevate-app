@@ -264,7 +264,7 @@ export default function PrayerRequestForm({
                   <FormLabel>Description</FormLabel>
                   <FormControl>
                     <Textarea
-                      className="bg-transparent min-h-[200px]"
+                      className="bg-transparent min-h-[300px] md:min-h-[200px]"
                       placeholder="Enter your prayer request here"
                       {...field}
                     />

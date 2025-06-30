@@ -107,6 +107,7 @@ model PrayerGroup {
   updatedAt   DateTime          @updatedAt
   users       UserPrayerGroup[] @relation("UserToPrayerGroup")
   ownerId     String            @db.ObjectId
+  imageUrl    String?
   owner       User              @relation("UserOwnedPrayerGroups", fields: [ownerId], references: [id], onDelete: Cascade)
   groupType   GroupType         @default(PUBLIC)
 }
