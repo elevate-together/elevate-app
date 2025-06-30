@@ -31,9 +31,8 @@ import { deleteGroupImage, uploadGroupImage } from "@/services/image";
 import RoundedImage from "@/components/ui/rounded-image";
 import { DEFAULT_IMAGE_URL } from "@/lib/utils";
 
-const MAX_FILE_SIZE = 1_000_000;
+const MAX_FILE_SIZE = 10_000_000;
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
-
 const formSchema = z.object({
   name: z.string().min(1, { message: "Name cannot be left blank" }),
   description: z
