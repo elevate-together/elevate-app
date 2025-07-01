@@ -32,6 +32,7 @@ import { getPrayerGroupsForUser } from "@/services/user-prayer-group";
 import { getSharedGroupIds } from "@/services/prayer-request-share";
 import SessionNotFound from "@/components/not-found/session";
 import { ShareWithTypes } from "@/lib/utils";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   request: z.string().min(1, { message: "Request cannot be left blank" }),
@@ -69,8 +70,10 @@ export default function PrayerRequestForm({
   const [options, setOptions] = useState<ShareWithTypeLabel[]>([]);
 
   const [loadingPane, setLoadingPane] = useState(false);
-  const [loadingSubmit, setLoadingSubmit] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [selectedValues, setSelectedValues] = useState<string[]>([]);
+  const [uploadProgress, setUploadProgress] = useState<number>(0);
+  const [loadingText, setLoadingText] = useState("Saving Changes...");
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -135,7 +138,8 @@ export default function PrayerRequestForm({
   }, [prayer, form, defaultGroupId]);
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    setLoadingSubmit(true);
+    setLoading(true);
+    setLoadingText("Saving Changes...");
     const { request, notify, sharedWith } = values;
     const sharedWithWithType = sharedWith
       .map((id) => {
@@ -153,12 +157,16 @@ export default function PrayerRequestForm({
         status: PrayerRequestStatus.IN_PROGRESS,
         sharedWith: sharedWithWithType,
       };
+      setLoadingText("Updating prayer request information...");
+      setUploadProgress(50);
       result = await updatePrayerRequest({
         id: prayer.id,
         requestData,
         userId,
       });
     } else {
+      setLoadingText("Creating prayer request...");
+      setUploadProgress(50);
       result = await createPrayerRequest({
         request,
         notify,
@@ -169,12 +177,15 @@ export default function PrayerRequestForm({
 
     if (result.success && result?.prayerRequest) {
       router.refresh();
+      setLoadingText("Done!");
+      setUploadProgress(100);
       onSubmit?.();
     } else {
       toast.error(result.message);
     }
+    setUploadProgress(0);
     resetForm();
-    setLoadingSubmit(false);
+    setLoading(false);
   };
 
   const resetForm = () => {
@@ -191,110 +202,119 @@ export default function PrayerRequestForm({
   };
 
   return (
-    <div>
+    <div className="relative">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <div className="flex flex-col gap-3">
-            <div className="flex flex-col justify-center gap-2">
-              <p className="text-sm">Share With</p>
-              <div className="flex items-center gap-2">
-                <FormField
-                  control={form.control}
-                  name="sharedWith"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormControl>
-                        <MultiSelect
-                          options={options}
-                          onValueChange={field.onChange}
-                          selectedValues={selectedValues}
-                          setSelectedValues={setSelectedValues}
-                          specialSelection
-                          placeholder="Request PrayerVisibility"
-                          modalPopover={true}
-                          isParentOpen={isOpen}
-                          maxCount={3}
-                          loading={loadingPane}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {!prayer?.id && (
+          <fieldset disabled={loading} className="space-y-8">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col justify-center gap-2">
+                <p className="text-sm">Share With</p>
+                <div className="flex items-center gap-2">
                   <FormField
                     control={form.control}
-                    name="notify"
+                    name="sharedWith"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex-1">
                         <FormControl>
-                          <Toggle
-                            pressed={field.value}
-                            onPressedChange={field.onChange}
-                            aria-label="Toggle notify"
-                            className="hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:bg-transparent data-[state=on]:bg-transparent"
-                          >
-                            {field.value ? (
-                              <BellRing className="h-4 w-4" />
-                            ) : (
-                              <BellOff className="h-4 w-4" />
-                            )}
-                          </Toggle>
+                          <MultiSelect
+                            options={options}
+                            onValueChange={field.onChange}
+                            selectedValues={selectedValues}
+                            setSelectedValues={setSelectedValues}
+                            specialSelection
+                            placeholder="Request PrayerVisibility"
+                            modalPopover={true}
+                            isParentOpen={isOpen}
+                            maxCount={3}
+                            loading={loadingPane}
+                          />
                         </FormControl>
+                        <FormMessage />
                       </FormItem>
                     )}
                   />
-                )}
-              </div>
-              <p className="text-xs text-muted-foreground leading-sm">
-                Everyone selected will have access to this request—you can
-                update it anytime.
-                {isNotify
-                  ? " Notifications will be sent to all selected recipients. Toggle to disable."
-                  : " Notifications are disabled. Toggle to enable and notify selected recipients of your request."}
-              </p>
-            </div>
 
-            <FormField
-              control={form.control}
-              name="request"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      className="bg-transparent min-h-[300px] md:min-h-[200px]"
-                      placeholder="Enter your prayer request here"
-                      {...field}
+                  {!prayer?.id && (
+                    <FormField
+                      control={form.control}
+                      name="notify"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Toggle
+                              pressed={field.value}
+                              onPressedChange={field.onChange}
+                              aria-label="Toggle notify"
+                              className="hover:bg-transparent active:bg-transparent focus:bg-transparent focus-visible:bg-transparent data-[state=on]:bg-transparent"
+                            >
+                              {field.value ? (
+                                <BellRing className="h-4 w-4" />
+                              ) : (
+                                <BellOff className="h-4 w-4" />
+                              )}
+                            </Toggle>
+                          </FormControl>
+                        </FormItem>
+                      )}
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground leading-sm">
+                  Everyone selected will have access to this request—you can
+                  update it anytime.
+                  {isNotify
+                    ? " Notifications will be sent to all selected recipients. Toggle to disable."
+                    : " Notifications are disabled. Toggle to enable and notify selected recipients of your request."}
+                </p>
+              </div>
 
-            <div className="flex flex-row gap-4 items-center w-full">
-              <Button
-                variant="outline"
-                type="button"
-                onClick={handleCancel}
-                className="w-full"
-                disabled={loadingSubmit}
-              >
-                Cancel
-              </Button>
-              <Button className="w-full" type="submit" disabled={loadingSubmit}>
-                {loadingSubmit ? (
-                  <Loader className="h-4 w-4 animate-spin" />
-                ) : (
-                  "Save"
+              <FormField
+                control={form.control}
+                name="request"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        className="bg-transparent min-h-[300px] md:min-h-[200px]"
+                        placeholder="Enter your prayer request here"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </Button>
+              />
+
+              <div className="flex flex-row gap-4 items-center w-full">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleCancel}
+                  className="w-full"
+                  disabled={loading}
+                >
+                  Cancel
+                </Button>
+                <Button className="w-full" type="submit" disabled={loading}>
+                  {loading ? (
+                    <Loader className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Save"
+                  )}
+                </Button>
+              </div>
             </div>
-          </div>
+          </fieldset>
         </form>
       </Form>
+
+      {loading && (
+        <div className="absolute inset-0 gap-5 z-10 flex flex-col items-center justify-center bg-white/80 dark:bg-black/60 backdrop-blur-sm rounded-md">
+          <p className="text-md font-bold">{loadingText}</p>
+          <Progress value={uploadProgress} className="w-[50%]" />
+        </div>
+      )}
     </div>
   );
 }
