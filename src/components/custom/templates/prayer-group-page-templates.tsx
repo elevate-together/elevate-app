@@ -47,6 +47,7 @@ export default function PrayerGroupPageTemplate({
           <RoundedImage
             src={prayerGroup.imageUrl ?? DEFAULT_IMAGE_URL}
             alt={prayerGroup.name || "Prayer Group Image"}
+            priority
           />
 
           <div className="flex flex-col justify-start">

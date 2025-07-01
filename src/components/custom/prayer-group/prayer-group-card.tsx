@@ -29,6 +29,7 @@ export default function PrayerGroupCard({
             }
             alt={prayerGroup.name || "Prayer Group Image"}
             className="min-w-24"
+            priority
           />
           <div className="flex flex-col items-start">
             <div className="flex items-center justify-between">
