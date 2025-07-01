@@ -28,11 +28,13 @@ export default function PrayerGroupCard({
                 : "https://kpfusvtzlmxikzmu.public.blob.vercel-storage.com/apple-icon.png"
             }
             alt={prayerGroup.name || "Prayer Group Image"}
-            className="min-w-28"
+            className="min-w-24"
           />
-          <div className="flex flex-col items-start gap-1">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-lg font-bold">{prayerGroup.name}</h3>
+          <div className="flex flex-col items-start">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold leading-tight">
+                {prayerGroup.name}
+              </h3>
               {pending && <Badge variant="outline">Pending Approval</Badge>}
             </div>
             {prayerGroup.description && (

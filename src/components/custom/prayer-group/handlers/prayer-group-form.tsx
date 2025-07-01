@@ -96,9 +96,7 @@ export default function PrayerGroupForm({
   };
 
   const handleRemoveImage = () => {
-    form.reset({
-      image: undefined,
-    });
+    form.setValue("image", undefined);
     setPreviewUrl(null);
   };
 
@@ -305,11 +303,13 @@ export default function PrayerGroupForm({
                       <div className="text-xs text-muted-foreground leading-sm">
                         New Image
                       </div>
-                      <img
-                        src={previewUrl}
-                        alt="Image preview"
-                        className="relative rounded-md max-w-32 md:min-w-40 aspect-square"
-                      />
+                      <div className="relative rounded-md border max-w-32 md:min-w-40 aspect-square overflow-hidden">
+                        <img
+                          src={previewUrl}
+                          alt="Image preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -322,13 +322,13 @@ export default function PrayerGroupForm({
                 )}
               </div>
             ) : (
-              <div>
+              <div className="flex justify-center w-full">
                 {previewUrl && (
-                  <div className="space-y-4">
+                  <div className="relative rounded-md border max-w-32 md:min-w-40 aspect-square overflow-hidden">
                     <img
                       src={previewUrl}
                       alt="Image preview"
-                      className=" relative rounded-md border max-h-[350px] object-cover"
+                      className="w-full h-full object-cover"
                     />
                     <Button
                       variant="destructive"

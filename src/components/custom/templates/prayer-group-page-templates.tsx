@@ -49,19 +49,19 @@ export default function PrayerGroupPageTemplate({
             alt={prayerGroup.name || "Prayer Group Image"}
           />
 
-          <div className="flex flex-col justify-start gap-1">
+          <div className="flex flex-col justify-start">
             <Badge variant="outline">
               {prayerGroup.groupType === GroupType.PRIVATE
                 ? "Private Group"
                 : "Public Group"}
             </Badge>
-            <h1 className=" text-xl md:text-3xl font-bold">
+            <h1 className=" text-xl md:text-3xl font-bold leading-tight pt-2">
               {prayerGroup.name}
             </h1>
-            <p className="text-sm md:text-md text-muted-foreground leading-tight">
+            <p className="text-sm md:text-md text-muted-foreground leading-none md:leading-tight">
               {prayerGroup.description}
             </p>
-            <div className="flex gap-1 items-center">
+            <div className="flex gap-1 items-center pt-2 md:pt-3">
               <UserAvatar user={prayerGroup.owner} size="xsmall" />
               <p className="text-xs text-muted-foreground">(owner)</p>
             </div>

@@ -16,7 +16,7 @@ export default function PrayerGroupAllPageTemplate({
   pendingGroups,
 }: Props) {
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-2">
 
       <div className="flex flex-row items-center justify-between">
         <div className="text-xl font-semibold">Your Groups</div>

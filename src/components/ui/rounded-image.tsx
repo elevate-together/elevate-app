@@ -23,6 +23,7 @@ export default function RoundedImage({
         src={src}
         alt={alt}
         fill
+        key={src}
         className="object-cover"
         sizes="(max-width: 640px) 96px, (max-width: 768px) 128px, 160px"
         priority={priority}
