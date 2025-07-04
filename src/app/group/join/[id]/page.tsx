@@ -17,7 +17,7 @@ export default async function JoinGroupPage({
   const { id: groupId } = await params;
   const session = await auth();
   if (!session) {
-    return <LogInPrompt callback={`group/join/${groupId}`} />;
+    return <LogInPrompt callback={`/group/join/${groupId}`} />;
   }
 
   const userId = session?.user?.id;
