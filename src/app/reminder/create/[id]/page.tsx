@@ -1,3 +1,4 @@
+import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
 import ReminderCreatePageTemplate from "@/components/custom/templates/reminder-create-page-template";
 import UserNotFound from "@/components/not-found/user";
 import { getRemindersByUserId } from "@/services/reminder";
@@ -20,5 +21,9 @@ export default async function ReminderPage({
   }
   const { reminders } = await getRemindersByUserId({ userId });
 
-  return <ReminderCreatePageTemplate user={user} reminders={reminders} />;
+  return (
+    <PagePaddingWrapper>
+      <ReminderCreatePageTemplate user={user} reminders={reminders} />
+    </PagePaddingWrapper>
+  );
 }

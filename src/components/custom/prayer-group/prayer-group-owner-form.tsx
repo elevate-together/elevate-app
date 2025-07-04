@@ -89,7 +89,7 @@ export default function PrayerGroupOwnerForm({
               <FormLabel>Select New Owner for {prayerGroup.name}</FormLabel>
               <FormControl>
                 <Select onValueChange={field.onChange} value={field.value}>
-                  <SelectTrigger className="min-h-[60px] text-left">
+                  <SelectTrigger className="min-h-[69px] max-h-[60px] text-left">
                     <SelectValue placeholder="Select new owner" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[250px] overflow-auto">
@@ -97,7 +97,7 @@ export default function PrayerGroupOwnerForm({
                       <SelectItem
                         key={user.id}
                         value={user.id}
-                        className="min-h-[55px] text-left"
+                        className="min-h-[55px] max-h-[55px] text-left"
                       >
                         <div className="flex items-center gap-3">
                           <UserAvatar
@@ -105,6 +105,7 @@ export default function PrayerGroupOwnerForm({
                             size="small"
                             boldName
                             includeEmail
+                            excludeLink
                           />
                           {user.id === prayerGroup.ownerId && (
                             <Badge variant="outline">Current</Badge>
@@ -122,7 +123,8 @@ export default function PrayerGroupOwnerForm({
 
         <p className="text-xs text-muted-foreground leading-sm mb-2">
           Ownership changes are permanent and cannot be undone unless the new
-          owner makes further changes.
+          owner makes further changes. You must change ownership before leaving
+          this group.
         </p>
 
         <div className="flex gap-4">

@@ -36,7 +36,7 @@ model Reminder {
   userId     String   @db.ObjectId
   title      String
   message    String
-  frequency  String
+  frequency  ReminderFrequency
   time       String
   dayOfWeek  Int?
   createdAt  DateTime @default(now())
@@ -208,4 +208,9 @@ enum ZoneType {
   DENVER
   CHICAGO   
   NEWYORK 
+}
+
+enum ReminderFrequency { 
+  DAILY
+  WEEKLY
 }

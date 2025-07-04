@@ -24,9 +24,9 @@ import {
   Star,
   Loader,
   Check,
-  Ellipsis,
   HelpingHand,
   User as UserIco,
+  EllipsisVertical,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -155,7 +155,7 @@ export default function PrayerRequestCard({
                   <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="ghost">
-                        <Ellipsis />
+                        <EllipsisVertical />
                       </Button>
                     </DropdownMenuTrigger>
 
@@ -194,7 +194,7 @@ export default function PrayerRequestCard({
                   <DropdownMenu open={isOpen} onOpenChange={setIsPopoverOpen}>
                     <DropdownMenuTrigger asChild>
                       <Button size="icon" variant="ghost">
-                        <Ellipsis />
+                        <EllipsisVertical />
                       </Button>
                     </DropdownMenuTrigger>
 

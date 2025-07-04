@@ -49,7 +49,7 @@ export default function UserLeaveGroup({
 
     if (response.success) {
       setIsOpen(false);
-      router.refresh();
+      router.push("/");
     } else {
       toast.error(response.message);
     }

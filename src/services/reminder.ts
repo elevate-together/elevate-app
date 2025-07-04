@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { Reminder, ZoneType } from "@prisma/client";
+import { Reminder, ReminderFrequency, ZoneType } from "@prisma/client";
 
 export async function addReminder({
   userId,
@@ -15,7 +15,7 @@ export async function addReminder({
   userId: string;
   title: string;
   message: string;
-  frequency: string;
+  frequency: ReminderFrequency;
   time: string;
   timeZone: ZoneType;
   dayOfWeek?: string;
@@ -25,8 +25,6 @@ export async function addReminder({
   reminder: Reminder | null;
 }> {
   try {
-    console.log(time);
-
     const reminder = await prisma.reminder.create({
       data: {
         userId,
@@ -36,7 +34,9 @@ export async function addReminder({
         time,
         timeZone,
         dayOfWeek:
-          frequency === "weekly" && dayOfWeek ? parseInt(dayOfWeek) : null,
+          frequency === ReminderFrequency.WEEKLY && dayOfWeek
+            ? parseInt(dayOfWeek)
+            : null,
       },
     });
 
@@ -85,6 +85,94 @@ export async function getRemindersByUserId({
       success: false,
       message: "Could not retrieve reminders",
       reminders: [],
+    };
+  }
+}
+
+export async function deleteReminder({
+  reminderId,
+  userId,
+}: {
+  reminderId: string;
+  userId: string;
+}): Promise<{
+  success: boolean;
+  message: string;
+}> {
+  try {
+    await prisma.reminder.delete({
+      where: {
+        id: reminderId,
+        userId,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Reminder deleted successfully",
+    };
+  } catch (error) {
+    console.error("Failed to delete reminder:", error);
+    return {
+      success: false,
+      message: "Could not delete reminder",
+    };
+  }
+}
+
+export async function updateReminder({
+  reminderId,
+  userId,
+  title,
+  message,
+  frequency,
+  time,
+  timeZone,
+  dayOfWeek,
+}: {
+  reminderId: string;
+  userId: string;
+  title: string;
+  message: string;
+  frequency: ReminderFrequency;
+  time: string;
+  timeZone: ZoneType;
+  dayOfWeek?: string;
+}): Promise<{
+  success: boolean;
+  message: string;
+  reminder: Reminder | null;
+}> {
+  try {
+    const reminder = await prisma.reminder.update({
+      where: {
+        id: reminderId,
+        userId,
+      },
+      data: {
+        title,
+        message,
+        frequency,
+        time,
+        timeZone,
+        dayOfWeek:
+          frequency === ReminderFrequency.WEEKLY && dayOfWeek
+            ? parseInt(dayOfWeek)
+            : null,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Reminder updated successfully",
+      reminder,
+    };
+  } catch (error) {
+    console.error("Failed to update reminder:", error);
+    return {
+      success: false,
+      message: "Could not update reminder",
+      reminder: null,
     };
   }
 }

@@ -19,7 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Plus } from "lucide-react";
+import { Hand } from "lucide-react";
 import { useState } from "react";
 import { ButtonProps } from "@/components/ui/button";
 
@@ -59,7 +59,7 @@ export default function PrayerRequestAdd({
       }`}
       {...props}
     >
-      <Plus />
+      <Hand />
       {isMenu && buttonLabel}
     </Button>
   );

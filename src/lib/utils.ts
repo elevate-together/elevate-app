@@ -2,7 +2,7 @@ import { PrayerGroup, Prisma, User, ZoneType } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import moment from "moment-timezone";
 
-import { HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
+import { Calendar, HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -67,6 +67,12 @@ export const menu_items = [
     title: "Your Groups",
     url: "/groups",
     icon: Users,
+    auth: true,
+  },
+  {
+    title: "Your Reminders",
+    url: "/reminder/create/{id}",
+    icon: Calendar,
     auth: true,
   },
 ];

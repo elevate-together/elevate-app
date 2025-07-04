@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { format } from "date-fns";
 import prisma from "@/lib/prisma";
 import { sendNotificationAllDevices } from "@/services/device";
-import { NotificationType } from "@prisma/client";
+import { NotificationType, ReminderFrequency } from "@prisma/client";
 
 export async function GET() {
   const now = new Date();
@@ -14,11 +14,11 @@ export async function GET() {
       where: {
         OR: [
           {
-            frequency: "daily",
+            frequency: ReminderFrequency.DAILY,
             time: currentUtcTime,
           },
           {
-            frequency: "weekly",
+            frequency: ReminderFrequency.WEEKLY,
             time: currentUtcTime,
             dayOfWeek: currentDayOfWeek,
           },

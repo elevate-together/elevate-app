@@ -13,6 +13,7 @@ import {
   TriangleAlert,
   Users,
   User,
+  CalendarDays,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React from "react";
@@ -39,6 +40,7 @@ const icons = {
   Star,
   Package,
   User,
+  CalendarDays
 };
 
 export default function NoDataDisplay({

@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { Users } from "lucide-react";
 import { useState } from "react";
 import PrayerGroupForm from "@/components/custom/prayer-group/handlers/prayer-group-form";
 import {
@@ -58,7 +58,7 @@ export default function PrayerGroupCreate({
       }`}
       variant={isMenu ? "ghost" : "secondary"}
     >
-      <Plus />
+      <Users />
       {isMobile ? buttonLabelShort : buttonLabel}
     </Button>
   );

@@ -19,7 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Edit2Icon } from "lucide-react";
+import { Edit } from "lucide-react";
 import { useState } from "react";
 
 import { PrayerRequest } from "@prisma/client";
@@ -31,8 +31,7 @@ type PrayerRequestEditProps = {
   className?: string;
 };
 
-export default function
- PrayerRequestEdit({
+export default function PrayerRequestEdit({
   prayer,
   userId,
   includeText = false,
@@ -50,7 +49,7 @@ export default function
       aria-label="Edit prayer request"
       className={className}
     >
-      <Edit2Icon />
+      <Edit />
       {includeText && "Edit"}
     </Button>
   );

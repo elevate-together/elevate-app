@@ -215,8 +215,8 @@ export default function PrayerGroupForm({
   return (
     <div className="relative">
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-          <fieldset disabled={loading} className="space-y-8">
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          <fieldset disabled={loading} className="space-y-3">
             <div className="flex flex-col gap-4 w-full">
               <div className="flex gap-3">
                 <FormField

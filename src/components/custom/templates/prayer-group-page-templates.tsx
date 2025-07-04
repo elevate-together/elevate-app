@@ -90,7 +90,9 @@ export default function PrayerGroupPageTemplate({
             variant="ghost"
           />
         )}
-        <UserLeaveGroup group={prayerGroup} userId={currentUser.id} />
+        {!isOwner && (
+          <UserLeaveGroup group={prayerGroup} userId={currentUser.id} />
+        )}
         <PrayerGroupJoinLink prayerGroup={prayerGroup} variant="ghost" />
       </div>
       <Tabs defaultValue="requests">

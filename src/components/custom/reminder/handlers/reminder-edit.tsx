@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { CalendarPlus } from "lucide-react";
+import { Edit } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -22,29 +22,29 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import ReminderForm from "../reminder-form";
-import { User } from "@prisma/client";
+import { Reminder, User } from "@prisma/client";
 
-type ReminderAddProps = {
+type ReminderEditProps = {
   user: User;
+  reminder: Reminder;
   icon?: boolean;
-  reminderText?: string;
   className?: string;
   isMenu?: boolean;
 };
 
-export default function ReminderAdd({
+export default function ReminderEdit({
   user,
+  reminder,
   icon = false,
-  reminderText = "",
   className = "",
   isMenu = false,
-}: ReminderAddProps) {
+}: ReminderEditProps) {
   const [isOpen, setIsOpen] = useState(false);
   const isMobile = useIsMobile();
 
-  const dialogTitle = "Schedule a new reminder";
-  const dialogDescription = "Customize a New Reminder";
-  const buttonLabel = "Add Reminder";
+  const dialogTitle = "Edit Reminder";
+  const dialogDescription = "Update your reminder info";
+  const buttonLabel = "Edit Reminder";
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -55,18 +55,18 @@ export default function ReminderAdd({
 
   const ButtonTrigger = icon ? (
     <Button size="icon" variant="ghost" className={className}>
-      <CalendarPlus />
+      <Edit />
     </Button>
   ) : (
     <Button
-      aria-label="Schedule a new reminder"
+      aria-label="Edit reminder"
       size="sm"
       className={`${
         isMenu ? "flex justify-start items-center w-full p-2" : ""
       } ${className}`}
       variant={isMenu ? "ghost" : "secondary"}
     >
-      <CalendarPlus />
+      <Edit />
       {buttonLabel}
     </Button>
   );
@@ -74,7 +74,7 @@ export default function ReminderAdd({
   const FormContent = (
     <ReminderForm
       user={user}
-      reminderText={reminderText}
+      reminder={reminder}
       onCancel={handleCancel}
       onSubmit={handleSubmit}
     />
