@@ -27,6 +27,7 @@ import { User } from "@prisma/client";
 type ReminderAddProps = {
   user: User;
   icon?: boolean;
+  reminderTitle?: string;
   reminderText?: string;
   className?: string;
   isMenu?: boolean;
@@ -35,7 +36,8 @@ type ReminderAddProps = {
 export default function ReminderAdd({
   user,
   icon = false,
-  reminderText = "",
+  reminderTitle,
+  reminderText,
   className = "",
   isMenu = false,
 }: ReminderAddProps) {
@@ -74,6 +76,7 @@ export default function ReminderAdd({
   const FormContent = (
     <ReminderForm
       user={user}
+      reminderTitle={reminderTitle}
       reminderText={reminderText}
       onCancel={handleCancel}
       onSubmit={handleSubmit}

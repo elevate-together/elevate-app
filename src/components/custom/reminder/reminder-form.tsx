@@ -33,6 +33,7 @@ import {
   getIanafromEnumKey,
 } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
 
 const reminderSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -49,6 +50,7 @@ type ReminderFormValues = z.infer<typeof reminderSchema>;
 type ReminderFormProps = {
   user: User;
   reminder?: Reminder;
+  reminderTitle?: string;
   reminderText?: string;
   onSubmit?: () => void;
   onCancel?: () => void;
@@ -57,7 +59,8 @@ type ReminderFormProps = {
 export default function ReminderForm({
   user,
   reminder,
-  reminderText = "",
+  reminderTitle,
+  reminderText,
   onSubmit,
   onCancel,
 }: ReminderFormProps) {
@@ -65,8 +68,8 @@ export default function ReminderForm({
   const form = useForm<ReminderFormValues>({
     resolver: zodResolver(reminderSchema),
     defaultValues: {
-      title: reminder?.title || "Reminder",
-      message: reminder?.message || reminderText,
+      title: reminder?.title || reminderTitle || "Reminder",
+      message: reminder?.message || reminderText || "",
       frequency: reminder?.frequency || ReminderFrequency.DAILY,
       reminderTime: convertUTCToZoneTime("13:00", user.timeZone),
       dayOfWeek: "",
@@ -127,6 +130,23 @@ export default function ReminderForm({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <fieldset disabled={loading} className="space-y-3">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Title</FormLabel>
+                  <FormControl>
+                    <Input
+                      className="bg-transparent"
+                      placeholder="Reminder message"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="frequency"

@@ -34,7 +34,7 @@ export const HomePagetemplate = ({
           user={prayer.user}
           prayer={prayer}
           isOwner={user.id === prayer.user.id}
-          currUserName={user.name}
+          currUser={user}
         />
       ))}
     </PullToRefreshWrapper>

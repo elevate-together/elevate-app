@@ -117,7 +117,7 @@ export default function PrayerGroupPageTemplate({
                     user={prayer.user}
                     prayer={prayer}
                     isOwner={false}
-                    currUserName={currentUser.name}
+                    currUser={currentUser}
                   />
                 ))}
               </div>
@@ -136,7 +136,7 @@ export default function PrayerGroupPageTemplate({
                     user={prayer.user}
                     prayer={prayer}
                     isOwner={false}
-                    currUserName={currentUser.name}
+                    currUser={currentUser}
                   />
                 ))}
               </div>

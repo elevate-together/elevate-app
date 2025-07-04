@@ -48,7 +48,7 @@ type PrayerRequestCardProps = {
   prayer: PrayerRequest;
   user: User;
   isOwner?: boolean;
-  currUserName?: string;
+  currUser?: User;
   hideActions?: boolean;
 };
 
@@ -56,7 +56,7 @@ export default function PrayerRequestCard({
   prayer,
   user,
   isOwner = false,
-  currUserName = "",
+  currUser,
   hideActions = false,
 }: PrayerRequestCardProps) {
   const router = useRouter();
@@ -66,6 +66,7 @@ export default function PrayerRequestCard({
 
   const handleSendNotification = async () => {
     setNotificationLoading(true);
+    const currUserName = currUser?.name || "";
     const title =
       currUserName != ""
         ? currUserName.includes(" ")
@@ -177,15 +178,17 @@ export default function PrayerRequestCard({
                         </Button>
                       </DropdownMenuItem>
 
-                      {prayer.status !== PrayerRequestStatus.ANSWERED && (
-                        <DropdownMenuItem asChild>
-                          <ReminderAdd
-                            user={user}
-                            reminderText={`Take a moment to pray for ${prayer.request}`}
-                            className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
-                          />
-                        </DropdownMenuItem>
-                      )}
+                      {prayer.status !== PrayerRequestStatus.ANSWERED &&
+                        currUser?.id && (
+                          <DropdownMenuItem asChild>
+                            <ReminderAdd
+                              user={currUser}
+                              reminderTitle={`Pray for ${currUser.name}`}
+                              reminderText={`Take a moment to pray for "${prayer.request}"`}
+                              className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
+                            />
+                          </DropdownMenuItem>
+                        )}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
@@ -221,7 +224,8 @@ export default function PrayerRequestCard({
                           <DropdownMenuItem asChild>
                             <ReminderAdd
                               user={user}
-                              reminderText={`Take a moment to pray for ${prayer.request}`}
+                              reminderTitle={`Prayer Reminder`}
+                              reminderText={`Take a moment to pray for "${prayer.request}"`}
                               className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
                             />
                           </DropdownMenuItem>
