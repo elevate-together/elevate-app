@@ -35,9 +35,8 @@ export default function ReminderCreatePageTemplate({
             return (
               <div key={reminder.id} className="bg-white p-4 border rounded-lg">
                 <div>
-                  <div className="text-lg font-bold flex items-center justify-between gap-2">
+                  <div className="flex items-center justify-between gap-2">
                     <div className="flex gap-2 ">
-                      {reminder.title}
                       <Badge
                         variant="outline"
                         className="text-xs lowercase capitalize"
@@ -54,6 +53,7 @@ export default function ReminderCreatePageTemplate({
                       <ReminderEdit reminder={reminder} user={user} icon />
                     </div>
                   </div>
+                  <div className="text-lg font-bold"> {reminder.title}</div>
                 </div>
                 <div className="text-md space-y-2">
                   <p>{reminder.message}</p>

@@ -66,7 +66,7 @@ export default function ReminderAdd({
       className={`${
         isMenu ? "flex justify-start items-center w-full p-2" : ""
       } ${className}`}
-      variant={isMenu ? "ghost" : "secondary"}
+      variant={isMenu ? "ghost" : "outline"}
     >
       <CalendarPlus />
       {buttonLabel}

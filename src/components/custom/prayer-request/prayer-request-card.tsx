@@ -183,7 +183,7 @@ export default function PrayerRequestCard({
                           <DropdownMenuItem asChild>
                             <ReminderAdd
                               user={currUser}
-                              reminderTitle={`Pray for ${currUser.name}`}
+                              reminderTitle={`Pray for ${user.name}`}
                               reminderText={`Take a moment to pray for "${prayer.request}"`}
                               className="px-2 py-1.5 text-sm w-full justify-start hover:bg-accent focus:outline-none focus:ring-0 focus-visible:ring-0 border-0"
                             />
