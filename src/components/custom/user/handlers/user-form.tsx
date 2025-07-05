@@ -176,7 +176,7 @@ export default function UserForm({
             {/* Action Buttons */}
             {isEdit && (
               <div className="flex flex-row gap-4 items-center justify-end">
-                <Button variant="outline" onClick={handleCancel}>
+                <Button variant="outline" onClick={handleCancel} type="button">
                   Cancel
                 </Button>
                 <Button type="submit">Save</Button>

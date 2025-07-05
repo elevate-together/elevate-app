@@ -402,6 +402,7 @@ export default function PrayerGroupForm({
                   variant="outline"
                   onClick={handleCancel}
                   className="flex-1"
+                  type="button"
                   disabled={loading}
                 >
                   Cancel

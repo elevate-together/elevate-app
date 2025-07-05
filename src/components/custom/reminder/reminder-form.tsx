@@ -239,6 +239,7 @@ export default function ReminderForm({
 
             <div className="flex flex-row gap-4">
               <Button
+                type="button"
                 variant="outline"
                 className="w-full"
                 onClick={onCancel}
