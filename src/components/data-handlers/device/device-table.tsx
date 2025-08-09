@@ -1,6 +1,6 @@
 "use client";
 
-import { NoDataDisplay } from "@/components/common";
+import { NoDataDisplay, SidebarButton } from "@/components/common";
 import { DeviceForm } from "@/components/data-handlers";
 import {
   Table,
@@ -119,32 +119,36 @@ export function DeviceTable({
                         <MoreVerticalIcon />
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem
-                        onClick={() => handleTestPush({ device })}
-                      >
-                        <div className="flex flex-row gap-2 items-center">
-                          <Bell size="14px" />
-                          <div>Test Push</div>
-                        </div>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <div
-                          className="flex flex-row gap-2 items-center"
-                          onClick={() => setOpen(true)}
+                    <DropdownMenuContent side="bottom" align="end">
+                      <DropdownMenuItem asChild>
+                        <SidebarButton
+                          onClick={() => handleTestPush({ device })}
                         >
-                          <Pencil size="14px" />
-                          <div>Rename</div>
-                        </div>
+                          <Bell />
+                          Test Push
+                        </SidebarButton>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <SidebarButton
+                          className="flex flex-row gap-2 items-center"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setOpen(!open);
+                          }}
+                        >
+                          <Pencil />
+                          Rename
+                        </SidebarButton>
                       </DropdownMenuItem>
 
-                      <DropdownMenuItem
-                        onSelect={() => handleRemoveDevice(device.endpoint)}
-                      >
-                        <div className="flex flex-row gap-2 items-center">
+                      <DropdownMenuItem>
+                        <SidebarButton
+                          onClick={() => handleRemoveDevice(device.endpoint)}
+                        >
                           <Trash size="14px" />
-                          <div>Remove</div>
-                        </div>
+                          Remove
+                        </SidebarButton>
                       </DropdownMenuItem>
 
                       <Dialog open={open} onOpenChange={setOpen}>
