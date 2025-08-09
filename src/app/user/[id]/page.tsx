@@ -16,11 +16,14 @@ interface ProfilePageProps {
 export default async function ProfilePage({ params }: ProfilePageProps) {
   const { id: pageId } = await params;
   const session = await auth();
+
   if (!session) {
     return <SessionNotFound />;
   }
 
   const isOwner = session.user.id === pageId;
+
+  console.log(isOwner);
 
   if (!isOwner) {
     const { user, message, success } = await getUserById({ id: pageId });
@@ -32,7 +35,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
     if (!user) {
       return <UserNotFound />;
     }
-    <ProfileGuestPageTemplate user={user} />;
+    return <ProfileGuestPageTemplate user={user} />;
   }
 
   const { devices } = await getUserDevices(pageId);

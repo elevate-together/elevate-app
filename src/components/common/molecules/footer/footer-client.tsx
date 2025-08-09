@@ -16,7 +16,7 @@ export function FooterClient({ session }: FooterClientProps) {
   if (!session) return null;
 
   return (
-    <div className="block md:hidden border-t border-border pt-4 pb-8 px-4 bg-white">
+    <div className="block md:hidden border-t border-border pt-4 pb-8 px-2 bg-white">
       <footer className="flex justify-evenly">
         {menu_items.map((item) => {
           const url = item.url.replace("{id}", session.user.id || "");

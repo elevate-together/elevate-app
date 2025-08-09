@@ -11,7 +11,7 @@ export const ProfileGuestPageTemplate = ({
   user,
 }: ProfileGuestPageTemplateProps) => {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 m-5">
       <div>
         <h2 className="text-xl font-semibold mb-2">{`${user.name}'s Info`}</h2>
         <Separator className="my-4" />
