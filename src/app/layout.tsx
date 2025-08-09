@@ -40,11 +40,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main className="flex w-full">
+          <main className="flex w-full min-h-screen max-h-screen">
             <Sidebar />
             <div className="flex flex-col w-full">
               <Navbar />
-              <div className="flex-1 overflow-hidden">{children}</div>
+              <div className="flex-1 overflow-auto">{children}</div>
               <Footer />
             </div>
           </main>

@@ -16,7 +16,7 @@ export function FooterClient({ session }: FooterClientProps) {
   if (!session) return null;
 
   return (
-    <div className="block md:hidden border-t border-border py-4">
+    <div className="block md:hidden border-t border-border py-4 mb-2">
       <nav className="flex justify-evenly">
         {menu_items.map((item) => {
           const url = item.url.replace("{id}", session.user.id || "");
@@ -34,7 +34,7 @@ export function FooterClient({ session }: FooterClientProps) {
             >
               <item.icon
                 className={cn(
-                  "h-6 w-6",
+                  "h-5 w-5",
                   isActive ? "text-black" : "text-gray-500"
                 )}
                 aria-hidden="true"

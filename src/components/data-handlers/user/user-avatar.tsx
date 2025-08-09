@@ -13,6 +13,7 @@ type AvatarProps = {
   boldName?: boolean;
   secondLine?: React.ReactNode;
   excludeLink?: boolean;
+  excludeName?: boolean;
   className?: string;
 };
 
@@ -21,6 +22,7 @@ export function UserAvatar({
   icon = false,
   size = "medium",
   includeEmail = false,
+  excludeName = false,
   boldName = false,
   secondLine = "",
   excludeLink = false,
@@ -42,34 +44,37 @@ export function UserAvatar({
     <div className={`flex items-center gap-2 ${className}`}>
       <Avatar className={avatarSizeClass}>
         <AvatarImage src={user.image ?? undefined} />
+
         <AvatarFallback>
           {user.name?.charAt(0).toUpperCase() || "?"}
         </AvatarFallback>
       </Avatar>
 
-      <div className="flex flex-col leading-tight">
-        <span
-          className={`m-0 p-0 ${nameFontWeight} ${
-            size === "large" ? "text-xl" : "text-sm"
-          }`}
-        >
-          {user.name}
-        </span>
+      {!excludeName && (
+        <div className="flex flex-col leading-tight">
+          <span
+            className={`m-0 p-0 ${nameFontWeight} ${
+              size === "large" ? "text-xl" : "text-sm"
+            }`}
+          >
+            {user.name}
+          </span>
 
-        {includeEmail ? (
-          <p
-            className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
-          >
-            {user.email}
-          </p>
-        ) : secondLine ? (
-          <p
-            className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
-          >
-            {secondLine}
-          </p>
-        ) : null}
-      </div>
+          {includeEmail ? (
+            <p
+              className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
+            >
+              {user.email}
+            </p>
+          ) : secondLine ? (
+            <p
+              className={`m-0 p-0 ${emailTextSize} font-normal text-muted-foreground`}
+            >
+              {secondLine}
+            </p>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 

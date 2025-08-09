@@ -50,7 +50,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
     <div className="block md:hidden border-b border-border px-4 py-1 flex justify-between items-center">
       <div>
         {isOnHome ? (
-          <UserAvatar user={session.user} size="xsmall" />
+          <UserAvatar user={session.user} size="small" excludeName />
         ) : (
           <BackButton />
         )}

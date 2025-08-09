@@ -86,7 +86,7 @@ export function SidebarClient({
       <DropdownMenu>
         <DropdownMenuTrigger>
           <div className="flex items-center space-between gap-6 py-6 px-3">
-            <UserAvatar user={session.user} includeEmail />
+            <UserAvatar user={session.user} includeEmail excludeLink />
             <EllipsisVertical className="w-5 h-5" />
           </div>
         </DropdownMenuTrigger>
@@ -99,6 +99,7 @@ export function SidebarClient({
             user={session.user}
             size="small"
             includeEmail
+            excludeLink
             className="py-2 px-1"
           />
           <Separator />
