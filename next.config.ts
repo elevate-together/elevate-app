@@ -1,6 +1,12 @@
 module.exports = {
   images: {
-    domains: ["kpfusvtzlmxikzmu.public.blob.vercel-storage.com"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: '"kpfusvtzlmxikzmu.public.blob.vercel-storage.com"',
+        pathname: "**",
+      },
+    ],
   },
   async headers() {
     return [

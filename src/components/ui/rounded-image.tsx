@@ -8,7 +8,7 @@ type RoundedImageProps = {
   priority?: boolean;
 };
 
-export default function RoundedImage({
+export function RoundedImage({
   src,
   alt,
   className = "min-w-28 sm:min-w-32 md:min-w-40",

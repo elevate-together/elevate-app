@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/prisma";
-import { MinimalUser, ResponseMessage } from "@/lib/utils";
+import { ResponseMessage } from "@/lib/utils";
 import {
   GroupStatus,
   GroupType,
@@ -13,6 +13,7 @@ import {
   User,
 } from "@prisma/client";
 import { sendNotificationAllDevices } from "@/services/device";
+import { Session } from "next-auth";
 
 // ADD a User to a Prayer Group
 export async function addUserToPrayerGroup(
@@ -260,7 +261,7 @@ export async function getPrayerGroupsNotIn(userId: string): Promise<{
 export async function getUsersByPrayerGroup(groupId: string): Promise<{
   success: boolean;
   message: string;
-  users?: MinimalUser[];
+  users: Session["user"][] | null;
 }> {
   try {
     const userPrayerGroups = await prisma.userPrayerGroup.findMany({
@@ -272,6 +273,8 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
             name: true,
             email: true,
             image: true,
+            role: true,
+            timeZone: true,
             createdAt: true,
           },
         },
@@ -282,6 +285,7 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
       return {
         success: false,
         message: "No users found in this prayer group.",
+        users: null,
       };
     }
 
@@ -295,6 +299,7 @@ export async function getUsersByPrayerGroup(groupId: string): Promise<{
     return {
       success: false,
       message: "An error occurred while retrieving users.",
+      users: null,
     };
   }
 }

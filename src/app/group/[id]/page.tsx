@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import { getUserById } from "@/services/user";
 import { getPrayerGroupById } from "@/services/prayer-group";
 import {
   getUsersByPrayerGroup,
@@ -10,13 +9,16 @@ import {
   getPrayerRequestsForGroup,
   getPublicPrayerRequestsForGroup,
 } from "@/services/prayer-request-share";
-import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
-import PrayerGroupPageTemplate from "@/components/custom/templates/prayer-group-page-templates";
-import PrayerGroupNotAccepted from "@/components/custom/prayer-group/status/prayer-group-not-accepted";
-import PrayerGroupNotIn from "@/components/custom/prayer-group/status/prayer-group-not-in";
-import UserNotFound from "@/components/not-found/user";
-import PrayerGroupNotFound from "@/components/not-found/prayer-group";
-import SessionNotFound from "@/components/not-found/session";
+import {
+  PagePaddingWrapper,
+  PrayerGroupNotFound,
+  PrayerGroupPageTemplate,
+  SessionNotFound,
+} from "@/components/common";
+import {
+  PrayerGroupNotAccepted,
+  PrayerGroupNotIn,
+} from "@/components/data-handlers";
 
 export default async function GroupPage({
   params,
@@ -26,15 +28,9 @@ export default async function GroupPage({
   const { id: groupId } = await params;
 
   const session = await auth();
-  const userId = session?.user?.id;
 
-  if (!userId) {
+  if (!session) {
     return <SessionNotFound />;
-  }
-
-  const { user } = await getUserById({ id: userId });
-  if (!user) {
-    return <UserNotFound />;
   }
 
   const { prayerGroup } = await getPrayerGroupById({ id: groupId });
@@ -42,7 +38,7 @@ export default async function GroupPage({
     return <PrayerGroupNotFound />;
   }
 
-  const groupStatus = await getUserGroupStatus(groupId, userId);
+  const groupStatus = await getUserGroupStatus(groupId, session.user.id);
 
   if (groupStatus === "none") {
     return <PrayerGroupNotIn />;
@@ -62,13 +58,13 @@ export default async function GroupPage({
   const { prayerRequests: publicRequests } =
     await getPublicPrayerRequestsForGroup(groupId);
 
-  const isOwner = prayerGroup.owner.id === userId;
+  const isOwner = prayerGroup.owner.id === session.user.id;
 
   return (
     <PagePaddingWrapper>
       <PrayerGroupPageTemplate
         prayerGroup={prayerGroup}
-        currentUser={user}
+        currentUser={session.user}
         members={users ?? []}
         pendingUsers={pendingUsers ?? []}
         sharedRequests={sharedRequests ?? []}

@@ -4,12 +4,13 @@ import prisma from "@/lib/prisma";
 import { ResponseMessage } from "@/lib/utils";
 import { User, ZoneType } from "@prisma/client";
 import { ObjectId } from "mongodb";
+import { Session } from "next-auth";
 
 // GET User by ID
 export async function getUserById({ id }: { id: string }): Promise<{
   success: boolean;
   message: string;
-  user: User | null;
+  user: Session["user"] | null;
 }> {
   try {
     if (!ObjectId.isValid(id)) {
@@ -22,6 +23,15 @@ export async function getUserById({ id }: { id: string }): Promise<{
 
     const user = await prisma.user.findUnique({
       where: { id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        image: true,
+        role: true,
+        timeZone: true,
+        createdAt: true,
+      },
     });
 
     if (!user) {

@@ -1,7 +1,6 @@
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")
-  directUrl =  env("DIRECT_DATABASE_URL")
 }
 
 generator client {
@@ -17,6 +16,7 @@ model User {
   createdAt              DateTime             @default(now())
   updatedAt              DateTime             @updatedAt
   timeZone               ZoneType             @default(CHICAGO)
+  role                   Role                 @default(USER)
 
   prayerGroups           UserPrayerGroup[]    @relation("UserToPrayerGroup")
   accounts               Account[]
@@ -213,4 +213,9 @@ enum ZoneType {
 enum ReminderFrequency { 
   DAILY
   WEEKLY
+}
+
+enum Role { 
+  USER
+  ADMIN
 }

@@ -1,14 +1,13 @@
-import AppSidebar from "@/components/custom/helpers/bars/app-sidebar";
-import Navbar from "@/components/custom/helpers/bars/navbar/navbar";
-import ServiceWorker from "@/components/service-worker";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { Toaster } from "@/components/ui/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import MobileFooter from "@/components/custom/helpers/bars/footer/mobile-footer";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui";
+import { Sidebar } from "@/components/common/molecules/sidebar/sidebar";
+import { Navbar } from "@/components/common/molecules/navbar/navbar";
+import { ServiceWorker } from "@/components/service-worker";
+import { Footer } from "@/components/common/molecules/footer/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,26 +40,26 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SidebarProvider>
-            <AppSidebar />
-            <main className="flex flex-col h-screen w-full">
+          <main className="flex w-full">
+            <Sidebar />
+            <div className="flex flex-col w-full">
               <Navbar />
               <div className="flex-1 overflow-hidden">{children}</div>
-              <MobileFooter />
-            </main>
-            <Toaster
-              toastOptions={{
-                classNames: {
-                  error: "bg-red-400",
-                  success: "text-green-600",
-                  warning: "text-yellow-600",
-                  info: "bg-blue-400",
-                },
-              }}
-            />
-            <ServiceWorker />
-            <SpeedInsights />
-          </SidebarProvider>
+              <Footer />
+            </div>
+          </main>
+          <Toaster
+            toastOptions={{
+              classNames: {
+                error: "bg-red-400",
+                success: "text-green-600",
+                warning: "text-yellow-600",
+                info: "bg-blue-400",
+              },
+            }}
+          />
+          <ServiceWorker />
+          <SpeedInsights />
         </ThemeProvider>
       </body>
     </html>

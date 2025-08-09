@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 
-const ServiceWorker = () => {
+export const ServiceWorker = () => {
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
@@ -23,5 +23,3 @@ const ServiceWorker = () => {
 
   return null;
 };
-
-export default ServiceWorker;

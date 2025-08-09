@@ -1,39 +1,45 @@
 import { auth } from "@/auth";
-import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
-import { ProfilePageTemplate } from "@/components/custom/templates/helper/profile-page-template";
-import UserNotFound from "@/components/not-found/user";
+import {
+  PagePaddingWrapper,
+  ProfileGuestPageTemplate,
+  ProfileUserPageTemplate,
+  SessionNotFound,
+  UserNotFound,
+} from "@/components/common";
 import { getUserDevices } from "@/services/device";
 import { getUserById } from "@/services/user";
+import { toast } from "sonner";
 
-export default async function ProfilePage({
-  params,
-}: {
+interface ProfilePageProps {
   params: Promise<{ id: string }>;
-}) {
+}
+export default async function ProfilePage({ params }: ProfilePageProps) {
   const { id: pageId } = await params;
-  const { user: pageUser } = await getUserById({ id: pageId });
-  const { devices } = await getUserDevices(pageId);
   const session = await auth();
-
   if (!session) {
-    return <div>You must be logged in to view this page.</div>;
+    return <SessionNotFound />;
   }
 
-  const currUser = session.user;
+  const isOwner = session.user.id === pageId;
 
-  if (!currUser || !pageUser) {
-    return <UserNotFound />;
+  if (!isOwner) {
+    const { user, message, success } = await getUserById({ id: pageId });
+
+    if (!success) {
+      toast.error(message);
+    }
+
+    if (!user) {
+      return <UserNotFound />;
+    }
+    <ProfileGuestPageTemplate user={user} />;
   }
 
-  const isOwner = currUser.id === pageId;
+  const { devices } = await getUserDevices(pageId);
 
   return (
     <PagePaddingWrapper>
-      <ProfilePageTemplate
-        isOwner={isOwner}
-        user={pageUser}
-        devices={devices ?? []}
-      />
+      <ProfileUserPageTemplate user={session.user} devices={devices ?? []} />
     </PagePaddingWrapper>
   );
 }

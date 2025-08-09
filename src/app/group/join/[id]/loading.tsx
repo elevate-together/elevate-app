@@ -1,4 +1,4 @@
-import LoadingProgress from "@/components/custom/helpers/loaders/loading-progress";
+import { LoadingProgress } from "@/components/common";
 
 export default function Loading() {
   return <LoadingProgress />;

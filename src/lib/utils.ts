@@ -2,15 +2,22 @@ import { PrayerGroup, Prisma, User, ZoneType } from "@prisma/client";
 import { clsx, type ClassValue } from "clsx";
 import moment from "moment-timezone";
 
-import { Calendar, HelpingHandIcon, Home, User as UserIco, Users } from "lucide-react";
+import {
+  Calendar,
+  HelpingHandIcon,
+  Home,
+  User as UserIco,
+  Users,
+} from "lucide-react";
 import { twMerge } from "tailwind-merge";
+import { Session } from "next-auth";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export type PrayerGroupWithOwner = PrayerGroup & {
-  owner: User;
+  owner: Session["user"];
 };
 
 export type PrayerGroupWithOwnerAndCount = PrayerGroupWithOwner & {
@@ -22,10 +29,10 @@ export type PrayerGroupWithOwnerAndUsers = PrayerGroup & {
   users: Pick<User, "name">[];
 };
 
-export type MinimalUser = Pick<
-  User,
-  "id" | "name" | "email" | "image" | "createdAt"
->;
+// export type Session["user"] = Pick<
+//   User,
+//   "id" | "name" | "email" | "image" | "createdAt"
+// >;
 
 export const DEFAULT_IMAGE_URL =
   "https://kpfusvtzlmxikzmu.public.blob.vercel-storage.com/apple-icon.png";
@@ -46,34 +53,34 @@ export type ResponseMessage = {
 export const menu_items = [
   {
     title: "Home",
+    titleShort: "Home",
     url: "/",
     icon: Home,
-    auth: false,
-  },
-  {
-    title: "Profile",
-    url: "/user/{id}",
-    icon: UserIco,
-    auth: true,
-  },
-
-  {
-    title: "Your Requests",
-    url: "/requests/{id}",
-    icon: HelpingHandIcon,
-    auth: true,
   },
   {
     title: "Your Groups",
-    url: "/groups",
+    titleShort: "Groups",
+    url: "/group",
     icon: Users,
-    auth: true,
   },
   {
+    title: "Your Requests",
+    titleShort: "Requests",
+    url: "/request/{id}",
+    icon: HelpingHandIcon,
+  },
+  {
+    title: "Profile",
+    titleShort: "Profile",
+    url: "/user/{id}",
+    icon: UserIco,
+  },
+
+  {
     title: "Your Reminders",
-    url: "/reminder/create/{id}",
+    titleShort: " Reminders",
+    url: "/reminder",
     icon: Calendar,
-    auth: true,
   },
 ];
 

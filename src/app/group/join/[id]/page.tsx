@@ -1,13 +1,16 @@
 import { auth } from "@/auth";
+import {
+  LogInPrompt,
+  PagePaddingWrapper,
+  PrayerGroupNotFound,
+} from "@/components/common";
+import {
+  PrayerGroupAccepted,
+  PrayerGroupJoin,
+  PrayerGroupNotAccepted,
+} from "@/components/data-handlers";
 import { getPrayerGroupWithCountById } from "@/services/prayer-group";
-import PrayerGroupJoin from "@/components/custom/prayer-group/join/prayer-group-join";
-import PagePaddingWrapper from "@/components/custom/templates/helper/page-padding-wrapper";
-import LogInPrompt from "@/components/custom/helpers/log-in-prompt";
 import { getUserGroupStatus } from "@/services/user-prayer-group";
-import PrayerGroupAccepted from "@/components/custom/prayer-group/status/prayer-group-accepted";
-import PrayerGroupNotAccepted from "@/components/custom/prayer-group/status/prayer-group-not-accepted";
-import PrayerGroupNotFound from "@/components/not-found/prayer-group";
-import SessionNotFound from "@/components/not-found/session";
 
 export default async function JoinGroupPage({
   params,
@@ -20,10 +23,7 @@ export default async function JoinGroupPage({
     return <LogInPrompt callback={`/group/join/${groupId}`} />;
   }
 
-  const userId = session?.user?.id;
-  if (!userId) return <SessionNotFound />;
-
-  const status = await getUserGroupStatus(groupId, userId);
+  const status = await getUserGroupStatus(groupId, session.user.id);
 
   if (status === "accepted") {
     return <PrayerGroupAccepted groupId={groupId} />;
@@ -38,7 +38,7 @@ export default async function JoinGroupPage({
 
   return (
     <PagePaddingWrapper>
-      <PrayerGroupJoin userId={userId} group={group} />
+      <PrayerGroupJoin userId={session.user.id} group={group} />
     </PagePaddingWrapper>
   );
 }

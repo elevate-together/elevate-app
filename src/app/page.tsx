@@ -3,38 +3,31 @@
 import { auth } from "@/auth";
 import { getInProgressPrayerRequestsForUser } from "@/services/prayer-request";
 import { getPrayerRequestsSharedWithUser } from "@/services/prayer-request-share";
-import { getUserById } from "@/services/user";
-import WelcomePage from "@/components/custom/templates/welcome-page";
-import { HomePagetemplate } from "@/components/custom/templates/home-page-template";
-import UserNotFound from "@/components/not-found/user";
-import PrayerRequestNotFound from "@/components/not-found/prayer-request";
+
+import {
+  HomePagetemplate,
+  PrayerRequestNotFound,
+  WelcomePageTemplate,
+} from "@/components/common";
 
 export default async function Home() {
   const session = await auth();
 
-  if (!session || !session.user || !session.user.id) {
+  if (!session) {
     return (
       <div className="h-80vh">
-        <WelcomePage />
+        <WelcomePageTemplate />
       </div>
     );
   }
 
-  const id = session.user.id;
-
-  const { user } = await getUserById({ id: id });
-
-  if (!user) {
-    return <UserNotFound />;
-  }
-
   const { success: FriendSuccess, prayerRequests: FriendPrayerRequests } =
-    await getPrayerRequestsSharedWithUser(id, false);
+    await getPrayerRequestsSharedWithUser(session.user.id, false);
 
   const {
     success: InProgressSuccess,
     prayerRequests: InProgressPrayerRequests,
-  } = await getInProgressPrayerRequestsForUser({ userId: id });
+  } = await getInProgressPrayerRequestsForUser({ userId: session.user.id });
 
   if (!FriendSuccess || !InProgressSuccess) {
     return <PrayerRequestNotFound />;
@@ -56,7 +49,7 @@ export default async function Home() {
 
   return (
     <HomePagetemplate
-      user={user}
+      user={session.user}
       friendPrayerRequests={FriendPrayerRequests ?? []}
       inProgressPrayerRequests={InProgressPrayerRequests ?? []}
       allPrayerRequests={allPrayerRequests ?? []}
