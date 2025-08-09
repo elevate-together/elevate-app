@@ -17,6 +17,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
 
   const routeTitles: { match: (path: string) => boolean; title: string }[] = [
     { match: (p) => p === "/", title: "Pray" },
+    { match: (p) => p === "/reminder", title: "Reminders" },
     { match: (p) => p === `/user/${session.user.id}`, title: "Settings" },
     { match: (p) => p === "/group", title: "Your Groups" },
     {
@@ -32,10 +33,6 @@ export function NavbarClient({ session }: NavbarClientProps) {
       match: (p) => p.startsWith("/group/join/") && p.split("/").length === 4,
       title: "Join Group",
     },
-    {
-      match: (p) => p.startsWith("/reminder/") && p.split("/").length === 3,
-      title: "Reminders",
-    },
   ];
 
   const currentTitle =
@@ -47,7 +44,7 @@ export function NavbarClient({ session }: NavbarClientProps) {
   const isOnHome = pathname === "/";
 
   return (
-    <div className="block md:hidden border-b border-border px-4 py-1 flex justify-between items-center">
+    <div className="block md:hidden border-b border-border px-4 py-1 flex items-center relative">
       <div>
         {isOnHome ? (
           <UserAvatar user={session.user} size="small" excludeName />
@@ -56,11 +53,11 @@ export function NavbarClient({ session }: NavbarClientProps) {
         )}
       </div>
 
-      <h1 className="font-bold text-lg truncate max-w-[50%] text-center">
+      <h1 className="font-bold text-lg truncate max-w-[50%] absolute left-1/2 transform -translate-x-1/2 text-center">
         {currentTitle}
       </h1>
 
-      <div className="flex items-center">
+      <div className="flex items-center ml-auto">
         <PrayerRequestCreate userId={user.id} variant="largeIcon" />
 
         <IconButton
