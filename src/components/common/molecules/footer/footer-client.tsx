@@ -16,8 +16,8 @@ export function FooterClient({ session }: FooterClientProps) {
   if (!session) return null;
 
   return (
-    <div className="block md:hidden border-t border-border py-4 mb-2">
-      <nav className="flex justify-evenly">
+    <div className="block md:hidden border-t border-border pt-4 pb-8 px-4 bg-white">
+      <footer className="flex justify-evenly">
         {menu_items.map((item) => {
           const url = item.url.replace("{id}", session.user.id || "");
           const isActive = pathname === url;
@@ -43,7 +43,7 @@ export function FooterClient({ session }: FooterClientProps) {
             </Link>
           );
         })}
-      </nav>
+      </footer>
     </div>
   );
 }
